@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,34 +10,33 @@ import {
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
-
-interface QuizQuestion {
-  id: number;
-  question: string;
-  questionJa: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
-  detailedExplanation?: string;
-}
+import { Question, QuizCategory, QuizResult } from '../types';
+import { storageService } from '../services/storageService';
+import { useAuth } from '../contexts/AuthContext';
 
 interface QuizScreenProps {
-  questions: QuizQuestion[];
+  questions: Question[];
+  category?: QuizCategory;
   onComplete: (score: number) => void;
   onExit: () => void;
 }
 
 export const QuizScreen: React.FC<QuizScreenProps> = ({
   questions,
+  category = 'basic',
   onComplete,
   onExit,
 }) => {
+  const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [showDetailedExplanation, setShowDetailedExplanation] = useState(false);
   const [feedbackAnimation] = useState(new Animated.Value(0));
+  const [correctAnswers, setCorrectAnswers] = useState<number[]>([]);
+  const [incorrectAnswers, setIncorrectAnswers] = useState<number[]>([]);
+  const [startTime] = useState(Date.now());
 
   const currentQuestion = questions[currentQuestionIndex];
   const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
@@ -57,13 +56,16 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       friction: 7,
     }).start();
 
-    // Update score
+    // Update score and track answers
     if (answerIndex === currentQuestion.correctAnswer) {
       setScore(score + 1);
+      setCorrectAnswers([...correctAnswers, currentQuestion.id]);
+    } else {
+      setIncorrectAnswers([...incorrectAnswers, currentQuestion.id]);
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer(null);
@@ -71,7 +73,38 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       setShowDetailedExplanation(false);
       feedbackAnimation.setValue(0);
     } else {
-      onComplete(score + (isCorrect ? 1 : 0));
+      // Save quiz result
+      const finalScore = score + (isCorrect ? 1 : 0);
+      const finalCorrectAnswers = isCorrect
+        ? [...correctAnswers, currentQuestion.id]
+        : correctAnswers;
+      const finalIncorrectAnswers = !isCorrect
+        ? [...incorrectAnswers, currentQuestion.id]
+        : incorrectAnswers;
+
+      if (user) {
+        const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+        const result: QuizResult = {
+          id: Date.now().toString(),
+          userId: user.id,
+          category,
+          score: Math.round((finalScore / questions.length) * 100),
+          totalQuestions: questions.length,
+          correctAnswers: finalCorrectAnswers,
+          incorrectAnswers: finalIncorrectAnswers,
+          completedAt: new Date().toISOString(),
+          timeSpent,
+        };
+
+        try {
+          await storageService.saveQuizResult(result);
+          await storageService.updateLearningStats(result);
+        } catch (error) {
+          console.error('Error saving quiz result:', error);
+        }
+      }
+
+      onComplete(finalScore);
     }
   };
 

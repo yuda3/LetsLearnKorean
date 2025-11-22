@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,11 @@ import {
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { ProgressBar } from '../components/ProgressBar';
-import { COLORS, TYPOGRAPHY, SPACING, SHADOWS } from '../constants/theme';
+import { TYPOGRAPHY, SPACING, SHADOWS } from '../constants/theme';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { storageService } from '../services/storageService';
+import { LearningStats } from '../types';
 
 interface HomeScreenProps {
   onStartQuiz: () => void;
@@ -23,31 +27,53 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onReview,
   userName = 'ユーザー',
 }) => {
-  // Mock data - replace with actual data later
-  const todayProgress = 65;
+  const { logout } = useAuth();
+  const { colors, mode, toggleTheme } = useTheme();
+  const [stats, setStats] = useState<LearningStats | null>(null);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    const learningStats = await storageService.getLearningStats();
+    setStats(learningStats);
+  };
+
+  const todayProgress = stats ? Math.min((stats.totalQuizzesTaken / 5) * 100, 100) : 0;
   const weeklyGoal = 5;
-  const completedDays = 3;
-  const currentStreak = 7;
+  const completedDays = stats ? Math.min(stats.totalQuizzesTaken, weeklyGoal) : 0;
+  const currentStreak = stats?.currentStreak || 0;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
       <ScrollView
-        style={styles.container}
+        style={[styles.container, { backgroundColor: colors.background.ivory }]}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
+        {/* Header with Theme Toggle and Logout */}
+        <View style={styles.topBar}>
+          <TouchableOpacity onPress={toggleTheme} style={[styles.iconButton, { backgroundColor: colors.background.cream }]}>
+            <Text style={styles.iconText}>{mode === 'dark' ? '☀️' : '🌙'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={logout} style={[styles.iconButton, { backgroundColor: colors.background.cream }]}>
+            <Text style={styles.iconText}>👋</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Welcome Section */}
         <View style={styles.header}>
-          <Text style={styles.greeting}>おはようございます、</Text>
-          <Text style={styles.userName}>{userName}さん</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.greeting, { color: colors.primary[600] }]}>おはようございます、</Text>
+          <Text style={[styles.userName, { color: colors.primary[800] }]}>{userName}さん</Text>
+          <Text style={[styles.subtitle, { color: colors.primary[500] }]}>
             今日も韓国語の旅を始めましょう
           </Text>
         </View>
 
         {/* Today's Progress Card */}
         <Card style={styles.progressCard} variant="elevated">
-          <Text style={styles.cardTitle}>今日の学習進捗</Text>
+          <Text style={[styles.cardTitle, { color: colors.primary[800] }]}>今日の学習進捗</Text>
           <ProgressBar
             progress={todayProgress}
             label="完了率"
@@ -55,13 +81,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           />
           <View style={styles.statsRow}>
             <View style={styles.stat}>
-              <Text style={styles.statValue}>{currentStreak}</Text>
-              <Text style={styles.statLabel}>日連続</Text>
+              <Text style={[styles.statValue, { color: colors.sage[600] }]}>{currentStreak}</Text>
+              <Text style={[styles.statLabel, { color: colors.primary[500] }]}>日連続</Text>
             </View>
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: colors.primary[200] }]} />
             <View style={styles.stat}>
-              <Text style={styles.statValue}>{completedDays}/{weeklyGoal}</Text>
-              <Text style={styles.statLabel}>週間目標</Text>
+              <Text style={[styles.statValue, { color: colors.sage[600] }]}>{completedDays}/{weeklyGoal}</Text>
+              <Text style={[styles.statLabel, { color: colors.primary[500] }]}>週間目標</Text>
             </View>
           </View>
         </Card>
@@ -79,7 +105,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
         {/* Learning Categories */}
         <View style={styles.categoriesSection}>
-          <Text style={styles.sectionTitle}>学習カテゴリー</Text>
+          <Text style={[styles.sectionTitle, { color: colors.primary[800] }]}>学習カテゴリー</Text>
 
           <View style={styles.categoryGrid}>
             <CategoryCard
@@ -112,10 +138,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         {/* Quick Review Section */}
         <Card style={styles.reviewCard}>
           <View style={styles.reviewHeader}>
-            <Text style={styles.cardTitle}>復習が必要な単語</Text>
-            <Text style={styles.reviewCount}>12個</Text>
+            <Text style={[styles.cardTitle, { color: colors.primary[800] }]}>復習が必要な単語</Text>
+            <Text style={[styles.reviewCount, { color: colors.coral[500] }]}>12個</Text>
           </View>
-          <Text style={styles.reviewDescription}>
+          <Text style={[styles.reviewDescription, { color: colors.primary[600] }]}>
             忘れる前に復習しましょう
           </Text>
           <View style={styles.reviewButtonContainer}>
@@ -145,11 +171,13 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   icon,
   color,
 }) => {
+  const { colors } = useTheme();
+
   return (
     <TouchableOpacity style={[styles.categoryCard, { backgroundColor: color }]}>
       <Text style={styles.categoryIcon}>{icon}</Text>
-      <Text style={styles.categoryTitle}>{title}</Text>
-      <Text style={styles.categorySubtitle}>{subtitle}</Text>
+      <Text style={[styles.categoryTitle, { color: colors.primary[800] }]}>{title}</Text>
+      <Text style={[styles.categorySubtitle, { color: colors.primary[600] }]}>{subtitle}</Text>
     </TouchableOpacity>
   );
 };
@@ -157,33 +185,45 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background.ivory,
   },
   container: {
     flex: 1,
-    backgroundColor: COLORS.background.ivory,
   },
   contentContainer: {
     padding: SPACING.lg,
     paddingBottom: SPACING['3xl'],
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: SPACING.sm,
+    marginBottom: SPACING.md,
+  },
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...SHADOWS.soft,
+  },
+  iconText: {
+    fontSize: 20,
   },
   header: {
     marginBottom: SPACING.xl,
   },
   greeting: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.primary[600],
     marginBottom: SPACING.xs,
   },
   userName: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
-    color: COLORS.primary[800],
     fontWeight: '700',
     marginBottom: SPACING.sm,
   },
   subtitle: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.primary[500],
     lineHeight: 24,
   },
   progressCard: {
@@ -191,7 +231,6 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.primary[800],
     fontWeight: '600',
     marginBottom: SPACING.md,
   },
@@ -207,18 +246,15 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: TYPOGRAPHY.fontSize['2xl'],
-    color: COLORS.sage[600],
     fontWeight: '700',
     marginBottom: SPACING.xs,
   },
   statLabel: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.primary[500],
   },
   divider: {
     width: 1,
     height: 40,
-    backgroundColor: COLORS.primary[200],
   },
   mainActionContainer: {
     marginBottom: SPACING.xl,
@@ -228,7 +264,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: TYPOGRAPHY.fontSize.xl,
-    color: COLORS.primary[800],
     fontWeight: '600',
     marginBottom: SPACING.md,
   },
@@ -251,13 +286,11 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.primary[800],
     fontWeight: '600',
     marginBottom: SPACING.xs,
   },
   categorySubtitle: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.primary[600],
     lineHeight: 18,
   },
   reviewCard: {
@@ -271,12 +304,10 @@ const styles = StyleSheet.create({
   },
   reviewCount: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.coral[500],
     fontWeight: '700',
   },
   reviewDescription: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.primary[600],
     marginBottom: SPACING.md,
   },
   reviewButtonContainer: {

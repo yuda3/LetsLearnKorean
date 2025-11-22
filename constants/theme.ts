@@ -1,5 +1,5 @@
 // Muji-inspired Design System
-export const COLORS = {
+export const LIGHT_COLORS = {
   // Primary warm grays
   primary: {
     50: '#F8F6F4',
@@ -59,6 +59,69 @@ export const COLORS = {
     warmWhite: '#FFF9F5',
   },
 };
+
+export const DARK_COLORS = {
+  // Primary cool grays for dark mode
+  primary: {
+    50: '#2A2824',
+    100: '#413E39',
+    200: '#5F5952',
+    300: '#7D756C',
+    400: '#9C9186',
+    500: '#B8AFA3',
+    600: '#D4CEC4',
+    700: '#E8E3DC',
+    800: '#F0EDE8',
+    900: '#F8F6F4',
+  },
+  // Sage green (slightly brighter for dark mode)
+  sage: {
+    50: '#1F2E28',
+    100: '#344D45',
+    200: '#4A6F62',
+    300: '#619180',
+    400: '#7DB49E',
+    500: '#9AC4B3',
+    600: '#B8D4C8',
+    700: '#D4E4DD',
+    800: '#E8F0ED',
+    900: '#F5F8F7',
+  },
+  // Coral (slightly muted for dark mode)
+  coral: {
+    50: '#6B241A',
+    100: '#9A3626',
+    200: '#C44A34',
+    300: '#E5634A',
+    400: '#F77F63',
+    500: '#F99B85',
+    600: '#FBB8A8',
+    700: '#FDD5CB',
+    800: '#FEEAE5',
+    900: '#FEF5F3',
+  },
+  // Mint
+  mint: {
+    50: '#173A2E',
+    100: '#265A4A',
+    200: '#377A67',
+    300: '#4A9A84',
+    400: '#62B9A2',
+    500: '#85C9B7',
+    600: '#A8D9CC',
+    700: '#CCE9E1',
+    800: '#E6F4F0',
+    900: '#F4FAF8',
+  },
+  // Dark backgrounds
+  background: {
+    ivory: '#1A1918',
+    cream: '#252321',
+    warmWhite: '#2F2D2A',
+  },
+};
+
+export const COLORS = LIGHT_COLORS;
 
 export const TYPOGRAPHY = {
   fontFamily: {

@@ -10,7 +10,7 @@ import {
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { ProgressBar } from '../components/ProgressBar';
-import { TYPOGRAPHY, SPACING, SHADOWS } from '../constants/theme';
+import { TYPOGRAPHY, SPACING, SHADOWS, COLORS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { storageService } from '../services/storageService';

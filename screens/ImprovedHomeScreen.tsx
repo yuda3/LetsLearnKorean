@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { ProgressBar } from '../components/ProgressBar';
@@ -37,10 +38,14 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
   const { colors } = useTheme();
   const [stats, setStats] = useState<LearningStats | null>(null);
   const [categoryProgress, setCategoryProgress] = useState<CategoryProgress[]>([]);
+  const [todayQuizCount, setTodayQuizCount] = useState(0);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  // 화면이 포커스될 때마다 데이터 다시 로드
+  useFocusEffect(
+    React.useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   const loadData = async () => {
     const learningStats = await storageService.getLearningStats();
@@ -48,6 +53,15 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
 
     const progress = await storageService.getCategoryProgress();
     setCategoryProgress(progress);
+
+    // 오늘 완료한 퀴즈 수 계산
+    const today = new Date().toISOString().split('T')[0];
+    const allResults = await storageService.getQuizResults();
+    const todayResults = allResults.filter(result => {
+      const resultDate = new Date(result.completedAt).toISOString().split('T')[0];
+      return resultDate === today;
+    });
+    setTodayQuizCount(todayResults.length);
   };
 
   const isCategoryUnlocked = (categoryId: QuizCategory): boolean => {
@@ -107,7 +121,8 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
     }
   };
 
-  const todayProgress = stats ? Math.min((stats.totalQuizzesTaken / 5) * 100, 100) : 0;
+  const dailyGoal = stats?.dailyGoal || 5;
+  const todayProgress = Math.min((todayQuizCount / dailyGoal) * 100, 100);
   const currentStreak = stats?.currentStreak || 0;
   const totalScore = stats?.totalCorrectAnswers || 0;
 

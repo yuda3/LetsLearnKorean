@@ -51,6 +51,7 @@ export interface LearningStats {
   currentStreak: number;
   longestStreak: number;
   lastStudyDate: string;
+  dailyGoal?: number; // 1日の目標クイズ数 (デフォルト: 5)
   categoryStats: {
     [key in QuizCategory]?: {
       quizzesTaken: number;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -54,6 +54,16 @@ export const SettingsScreen: React.FC = () => {
   const { colors, mode, toggleTheme } = useTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [dailyGoal, setDailyGoal] = useState(5);
+
+  useEffect(() => {
+    loadDailyGoal();
+  }, []);
+
+  const loadDailyGoal = async () => {
+    const goal = await storageService.getDailyGoal();
+    setDailyGoal(goal);
+  };
 
   const handleClearData = () => {
     Alert.alert(
@@ -94,6 +104,34 @@ export const SettingsScreen: React.FC = () => {
     );
   };
 
+  const handleDailyGoalChange = () => {
+    const goalOptions = [3, 5, 10, 15, 20];
+    const goalLabels = goalOptions.map(g => `${g}個`);
+
+    Alert.alert(
+      '1日の目標',
+      '1日に完了したいクイズの数を選択してください',
+      [
+        ...goalOptions.map((goal, index) => ({
+          text: goalLabels[index],
+          onPress: async () => {
+            try {
+              await storageService.updateDailyGoal(goal);
+              setDailyGoal(goal);
+              Alert.alert('成功', `1日の目標を${goal}個に設定しました。`);
+            } catch (error) {
+              Alert.alert('エラー', '目標の設定に失敗しました。');
+            }
+          },
+        })),
+        {
+          text: 'キャンセル',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
       <ScrollView
@@ -121,6 +159,26 @@ export const SettingsScreen: React.FC = () => {
                 trackColor={{ false: colors.primary[200], true: colors.sage[400] }}
                 thumbColor={mode === 'dark' ? colors.sage[600] : colors.primary[100]}
               />
+            }
+          />
+        </View>
+
+        {/* Learning Goal Section */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.primary[700] }]}>学習目標</Text>
+          <SettingItem
+            icon="🎯"
+            titleJa="1日の目標"
+            titleKo="일일 목표"
+            colors={colors}
+            onPress={handleDailyGoalChange}
+            rightElement={
+              <View style={styles.goalValueContainer}>
+                <Text style={[styles.goalValue, { color: colors.sage[600] }]}>
+                  {dailyGoal}個
+                </Text>
+                <Text style={[styles.settingArrow, { color: colors.primary[400] }]}>›</Text>
+              </View>
             }
           />
         </View>
@@ -263,6 +321,15 @@ const styles = StyleSheet.create({
   settingArrow: {
     fontSize: 24,
     marginLeft: SPACING.sm,
+  },
+  goalValueContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  goalValue: {
+    fontSize: TYPOGRAPHY.fontSize.base,
+    fontWeight: '700',
   },
   versionText: {
     textAlign: 'center',

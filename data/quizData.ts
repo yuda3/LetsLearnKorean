@@ -1394,9 +1394,11 @@ export const quizQuestions: Question[] = [
   },
 ];
 
-// カテゴリー別にクイズを取得する関数
+// カテゴリー別にクイズを取得する関数（ランダムにシャッフル）
 export const getQuizzesByCategory = (category: string): Question[] => {
-  return quizQuestions.filter((q) => q.category === category);
+  const filtered = quizQuestions.filter((q) => q.category === category);
+  // 同じ問題が続けて出ないようにランダムにシャッフル
+  return [...filtered].sort(() => 0.5 - Math.random());
 };
 
 // ランダムなクイズを取得する関数

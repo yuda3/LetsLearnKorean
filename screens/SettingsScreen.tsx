@@ -67,22 +67,29 @@ export const SettingsScreen: React.FC = () => {
 
   const handleClearData = () => {
     Alert.alert(
-      'データをクリア',
-      '本当にすべてのデータを削除しますか？この操作は取り消せません。',
+      '모든 데이터 삭제 / データをクリア',
+      '정말로 모든 데이터를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.\n\n本当にすべてのデータを削除しますか？この操作は取り消せません。',
       [
         {
-          text: 'キャンセル',
+          text: '취소 / キャンセル',
           style: 'cancel',
         },
         {
-          text: '削除',
+          text: '삭제 / 削除',
           style: 'destructive',
           onPress: async () => {
             try {
               await storageService.clearAll();
-              Alert.alert('成功', 'すべてのデータが削除されました。アプリを再起動してください。');
+              Alert.alert(
+                '성공 / 成功',
+                '모든 데이터가 삭제되었습니다. 앱을 다시 시작해주세요.\n\nすべてのデータが削除されました。アプリを再起動してください。'
+              );
             } catch (error) {
-              Alert.alert('エラー', 'データの削除に失敗しました。');
+              console.error('Error clearing data:', error);
+              Alert.alert(
+                '오류 / エラー',
+                '데이터 삭제에 실패했습니다.\n\nデータの削除に失敗しました。'
+              );
             }
           },
         },
@@ -106,27 +113,27 @@ export const SettingsScreen: React.FC = () => {
 
   const handleDailyGoalChange = () => {
     Alert.alert(
-      '1日の目標',
-      '1日に完了したいクイズの数を選択してください',
+      '일일 목표 / 1日の目標',
+      '하루에 완료하고 싶은 퀴즈 수를 선택하세요\n\n1日に完了したいクイズの数を選択してください',
       [
         {
-          text: '3個',
+          text: '3개 / 3個',
           onPress: () => updateGoal(3),
         },
         {
-          text: '5個',
+          text: '5개 / 5個',
           onPress: () => updateGoal(5),
         },
         {
-          text: '10個',
+          text: '10개 / 10個',
           onPress: () => updateGoal(10),
         },
         {
-          text: 'さらに表示',
+          text: '더보기 / さらに表示',
           onPress: showMoreGoalOptions,
         },
         {
-          text: 'キャンセル',
+          text: '취소 / キャンセル',
           style: 'cancel',
         },
       ]
@@ -135,23 +142,23 @@ export const SettingsScreen: React.FC = () => {
 
   const showMoreGoalOptions = () => {
     Alert.alert(
-      '1日の目標',
-      '1日に完了したいクイズの数を選択してください',
+      '일일 목표 / 1日の目標',
+      '하루에 완료하고 싶은 퀴즈 수를 선택하세요\n\n1日に完了したいクイズの数を選択してください',
       [
         {
-          text: '15個',
+          text: '15개 / 15個',
           onPress: () => updateGoal(15),
         },
         {
-          text: '20個',
+          text: '20개 / 20個',
           onPress: () => updateGoal(20),
         },
         {
-          text: '戻る',
+          text: '돌아가기 / 戻る',
           onPress: handleDailyGoalChange,
         },
         {
-          text: 'キャンセル',
+          text: '취소 / キャンセル',
           style: 'cancel',
         },
       ]
@@ -162,9 +169,16 @@ export const SettingsScreen: React.FC = () => {
     try {
       await storageService.updateDailyGoal(goal);
       setDailyGoal(goal);
-      Alert.alert('成功', `1日の目標を${goal}個に設定しました。`);
+      Alert.alert(
+        '성공 / 成功',
+        `일일 목표를 ${goal}개로 설정했습니다.\n\n1日の目標を${goal}個に設定しました。`
+      );
     } catch (error) {
-      Alert.alert('エラー', '目標の設定に失敗しました。');
+      console.error('Error updating daily goal:', error);
+      Alert.alert(
+        '오류 / エラー',
+        '목표 설정에 실패했습니다.\n\n目標の設定に失敗しました。'
+      );
     }
   };
 

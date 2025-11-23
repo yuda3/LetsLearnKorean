@@ -6,10 +6,12 @@ import {
   SafeAreaView,
   Animated,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface ResultScreenProps {
   score: number;
@@ -32,6 +34,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   incorrectAnswers = [],
   timeSpent,
 }) => {
+  const { colors } = useTheme();
   const [scaleAnimation] = useState(new Animated.Value(0));
   const [fadeAnimation] = useState(new Animated.Value(0));
 
@@ -72,35 +75,35 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         title: '完璧です！',
         subtitle: '素晴らしい成績ですね',
         emoji: '🎉',
-        color: COLORS.sage[500],
+        color: colors.sage[500],
       };
     } else if (percentage >= 80) {
       return {
         title: '大変よくできました！',
         subtitle: 'とても良い理解度です',
         emoji: '⭐',
-        color: COLORS.sage[500],
+        color: colors.sage[500],
       };
     } else if (percentage >= 60) {
       return {
         title: 'よくできました！',
         subtitle: '着実に上達しています',
         emoji: '👏',
-        color: COLORS.mint[500],
+        color: colors.mint[500],
       };
     } else if (percentage >= 40) {
       return {
         title: '頑張りました！',
         subtitle: '復習して次に進みましょう',
         emoji: '💪',
-        color: COLORS.coral[400],
+        color: colors.coral[400],
       };
     } else {
       return {
         title: 'もう一度チャレンジ！',
         subtitle: '練習すればもっと良くなります',
         emoji: '🌱',
-        color: COLORS.coral[500],
+        color: colors.coral[500],
       };
     }
   };
@@ -108,119 +111,125 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   const message = getMessage();
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Decorative Background */}
-        <View style={styles.decorativeBackground}>
-          <View style={[styles.circle, styles.circle1]} />
-          <View style={[styles.circle, styles.circle2]} />
-          <View style={[styles.circle, styles.circle3]} />
-        </View>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.container}>
+          {/* Decorative Background */}
+          <View style={styles.decorativeBackground}>
+            <View style={[styles.circle, styles.circle1, { backgroundColor: colors.sage[300] }]} />
+            <View style={[styles.circle, styles.circle2, { backgroundColor: colors.coral[300] }]} />
+            <View style={[styles.circle, styles.circle3, { backgroundColor: colors.mint[300] }]} />
+          </View>
 
-        {/* Result Card */}
-        <Animated.View
-          style={[
-            styles.cardContainer,
-            {
-              transform: [{ scale: scaleAnimation }],
-            },
-          ]}
-        >
-          <Card style={styles.resultCard} variant="elevated">
-            {/* Emoji */}
-            <Text style={styles.emoji}>{message.emoji}</Text>
+          {/* Result Card */}
+          <Animated.View
+            style={[
+              styles.cardContainer,
+              {
+                transform: [{ scale: scaleAnimation }],
+              },
+            ]}
+          >
+            <Card style={styles.resultCard} variant="elevated">
+              {/* Emoji */}
+              <Text style={styles.emoji}>{message.emoji}</Text>
 
-            {/* Title */}
-            <Text style={styles.title}>{message.title}</Text>
-            <Text style={styles.subtitle}>{message.subtitle}</Text>
+              {/* Title */}
+              <Text style={[styles.title, { color: colors.primary[800] }]}>{message.title}</Text>
+              <Text style={[styles.subtitle, { color: colors.primary[600] }]}>{message.subtitle}</Text>
 
-            {/* Score Display */}
-            <View style={styles.scoreContainer}>
-              <View style={[styles.scoreCircle, { borderColor: message.color }]}>
-                <Text style={[styles.scorePercentage, { color: message.color }]}>
-                  {percentage}%
+              {/* Score Display */}
+              <View style={styles.scoreContainer}>
+                <View style={[styles.scoreCircle, { borderColor: message.color, backgroundColor: colors.background.warmWhite }]}>
+                  <Text style={[styles.scorePercentage, { color: message.color }]}>
+                    {percentage}%
+                  </Text>
+                  <Text style={[styles.scoreLabel, { color: colors.primary[600] }]}>正解率</Text>
+                </View>
+              </View>
+
+              {/* Score Details */}
+              <View style={styles.detailsContainer}>
+                <View style={styles.detailItem}>
+                  <Text style={[styles.detailValue, { color: colors.primary[700] }]}>{score}</Text>
+                  <Text style={[styles.detailLabel, { color: colors.primary[500] }]}>正解</Text>
+                </View>
+                <View style={[styles.divider, { backgroundColor: colors.primary[200] }]} />
+                <View style={styles.detailItem}>
+                  <Text style={[styles.detailValue, { color: colors.primary[700] }]}>{totalQuestions - score}</Text>
+                  <Text style={[styles.detailLabel, { color: colors.primary[500] }]}>不正解</Text>
+                </View>
+                <View style={[styles.divider, { backgroundColor: colors.primary[200] }]} />
+                <View style={styles.detailItem}>
+                  <Text style={[styles.detailValue, { color: colors.primary[700] }]}>{totalQuestions}</Text>
+                  <Text style={[styles.detailLabel, { color: colors.primary[500] }]}>合計</Text>
+                </View>
+              </View>
+
+              {/* Additional Stats */}
+              {timeSpent !== undefined && (
+                <View style={[styles.additionalStatsContainer, { borderTopColor: colors.primary[200] }]}>
+                  <View style={styles.statRow}>
+                    <Text style={styles.statIcon}>⏱️</Text>
+                    <View style={styles.statInfo}>
+                      <Text style={[styles.statLabel, { color: colors.primary[600] }]}>所要時間</Text>
+                      <Text style={[styles.statValue, { color: colors.primary[700] }]}>{formatTime(timeSpent)}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.statRow}>
+                    <Text style={styles.statIcon}>⚡</Text>
+                    <View style={styles.statInfo}>
+                      <Text style={[styles.statLabel, { color: colors.primary[600] }]}>平均解答時間</Text>
+                      <Text style={[styles.statValue, { color: colors.primary[700] }]}>{averageTimePerQuestion}秒</Text>
+                    </View>
+                  </View>
+                </View>
+              )}
+
+              {/* Motivational Message */}
+              <View style={[styles.messageContainer, { borderTopColor: colors.primary[200] }]}>
+                <Text style={[styles.messageText, { color: colors.primary[600] }]}>
+                  {percentage >= 70
+                    ? '継続は力なり。この調子で頑張りましょう！'
+                    : '間違えた問題を復習すると、もっと上達しますよ。'}
                 </Text>
-                <Text style={styles.scoreLabel}>正解率</Text>
               </View>
-            </View>
+            </Card>
+          </Animated.View>
 
-            {/* Score Details */}
-            <View style={styles.detailsContainer}>
-              <View style={styles.detailItem}>
-                <Text style={styles.detailValue}>{score}</Text>
-                <Text style={styles.detailLabel}>正解</Text>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.detailItem}>
-                <Text style={styles.detailValue}>{totalQuestions - score}</Text>
-                <Text style={styles.detailLabel}>不正解</Text>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.detailItem}>
-                <Text style={styles.detailValue}>{totalQuestions}</Text>
-                <Text style={styles.detailLabel}>合計</Text>
-              </View>
-            </View>
-
-            {/* Additional Stats */}
-            {timeSpent !== undefined && (
-              <View style={styles.additionalStatsContainer}>
-                <View style={styles.statRow}>
-                  <Text style={styles.statIcon}>⏱️</Text>
-                  <View style={styles.statInfo}>
-                    <Text style={styles.statLabel}>所要時間</Text>
-                    <Text style={styles.statValue}>{formatTime(timeSpent)}</Text>
-                  </View>
-                </View>
-                <View style={styles.statRow}>
-                  <Text style={styles.statIcon}>⚡</Text>
-                  <View style={styles.statInfo}>
-                    <Text style={styles.statLabel}>平均解答時間</Text>
-                    <Text style={styles.statValue}>{averageTimePerQuestion}秒</Text>
-                  </View>
-                </View>
-              </View>
+          {/* Action Buttons */}
+          <Animated.View style={[styles.actionsContainer, { opacity: fadeAnimation }]}>
+            {onShare && (
+              <TouchableOpacity style={[styles.shareButton, { backgroundColor: colors.background.cream, borderColor: colors.primary[200] }]} onPress={onShare}>
+                <Text style={[styles.shareButtonText, { color: colors.primary[700] }]}>📤 結果をシェア</Text>
+              </TouchableOpacity>
             )}
 
-            {/* Motivational Message */}
-            <View style={styles.messageContainer}>
-              <Text style={styles.messageText}>
-                {percentage >= 70
-                  ? '継続は力なり。この調子で頑張りましょう！'
-                  : '間違えた問題を復習すると、もっと上達しますよ。'}
-              </Text>
+            <View style={styles.buttonGroup}>
+              <View style={styles.buttonWrapper}>
+                <Button
+                  title="もう一度"
+                  onPress={onRetry}
+                  variant="outline"
+                  size="lg"
+                />
+              </View>
+              <View style={styles.buttonWrapper}>
+                <Button
+                  title="ホームへ"
+                  onPress={onHome}
+                  variant="primary"
+                  size="lg"
+                />
+              </View>
             </View>
-          </Card>
-        </Animated.View>
-
-        {/* Action Buttons */}
-        <Animated.View style={[styles.actionsContainer, { opacity: fadeAnimation }]}>
-          {onShare && (
-            <TouchableOpacity style={styles.shareButton} onPress={onShare}>
-              <Text style={styles.shareButtonText}>📤 結果をシェア</Text>
-            </TouchableOpacity>
-          )}
-
-          <View style={styles.buttonGroup}>
-            <View style={styles.buttonWrapper}>
-              <Button
-                title="もう一度"
-                onPress={onRetry}
-                variant="outline"
-                size="lg"
-              />
-            </View>
-            <View style={styles.buttonWrapper}>
-              <Button
-                title="ホームへ"
-                onPress={onHome}
-                variant="primary"
-                size="lg"
-              />
-            </View>
-          </View>
-        </Animated.View>
-      </View>
+          </Animated.View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -228,7 +237,13 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background.ivory,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContentContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   container: {
     flex: 1,
@@ -247,21 +262,18 @@ const styles = StyleSheet.create({
   circle1: {
     width: 300,
     height: 300,
-    backgroundColor: COLORS.sage[300],
     top: -100,
     right: -100,
   },
   circle2: {
     width: 200,
     height: 200,
-    backgroundColor: COLORS.coral[300],
     bottom: -50,
     left: -50,
   },
   circle3: {
     width: 150,
     height: 150,
-    backgroundColor: COLORS.mint[300],
     top: '40%',
     left: -75,
   },
@@ -278,14 +290,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
-    color: COLORS.primary[800],
     fontWeight: '700',
     marginBottom: SPACING.xs,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.primary[600],
     marginBottom: SPACING.xl,
     textAlign: 'center',
   },
@@ -299,7 +309,6 @@ const styles = StyleSheet.create({
     borderWidth: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.background.warmWhite,
   },
   scorePercentage: {
     fontSize: TYPOGRAPHY.fontSize['5xl'],
@@ -307,7 +316,6 @@ const styles = StyleSheet.create({
   },
   scoreLabel: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.primary[600],
     marginTop: SPACING.xs,
   },
   detailsContainer: {
@@ -324,25 +332,21 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     fontSize: TYPOGRAPHY.fontSize['2xl'],
-    color: COLORS.primary[700],
     fontWeight: '700',
     marginBottom: SPACING.xs,
   },
   detailLabel: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.primary[500],
   },
   divider: {
     width: 1,
     height: 40,
-    backgroundColor: COLORS.primary[200],
   },
   additionalStatsContainer: {
     width: '100%',
     marginTop: SPACING.lg,
     paddingTop: SPACING.lg,
     borderTopWidth: 1,
-    borderTopColor: COLORS.primary[200],
     gap: SPACING.md,
   },
   statRow: {
@@ -363,12 +367,10 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xl,
     paddingTop: SPACING.lg,
     borderTopWidth: 1,
-    borderTopColor: COLORS.primary[200],
     width: '100%',
   },
   messageText: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.primary[600],
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -376,17 +378,21 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   shareButton: {
-    backgroundColor: COLORS.background.cream,
     padding: SPACING.md,
     borderRadius: BORDER_RADIUS.lg,
     alignItems: 'center',
     ...SHADOWS.soft,
     borderWidth: 1,
-    borderColor: COLORS.primary[200],
   },
   shareButtonText: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.primary[700],
+    fontWeight: '600',
+  },
+  statLabel: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+  },
+  statValue: {
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: '600',
   },
   buttonGroup: {

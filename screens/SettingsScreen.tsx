@@ -105,31 +105,67 @@ export const SettingsScreen: React.FC = () => {
   };
 
   const handleDailyGoalChange = () => {
-    const goalOptions = [3, 5, 10, 15, 20];
-    const goalLabels = goalOptions.map(g => `${g}個`);
-
     Alert.alert(
       '1日の目標',
       '1日に完了したいクイズの数を選択してください',
       [
-        ...goalOptions.map((goal, index) => ({
-          text: goalLabels[index],
-          onPress: async () => {
-            try {
-              await storageService.updateDailyGoal(goal);
-              setDailyGoal(goal);
-              Alert.alert('成功', `1日の目標を${goal}個に設定しました。`);
-            } catch (error) {
-              Alert.alert('エラー', '目標の設定に失敗しました。');
-            }
-          },
-        })),
+        {
+          text: '3個',
+          onPress: () => updateGoal(3),
+        },
+        {
+          text: '5個',
+          onPress: () => updateGoal(5),
+        },
+        {
+          text: '10個',
+          onPress: () => updateGoal(10),
+        },
+        {
+          text: 'さらに表示',
+          onPress: showMoreGoalOptions,
+        },
         {
           text: 'キャンセル',
           style: 'cancel',
         },
       ]
     );
+  };
+
+  const showMoreGoalOptions = () => {
+    Alert.alert(
+      '1日の目標',
+      '1日に完了したいクイズの数を選択してください',
+      [
+        {
+          text: '15個',
+          onPress: () => updateGoal(15),
+        },
+        {
+          text: '20個',
+          onPress: () => updateGoal(20),
+        },
+        {
+          text: '戻る',
+          onPress: handleDailyGoalChange,
+        },
+        {
+          text: 'キャンセル',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
+  const updateGoal = async (goal: number) => {
+    try {
+      await storageService.updateDailyGoal(goal);
+      setDailyGoal(goal);
+      Alert.alert('成功', `1日の目標を${goal}個に設定しました。`);
+    } catch (error) {
+      Alert.alert('エラー', '目標の設定に失敗しました。');
+    }
   };
 
   return (

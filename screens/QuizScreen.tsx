@@ -178,10 +178,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
           {/* Question */}
           <View style={styles.questionContainer}>
             <Text style={[styles.questionJa, { color: colors.primary[600] }]}>{currentQuestion.questionJa}</Text>
-            <View style={styles.questionWithSpeech}>
-              <Text style={[styles.question, { color: colors.primary[800] }]}>{currentQuestion.question}</Text>
-              <SpeechButton text={currentQuestion.question} size="lg" style={{ marginTop: SPACING.md }} />
-            </View>
+            <Text style={[styles.question, { color: colors.primary[800] }]}>{currentQuestion.question}</Text>
           </View>
 
           {/* Answer Options */}
@@ -320,30 +317,34 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
   };
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={disabled}
-      style={[
-        styles.optionButton,
-        {
-          backgroundColor: getBackgroundColor(),
-          borderColor: getBorderColor(),
-          borderWidth: 2,
-        },
-      ]}
-      activeOpacity={0.7}
-    >
-      <Text
+    <View style={styles.optionWithSpeech}>
+      <TouchableOpacity
+        onPress={onPress}
+        disabled={disabled}
         style={[
-          styles.optionText,
-          { color: colors.primary[700] },
-          (correct || incorrect) && styles.optionTextBold,
+          styles.optionButton,
+          {
+            backgroundColor: getBackgroundColor(),
+            borderColor: getBorderColor(),
+            borderWidth: 2,
+            flex: 1,
+          },
         ]}
+        activeOpacity={0.7}
       >
-        {text}
-      </Text>
-      {correct && <Text style={[styles.checkMark, { color: colors.sage[600] }]}>✓</Text>}
-    </TouchableOpacity>
+        <Text
+          style={[
+            styles.optionText,
+            { color: colors.primary[700] },
+            (correct || incorrect) && styles.optionTextBold,
+          ]}
+        >
+          {text}
+        </Text>
+        {correct && <Text style={[styles.checkMark, { color: colors.sage[600] }]}>✓</Text>}
+      </TouchableOpacity>
+      <SpeechButton text={text} size="sm" style={{ marginLeft: SPACING.xs }} />
+    </View>
   );
 };
 
@@ -410,9 +411,6 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
     textAlign: 'center',
   },
-  questionWithSpeech: {
-    alignItems: 'center',
-  },
   question: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
     fontWeight: '700',
@@ -421,6 +419,10 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     gap: SPACING.md,
+  },
+  optionWithSpeech: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   optionButton: {
     padding: SPACING.lg,

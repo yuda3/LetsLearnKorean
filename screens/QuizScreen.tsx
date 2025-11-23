@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Animated,
+  ScrollView,
 } from 'react-native';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
@@ -13,6 +14,7 @@ import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constant
 import { Question, QuizCategory, QuizResult } from '../types';
 import { storageService } from '../services/storageService';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface QuizScreenProps {
   questions: Question[];
@@ -30,6 +32,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   userName,
 }) => {
   const { user } = useAuth();
+  const { colors } = useTheme();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -143,111 +146,138 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   }, [autoAdvanceTimer]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onExit} style={styles.exitButton}>
-            <Text style={styles.exitText}>×</Text>
-          </TouchableOpacity>
-          <View style={styles.progressContainer}>
-            {userName && (
-              <Text style={styles.userNameText}>{userName}さん</Text>
-            )}
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: `${progress}%` }]} />
-            </View>
-            <Text style={styles.progressText}>
-              {currentQuestionIndex + 1} / {questions.length}
-            </Text>
-          </View>
-        </View>
-
-        {/* Question */}
-        <View style={styles.questionContainer}>
-          <Text style={styles.questionJa}>{currentQuestion.questionJa}</Text>
-          <Text style={styles.question}>{currentQuestion.question}</Text>
-        </View>
-
-        {/* Answer Options */}
-        <View style={styles.optionsContainer}>
-          {currentQuestion.options.map((option, index) => (
-            <AnswerOption
-              key={index}
-              text={option}
-              onPress={() => handleAnswerSelect(index)}
-              selected={selectedAnswer === index}
-              correct={showResult && index === currentQuestion.correctAnswer}
-              incorrect={showResult && selectedAnswer === index && !isCorrect}
-              disabled={showResult}
-            />
-          ))}
-        </View>
-
-        {/* Feedback & Explanation */}
-        {showResult && (
-          <Animated.View
-            style={[
-              styles.feedbackContainer,
-              {
-                opacity: feedbackOpacity,
-                transform: [{ scale: feedbackScale }],
-              },
-            ]}
-          >
-            <View
-              style={[
-                styles.feedbackCircle,
-                isCorrect ? styles.correctCircle : styles.incorrectCircle,
-              ]}
-            >
-              <Text style={styles.feedbackIcon}>
-                {isCorrect ? '✓' : '×'}
-              </Text>
-            </View>
-
-            <Card style={styles.explanationCard}>
-              <Text style={styles.explanationTitle}>
-                {isCorrect ? '正解です！' : '不正解'}
-              </Text>
-              <Text style={styles.explanationText}>
-                {currentQuestion.explanation}
-              </Text>
-
-              {currentQuestion.detailedExplanation && (
-                <>
-                  {showDetailedExplanation ? (
-                    <View style={styles.detailedExplanation}>
-                      <Text style={styles.detailedExplanationText}>
-                        {currentQuestion.detailedExplanation}
-                      </Text>
-                    </View>
-                  ) : (
-                    <TouchableOpacity
-                      onPress={() => setShowDetailedExplanation(true)}
-                      style={styles.moreButton}
-                    >
-                      <Text style={styles.moreButtonText}>もっと見る ↓</Text>
-                    </TouchableOpacity>
-                  )}
-                </>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.container}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={onExit} style={[styles.exitButton, { backgroundColor: colors.background.cream }]}>
+              <Text style={[styles.exitText, { color: colors.primary[600] }]}>×</Text>
+            </TouchableOpacity>
+            <View style={styles.progressContainer}>
+              {userName && (
+                <Text style={[styles.userNameText, { color: colors.primary[700] }]}>{userName}さん</Text>
               )}
-            </Card>
+              <View style={[styles.progressBar, { backgroundColor: colors.primary[100] }]}>
+                <View style={[styles.progressFill, { width: `${progress}%`, backgroundColor: colors.sage[500] }]} />
+              </View>
+              <Text style={[styles.progressText, { color: colors.primary[600] }]}>
+                {currentQuestionIndex + 1} / {questions.length}
+              </Text>
+            </View>
+          </View>
 
-            <Button
-              title={
-                currentQuestionIndex < questions.length - 1
-                  ? '次へ'
-                  : '結果を見る'
-              }
+          {/* Question */}
+          <View style={styles.questionContainer}>
+            <Text style={[styles.questionJa, { color: colors.primary[600] }]}>{currentQuestion.questionJa}</Text>
+            <Text style={[styles.question, { color: colors.primary[800] }]}>{currentQuestion.question}</Text>
+          </View>
+
+          {/* Answer Options */}
+          <View style={styles.optionsContainer}>
+            {currentQuestion.options.map((option, index) => (
+              <AnswerOption
+                key={index}
+                text={option}
+                onPress={() => handleAnswerSelect(index)}
+                selected={selectedAnswer === index}
+                correct={showResult && index === currentQuestion.correctAnswer}
+                incorrect={showResult && selectedAnswer === index && !isCorrect}
+                disabled={showResult}
+                colors={colors}
+              />
+            ))}
+          </View>
+
+          {/* Feedback & Explanation */}
+          {showResult && (
+            <TouchableOpacity
+              activeOpacity={1}
               onPress={handleNext}
-              variant="primary"
-              size="lg"
-              fullWidth
-            />
-          </Animated.View>
-        )}
-      </View>
+              style={styles.feedbackTouchable}
+            >
+              <Animated.View
+                style={[
+                  styles.feedbackContainer,
+                  {
+                    opacity: feedbackOpacity,
+                    transform: [{ scale: feedbackScale }],
+                  },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.feedbackCircle,
+                    {
+                      backgroundColor: isCorrect ? colors.sage[500] : colors.coral[500],
+                    },
+                  ]}
+                >
+                  <Text style={styles.feedbackIcon}>
+                    {isCorrect ? '✓' : '×'}
+                  </Text>
+                </View>
+
+                <Card style={styles.explanationCard}>
+                  <Text style={[styles.explanationTitle, { color: colors.primary[800] }]}>
+                    {isCorrect ? '正解です！' : '不正解'}
+                  </Text>
+                  <Text style={[styles.explanationText, { color: colors.primary[700] }]}>
+                    {currentQuestion.explanation}
+                  </Text>
+
+                  {currentQuestion.detailedExplanation && (
+                    <>
+                      {showDetailedExplanation ? (
+                        <View style={[styles.detailedExplanation, { borderTopColor: colors.primary[200] }]}>
+                          <Text style={[styles.detailedExplanationText, { color: colors.primary[600] }]}>
+                            {currentQuestion.detailedExplanation}
+                          </Text>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            setShowDetailedExplanation(true);
+                          }}
+                          style={styles.moreButton}
+                        >
+                          <Text style={[styles.moreButtonText, { color: colors.sage[600] }]}>もっと見る ↓</Text>
+                        </TouchableOpacity>
+                      )}
+                    </>
+                  )}
+                </Card>
+
+                <Text style={[styles.tapToNextText, { color: colors.primary[500] }]}>
+                  {currentQuestionIndex < questions.length - 1
+                    ? '🖐️ タップで次の問題へ'
+                    : '🖐️ タップで結果を見る'}
+                </Text>
+
+                <Button
+                  title={
+                    currentQuestionIndex < questions.length - 1
+                      ? '次へ'
+                      : '結果を見る'
+                  }
+                  onPress={(e) => {
+                    if (e) e.stopPropagation();
+                    handleNext();
+                  }}
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                />
+              </Animated.View>
+            </TouchableOpacity>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -259,6 +289,7 @@ interface AnswerOptionProps {
   correct: boolean;
   incorrect: boolean;
   disabled: boolean;
+  colors: any;
 }
 
 const AnswerOption: React.FC<AnswerOptionProps> = ({
@@ -268,19 +299,20 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
   correct,
   incorrect,
   disabled,
+  colors,
 }) => {
   const getBackgroundColor = () => {
-    if (correct) return COLORS.sage[100];
-    if (incorrect) return COLORS.coral[100];
-    if (selected) return COLORS.primary[100];
-    return COLORS.background.cream;
+    if (correct) return colors.sage[100];
+    if (incorrect) return colors.coral[100];
+    if (selected) return colors.primary[100];
+    return colors.background.cream;
   };
 
   const getBorderColor = () => {
-    if (correct) return COLORS.sage[500];
-    if (incorrect) return COLORS.coral[500];
-    if (selected) return COLORS.primary[400];
-    return COLORS.primary[200];
+    if (correct) return colors.sage[500];
+    if (incorrect) return colors.coral[500];
+    if (selected) return colors.primary[400];
+    return colors.primary[200];
   };
 
   return (
@@ -300,12 +332,13 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
       <Text
         style={[
           styles.optionText,
+          { color: colors.primary[700] },
           (correct || incorrect) && styles.optionTextBold,
         ]}
       >
         {text}
       </Text>
-      {correct && <Text style={styles.checkMark}>✓</Text>}
+      {correct && <Text style={[styles.checkMark, { color: colors.sage[600] }]}>✓</Text>}
     </TouchableOpacity>
   );
 };
@@ -313,7 +346,12 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background.ivory,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContentContainer: {
+    flexGrow: 1,
   },
   container: {
     flex: 1,
@@ -328,7 +366,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.background.cream,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.md,
@@ -336,7 +373,6 @@ const styles = StyleSheet.create({
   },
   exitText: {
     fontSize: 28,
-    color: COLORS.primary[600],
     fontWeight: '300',
   },
   progressContainer: {
@@ -344,25 +380,21 @@ const styles = StyleSheet.create({
   },
   userNameText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.primary[700],
     fontWeight: '600',
     marginBottom: SPACING.xs,
   },
   progressBar: {
     height: 8,
-    backgroundColor: COLORS.primary[100],
     borderRadius: BORDER_RADIUS.sm,
     overflow: 'hidden',
     marginBottom: SPACING.xs,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: COLORS.sage[500],
     borderRadius: BORDER_RADIUS.sm,
   },
   progressText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.primary[600],
     textAlign: 'right',
   },
   questionContainer: {
@@ -372,13 +404,11 @@ const styles = StyleSheet.create({
   },
   questionJa: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.primary[600],
     marginBottom: SPACING.md,
     textAlign: 'center',
   },
   question: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
-    color: COLORS.primary[800],
     fontWeight: '700',
     textAlign: 'center',
     lineHeight: 42,
@@ -396,7 +426,6 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.primary[700],
     flex: 1,
   },
   optionTextBold: {
@@ -404,8 +433,10 @@ const styles = StyleSheet.create({
   },
   checkMark: {
     fontSize: 24,
-    color: COLORS.sage[600],
     marginLeft: SPACING.sm,
+  },
+  feedbackTouchable: {
+    width: '100%',
   },
   feedbackContainer: {
     marginTop: SPACING.xl,
@@ -420,12 +451,6 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
     ...SHADOWS.softMd,
   },
-  correctCircle: {
-    backgroundColor: COLORS.sage[500],
-  },
-  incorrectCircle: {
-    backgroundColor: COLORS.coral[500],
-  },
   feedbackIcon: {
     fontSize: 48,
     color: '#FFFFFF',
@@ -437,24 +462,20 @@ const styles = StyleSheet.create({
   },
   explanationTitle: {
     fontSize: TYPOGRAPHY.fontSize.xl,
-    color: COLORS.primary[800],
     fontWeight: '700',
     marginBottom: SPACING.sm,
   },
   explanationText: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.primary[700],
     lineHeight: 24,
   },
   detailedExplanation: {
     marginTop: SPACING.md,
     paddingTop: SPACING.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.primary[200],
   },
   detailedExplanationText: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.primary[600],
     lineHeight: 24,
   },
   moreButton: {
@@ -464,7 +485,12 @@ const styles = StyleSheet.create({
   },
   moreButtonText: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.sage[600],
     fontWeight: '600',
+  },
+  tapToNextText: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    marginBottom: SPACING.md,
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });

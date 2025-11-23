@@ -320,34 +320,30 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
   };
 
   return (
-    <View style={styles.optionWithSpeech}>
-      <TouchableOpacity
-        onPress={onPress}
-        disabled={disabled}
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={disabled}
+      style={[
+        styles.optionButton,
+        {
+          backgroundColor: getBackgroundColor(),
+          borderColor: getBorderColor(),
+          borderWidth: 2,
+        },
+      ]}
+      activeOpacity={0.7}
+    >
+      <Text
         style={[
-          styles.optionButton,
-          {
-            backgroundColor: getBackgroundColor(),
-            borderColor: getBorderColor(),
-            borderWidth: 2,
-            flex: 1,
-          },
+          styles.optionText,
+          { color: colors.primary[700] },
+          (correct || incorrect) && styles.optionTextBold,
         ]}
-        activeOpacity={0.7}
       >
-        <Text
-          style={[
-            styles.optionText,
-            { color: colors.primary[700] },
-            (correct || incorrect) && styles.optionTextBold,
-          ]}
-        >
-          {text}
-        </Text>
-        {correct && <Text style={[styles.checkMark, { color: colors.sage[600] }]}>✓</Text>}
-      </TouchableOpacity>
-      <SpeechButton text={text} size="sm" style={{ marginLeft: SPACING.xs }} />
-    </View>
+        {text}
+      </Text>
+      {correct && <Text style={[styles.checkMark, { color: colors.sage[600] }]}>✓</Text>}
+    </TouchableOpacity>
   );
 };
 
@@ -425,10 +421,6 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     gap: SPACING.md,
-  },
-  optionWithSpeech: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   optionButton: {
     padding: SPACING.lg,

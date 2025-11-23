@@ -106,6 +106,7 @@ export const storageService = {
           currentStreak: 1,
           longestStreak: 1,
           lastStudyDate: today,
+          dailyGoal: 5, // デフォルト値
           categoryStats: {
             [result.category]: {
               quizzesTaken: 1,
@@ -154,6 +155,7 @@ export const storageService = {
         currentStreak: newStreak,
         longestStreak: Math.max(stats.longestStreak, newStreak),
         lastStudyDate: today,
+        dailyGoal: stats.dailyGoal || 5, // 既存の目標値を維持、なければデフォルト5
         categoryStats: {
           ...stats.categoryStats,
           [result.category]: updatedCategoryStats,
@@ -286,6 +288,44 @@ export const storageService = {
     } catch (error) {
       console.error('Error unlocking badge:', error);
       throw error;
+    }
+  },
+
+  // Daily goal management
+  async updateDailyGoal(goal: number): Promise<void> {
+    try {
+      const stats = await this.getLearningStats();
+      if (stats) {
+        const updatedStats = { ...stats, dailyGoal: goal };
+        await this.saveLearningStats(updatedStats);
+      } else {
+        // If no stats exist, create initial stats with the goal
+        const today = new Date().toISOString().split('T')[0];
+        const newStats: LearningStats = {
+          totalQuizzesTaken: 0,
+          totalCorrectAnswers: 0,
+          totalQuestions: 0,
+          currentStreak: 0,
+          longestStreak: 0,
+          lastStudyDate: today,
+          dailyGoal: goal,
+          categoryStats: {},
+        };
+        await this.saveLearningStats(newStats);
+      }
+    } catch (error) {
+      console.error('Error updating daily goal:', error);
+      throw error;
+    }
+  },
+
+  async getDailyGoal(): Promise<number> {
+    try {
+      const stats = await this.getLearningStats();
+      return stats?.dailyGoal || 5; // デフォルト: 5
+    } catch (error) {
+      console.error('Error getting daily goal:', error);
+      return 5;
     }
   },
 };

@@ -92,13 +92,15 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       feedbackAnimation.setValue(0);
     } else {
       // Save quiz result
-      const finalScore = score + (isCorrect ? 1 : 0);
+      // Calculate final answers arrays first
       const finalCorrectAnswers = isCorrect
         ? [...correctAnswers, currentQuestion.id]
         : correctAnswers;
       const finalIncorrectAnswers = !isCorrect
         ? [...incorrectAnswers, currentQuestion.id]
         : incorrectAnswers;
+      // Use the length of correct answers as the final score to avoid double counting
+      const finalScore = finalCorrectAnswers.length;
 
       if (user) {
         const timeSpent = Math.floor((Date.now() - startTime) / 1000);

@@ -64,6 +64,34 @@ const BADGE_DEFINITIONS: Badge[] = [
     icon: '🏆',
     requirement: { type: 'quizzes', value: 100 },
   },
+  {
+    id: 'category_1',
+    name: '첫 걸음',
+    description: '첫 번째 카테고리 완료',
+    icon: '🌱',
+    requirement: { type: 'category', value: 1 },
+  },
+  {
+    id: 'category_3',
+    name: '성장하는 학습자',
+    description: '3개 카테고리 완료',
+    icon: '🌿',
+    requirement: { type: 'category', value: 3 },
+  },
+  {
+    id: 'category_5',
+    name: '중급 도전자',
+    description: '5개 카테고리 완료',
+    icon: '🎋',
+    requirement: { type: 'category', value: 5 },
+  },
+  {
+    id: 'category_all',
+    name: '완벽한 정복',
+    description: '모든 카테고리 완료',
+    icon: '🎓',
+    requirement: { type: 'category', value: 8 },
+  },
 ];
 
 export const ProfileScreen: React.FC = () => {
@@ -93,7 +121,14 @@ export const ProfileScreen: React.FC = () => {
 
     // Check and unlock badges based on current stats
     const currentStats = await storageService.getLearningStats();
+    const categoryProgress = await storageService.getCategoryProgress();
+
     if (currentStats) {
+      // Count completed categories (bestScore >= 70 and completedQuizzes >= 3)
+      const completedCategories = categoryProgress.filter(
+        (cat) => cat.bestScore >= 70 && cat.completedQuizzes >= 3
+      ).length;
+
       const updatedBadges = savedBadges.map((badge) => {
         if (badge.unlockedAt) return badge;
 
@@ -104,6 +139,9 @@ export const ProfileScreen: React.FC = () => {
             break;
           case 'quizzes':
             shouldUnlock = currentStats.totalQuizzesTaken >= badge.requirement.value;
+            break;
+          case 'category':
+            shouldUnlock = completedCategories >= badge.requirement.value;
             break;
         }
 

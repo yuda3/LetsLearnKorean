@@ -42,7 +42,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   const [correctAnswers, setCorrectAnswers] = useState<number[]>([]);
   const [incorrectAnswers, setIncorrectAnswers] = useState<number[]>([]);
   const [startTime] = useState(Date.now());
-  const [autoAdvanceTimer, setAutoAdvanceTimer] = useState<NodeJS.Timeout | null>(null);
+  const [autoAdvanceTimer, setAutoAdvanceTimer] = useState<number | null>(null);
 
   const currentQuestion = questions[currentQuestionIndex];
   const isCorrect = selectedAnswer === currentQuestion.correctAnswer;

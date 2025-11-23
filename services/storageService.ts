@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { User, QuizResult, LearningStats, ThemeMode, CategoryProgress, OnboardingStatus, Badge } from '../types';
+import { User, QuizResult, LearningStats, ThemeMode, CategoryProgress, Badge } from '../types';
 
 const KEYS = {
   USER: '@user',
@@ -7,7 +7,6 @@ const KEYS = {
   LEARNING_STATS: '@learning_stats',
   THEME_MODE: '@theme_mode',
   CATEGORY_PROGRESS: '@category_progress',
-  ONBOARDING_STATUS: '@onboarding_status',
   BADGES: '@badges',
 };
 
@@ -251,42 +250,6 @@ export const storageService = {
       await this.saveCategoryProgress(progress);
     } catch (error) {
       console.error('Error updating category progress:', error);
-      throw error;
-    }
-  },
-
-  // Onboarding management
-  async getOnboardingStatus(): Promise<OnboardingStatus> {
-    try {
-      const statusData = await AsyncStorage.getItem(KEYS.ONBOARDING_STATUS);
-      return statusData
-        ? JSON.parse(statusData)
-        : { completed: false, currentStep: 0 };
-    } catch (error) {
-      console.error('Error getting onboarding status:', error);
-      return { completed: false, currentStep: 0 };
-    }
-  },
-
-  async saveOnboardingStatus(status: OnboardingStatus): Promise<void> {
-    try {
-      await AsyncStorage.setItem(KEYS.ONBOARDING_STATUS, JSON.stringify(status));
-    } catch (error) {
-      console.error('Error saving onboarding status:', error);
-      throw error;
-    }
-  },
-
-  async completeOnboarding(): Promise<void> {
-    try {
-      const status: OnboardingStatus = {
-        completed: true,
-        currentStep: 4,
-        completedAt: new Date().toISOString(),
-      };
-      await this.saveOnboardingStatus(status);
-    } catch (error) {
-      console.error('Error completing onboarding:', error);
       throw error;
     }
   },

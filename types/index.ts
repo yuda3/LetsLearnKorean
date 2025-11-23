@@ -91,13 +91,6 @@ export interface CategoryConfig {
   unlockRequirement?: UnlockRequirement;
 }
 
-// Onboarding
-export interface OnboardingStatus {
-  completed: boolean;
-  currentStep: number;
-  completedAt?: string;
-}
-
 // Badges and achievements
 export interface Badge {
   id: string;

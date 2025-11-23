@@ -117,6 +117,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
         try {
           await storageService.saveQuizResult(result);
           await storageService.updateLearningStats(result);
+          await storageService.updateCategoryProgress(result);
         } catch (error) {
           console.error('Error saving quiz result:', error);
         }
@@ -265,10 +266,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                       ? '次へ'
                       : '結果を見る'
                   }
-                  onPress={(e) => {
-                    if (e) e.stopPropagation();
-                    handleNext();
-                  }}
+                  onPress={handleNext}
                   variant="primary"
                   size="lg"
                   fullWidth
@@ -351,10 +349,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContentContainer: {
-    flexGrow: 1,
+    paddingBottom: SPACING.xl * 2,
   },
   container: {
-    flex: 1,
     padding: SPACING.lg,
   },
   header: {

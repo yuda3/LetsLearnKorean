@@ -130,7 +130,9 @@ function HomeStack() {
             totalQuestions={quizState.questions.length}
             onRetry={() => props.navigation.navigate('QuizSetup')}
             onHome={() => props.navigation.navigate('HomeMain')}
-            onShare={() => console.log('Share')}
+            onShare={() => {
+              // Share functionality placeholder - can be implemented with expo-sharing
+            }}
             correctAnswers={quizState.correctAnswers}
             incorrectAnswers={quizState.incorrectAnswers}
             timeSpent={quizState.timeSpent}

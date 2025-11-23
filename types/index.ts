@@ -62,3 +62,51 @@ export interface LearningStats {
 
 // Theme types
 export type ThemeMode = 'light' | 'dark';
+
+// Progress and unlock system
+export interface CategoryProgress {
+  category: QuizCategory;
+  level: UserLevel;
+  isUnlocked: boolean;
+  completedQuizzes: number;
+  bestScore: number;
+  averageScore: number;
+  totalQuizzes: number;
+}
+
+export interface UnlockRequirement {
+  requiredCategory?: QuizCategory;
+  requiredLevel?: UserLevel;
+  minimumScore: number;
+  minimumQuizzes: number;
+}
+
+export interface CategoryConfig {
+  id: QuizCategory;
+  titleJa: string;
+  titleKo: string;
+  icon: string;
+  description: string;
+  difficulty: UserLevel;
+  unlockRequirement?: UnlockRequirement;
+}
+
+// Onboarding
+export interface OnboardingStatus {
+  completed: boolean;
+  currentStep: number;
+  completedAt?: string;
+}
+
+// Badges and achievements
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  unlockedAt?: string;
+  requirement: {
+    type: 'streak' | 'quizzes' | 'score' | 'category';
+    value: number;
+  };
+}

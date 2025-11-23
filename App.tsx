@@ -10,21 +10,27 @@ import {
 
 import { HomeScreen } from './screens/HomeScreen';
 import { QuizScreen } from './screens/QuizScreen';
+import { QuizSetupScreen } from './screens/QuizSetupScreen';
 import { ResultScreen } from './screens/ResultScreen';
 import { LoginScreen } from './screens/LoginScreen';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { quizQuestions, getRandomQuizzes } from './data/quizData';
+import { UserLevel } from './types';
 import './global.css';
 
-type Screen = 'home' | 'quiz' | 'result';
+type Screen = 'home' | 'setup' | 'quiz' | 'result';
 
 function AppContent() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, updateUserLevel } = useAuth();
   const { colors, mode } = useTheme();
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [quizScore, setQuizScore] = useState(0);
   const [currentQuestions, setCurrentQuestions] = useState(getRandomQuizzes(5));
+  const [correctAnswers, setCorrectAnswers] = useState<number[]>([]);
+  const [incorrectAnswers, setIncorrectAnswers] = useState<number[]>([]);
+  const [quizStartTime, setQuizStartTime] = useState<number>(Date.now());
+  const [timeSpent, setTimeSpent] = useState<number>(0);
 
   const [fontsLoaded] = useFonts({
     NotoSansJP_400Regular,
@@ -32,21 +38,35 @@ function AppContent() {
     NotoSansJP_700Bold,
   });
 
-  const handleStartQuiz = useCallback(() => {
-    setQuizScore(0);
-    setCurrentQuestions(getRandomQuizzes(5));
-    setCurrentScreen('quiz');
+  const handleStartSetup = useCallback(() => {
+    setCurrentScreen('setup');
   }, []);
 
-  const handleQuizComplete = useCallback((score: number) => {
+  const handleStartQuiz = useCallback(async (questionCount: number, level?: UserLevel) => {
+    // Update user level if provided and user doesn't have a level set
+    if (level && user && !user.level) {
+      await updateUserLevel(level);
+    }
+
+    setQuizScore(0);
+    setCorrectAnswers([]);
+    setIncorrectAnswers([]);
+    setCurrentQuestions(getRandomQuizzes(questionCount));
+    setQuizStartTime(Date.now());
+    setCurrentScreen('quiz');
+  }, [user, updateUserLevel]);
+
+  const handleQuizComplete = useCallback((score: number, correct: number[], incorrect: number[]) => {
     setQuizScore(score);
+    setCorrectAnswers(correct);
+    setIncorrectAnswers(incorrect);
+    const endTime = Date.now();
+    setTimeSpent(Math.floor((endTime - quizStartTime) / 1000));
     setCurrentScreen('result');
-  }, []);
+  }, [quizStartTime]);
 
   const handleRetry = useCallback(() => {
-    setQuizScore(0);
-    setCurrentQuestions(getRandomQuizzes(5));
-    setCurrentScreen('quiz');
+    setCurrentScreen('setup');
   }, []);
 
   const handleGoHome = useCallback(() => {
@@ -79,9 +99,18 @@ function AppContent() {
 
       {currentScreen === 'home' && (
         <HomeScreen
-          onStartQuiz={handleStartQuiz}
+          onStartQuiz={handleStartSetup}
           onReview={handleReview}
           userName={user.name}
+        />
+      )}
+
+      {currentScreen === 'setup' && (
+        <QuizSetupScreen
+          onStart={handleStartQuiz}
+          onBack={handleGoHome}
+          userLevel={user.level}
+          showLevelSelection={!user.level}
         />
       )}
 
@@ -91,6 +120,7 @@ function AppContent() {
           category="basic"
           onComplete={handleQuizComplete}
           onExit={handleGoHome}
+          userName={user.name}
         />
       )}
 
@@ -101,6 +131,9 @@ function AppContent() {
           onRetry={handleRetry}
           onHome={handleGoHome}
           onShare={handleShare}
+          correctAnswers={correctAnswers}
+          incorrectAnswers={incorrectAnswers}
+          timeSpent={timeSpent}
         />
       )}
     </View>

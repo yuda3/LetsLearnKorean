@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { User } from '../types';
+import { User, UserLevel } from '../types';
 import { storageService } from '../services/storageService';
 
 interface AuthContextType {
@@ -7,6 +7,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (name: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUserLevel: (level: UserLevel) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -55,8 +56,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const updateUserLevel = async (level: UserLevel) => {
+    try {
+      if (user) {
+        const updatedUser: User = {
+          ...user,
+          level,
+        };
+        await storageService.saveUser(updatedUser);
+        setUser(updatedUser);
+      }
+    } catch (error) {
+      console.error('Error updating user level:', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, updateUserLevel }}>
       {children}
     </AuthContext.Provider>
   );

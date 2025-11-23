@@ -1,8 +1,11 @@
 // User types
+export type UserLevel = 'beginner' | 'intermediate' | 'advanced';
+
 export interface User {
   id: string;
   name: string;
   email?: string;
+  level?: UserLevel;
   createdAt: string;
 }
 

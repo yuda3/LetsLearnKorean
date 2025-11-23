@@ -108,8 +108,18 @@ function HomeStack() {
               handleCategorySelect(category);
               props.navigation.navigate('Quiz');
             }}
-            onNavigateToProfile={() => props.navigation.navigate('ProfileTab')}
-            onNavigateToSettings={() => props.navigation.navigate('SettingsTab')}
+            onNavigateToProfile={() => {
+              const parent = props.navigation.getParent();
+              if (parent) {
+                parent.navigate('ProfileTab');
+              }
+            }}
+            onNavigateToSettings={() => {
+              const parent = props.navigation.getParent();
+              if (parent) {
+                parent.navigate('SettingsTab');
+              }
+            }}
             userName={user?.name}
           />
         )}
@@ -167,6 +177,62 @@ function HomeStack() {
 // Practice Stack Navigator
 function PracticeStack() {
   const { colors } = useTheme();
+  const { user } = useAuth();
+  const [quizState, setQuizState] = React.useState<{
+    questions: any[];
+    category: QuizCategory;
+    score: number;
+    correctAnswers: number[];
+    incorrectAnswers: number[];
+    quizStartTime: number;
+    timeSpent: number;
+  }>({
+    questions: getRandomQuizzes(5),
+    category: 'basic',
+    score: 0,
+    correctAnswers: [],
+    incorrectAnswers: [],
+    quizStartTime: Date.now(),
+    timeSpent: 0,
+  });
+
+  const handleStartPractice = (mode: string) => {
+    let questions: any[];
+    let category: QuizCategory = 'basic';
+
+    if (mode === 'random') {
+      // Random quiz from all categories
+      questions = getRandomQuizzes(10);
+    } else if (mode.startsWith('review_')) {
+      // Review specific category
+      const reviewCategory = mode.replace('review_', '') as QuizCategory;
+      questions = getQuizzesByCategory(reviewCategory).slice(0, 10);
+      category = reviewCategory;
+    } else {
+      // Default random
+      questions = getRandomQuizzes(10);
+    }
+
+    setQuizState({
+      ...quizState,
+      questions,
+      category,
+      score: 0,
+      correctAnswers: [],
+      incorrectAnswers: [],
+      quizStartTime: Date.now(),
+    });
+  };
+
+  const handleQuizComplete = (score: number, correct: number[], incorrect: number[]) => {
+    setQuizState({
+      ...quizState,
+      score,
+      correctAnswers: correct,
+      incorrectAnswers: incorrect,
+      timeSpent: Math.floor((Date.now() - quizState.quizStartTime) / 1000),
+    });
+  };
 
   return (
     <Stack.Navigator
@@ -175,7 +241,46 @@ function PracticeStack() {
         contentStyle: { backgroundColor: colors.background.ivory },
       }}
     >
-      <Stack.Screen name="PracticeMain" component={PracticeScreen} />
+      <Stack.Screen name="PracticeMain">
+        {(props) => (
+          <PracticeScreen
+            {...props}
+            onStartPractice={(mode) => {
+              handleStartPractice(mode);
+              props.navigation.navigate('PracticeQuiz');
+            }}
+          />
+        )}
+      </Stack.Screen>
+      <Stack.Screen name="PracticeQuiz">
+        {(props) => (
+          <QuizScreen
+            {...props}
+            questions={quizState.questions}
+            category={quizState.category}
+            onComplete={(score, correct, incorrect) => {
+              handleQuizComplete(score, correct, incorrect);
+              props.navigation.navigate('PracticeResult');
+            }}
+            onExit={() => props.navigation.navigate('PracticeMain')}
+            userName={user?.name}
+          />
+        )}
+      </Stack.Screen>
+      <Stack.Screen name="PracticeResult">
+        {(props) => (
+          <ResultScreen
+            {...props}
+            score={quizState.score}
+            totalQuestions={quizState.questions.length}
+            onRetry={() => props.navigation.navigate('PracticeMain')}
+            onHome={() => props.navigation.navigate('PracticeMain')}
+            correctAnswers={quizState.correctAnswers}
+            incorrectAnswers={quizState.incorrectAnswers}
+            timeSpent={quizState.timeSpent}
+          />
+        )}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }

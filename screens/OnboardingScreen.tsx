@@ -66,35 +66,68 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   const scrollX = useRef(new Animated.Value(0)).current;
 
   const handleNext = () => {
+    console.log('OnboardingScreen - handleNext called, currentIndex:', currentIndex);
     if (currentIndex < ONBOARDING_SLIDES.length - 1) {
-      flatListRef.current?.scrollToIndex({
-        index: currentIndex + 1,
-        animated: true,
-      });
+      try {
+        flatListRef.current?.scrollToIndex({
+          index: currentIndex + 1,
+          animated: true,
+        });
+        setCurrentIndex(currentIndex + 1);
+      } catch (error) {
+        console.error('Error scrolling to next slide:', error);
+      }
     }
   };
 
   const handleSkip = () => {
-    flatListRef.current?.scrollToIndex({
-      index: ONBOARDING_SLIDES.length - 1,
-      animated: true,
-    });
+    console.log('OnboardingScreen - handleSkip called');
+    try {
+      const lastIndex = ONBOARDING_SLIDES.length - 1;
+      flatListRef.current?.scrollToIndex({
+        index: lastIndex,
+        animated: true,
+      });
+      setCurrentIndex(lastIndex);
+    } catch (error) {
+      console.error('Error scrolling to last slide:', error);
+    }
   };
 
   const handleGetStarted = async () => {
-    await storageService.completeOnboarding();
-    onComplete();
+    console.log('OnboardingScreen - handleGetStarted called');
+    try {
+      await storageService.completeOnboarding();
+      onComplete();
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+    }
   };
 
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
     if (viewableItems.length > 0) {
-      setCurrentIndex(viewableItems[0].index || 0);
+      const newIndex = viewableItems[0].index || 0;
+      console.log('OnboardingScreen - viewable items changed, newIndex:', newIndex);
+      setCurrentIndex(newIndex);
     }
   }).current;
 
   const viewabilityConfig = useRef({
     itemVisiblePercentThreshold: 50,
   }).current;
+
+  const getItemLayout = (_data: any, index: number) => ({
+    length: SCREEN_WIDTH,
+    offset: SCREEN_WIDTH * index,
+    index,
+  });
+
+  React.useEffect(() => {
+    console.log('OnboardingScreen - Component mounted');
+    console.log('OnboardingScreen - colors:', colors);
+    console.log('OnboardingScreen - SCREEN_WIDTH:', SCREEN_WIDTH);
+    console.log('OnboardingScreen - slides count:', ONBOARDING_SLIDES.length);
+  }, []);
 
   const renderItem = ({ item }: { item: OnboardingSlide }) => (
     <View style={[styles.slide, { width: SCREEN_WIDTH }]}>
@@ -159,22 +192,25 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
       )}
 
       {/* Slides */}
-      <FlatList
-        ref={flatListRef}
-        data={ONBOARDING_SLIDES}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false }
-        )}
-        scrollEventThrottle={16}
-      />
+      <View style={{ flex: 1 }}>
+        <FlatList
+          ref={flatListRef}
+          data={ONBOARDING_SLIDES}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={viewabilityConfig}
+          getItemLayout={getItemLayout}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            { useNativeDriver: false }
+          )}
+          scrollEventThrottle={16}
+        />
+      </View>
 
       {/* Pagination dots */}
       {renderPagination()}

@@ -11,7 +11,7 @@ import { QuizScreen } from '../screens/QuizScreen';
 import { ResultScreen } from '../screens/ResultScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { getRandomQuizzes } from '../data/quizData';
+import { getRandomQuizzes, getQuizzesByCategory } from '../data/quizData';
 import { UserLevel, QuizCategory } from '../types';
 
 const Tab = createBottomTabNavigator();
@@ -43,6 +43,22 @@ function HomeStack() {
     setQuizState({
       ...quizState,
       questions: getRandomQuizzes(5),
+      category: 'basic',
+      score: 0,
+      correctAnswers: [],
+      incorrectAnswers: [],
+      quizStartTime: Date.now(),
+    });
+  };
+
+  const handleCategorySelect = (category: QuizCategory) => {
+    const categoryQuizzes = getQuizzesByCategory(category);
+    const quizCount = Math.min(5, categoryQuizzes.length);
+
+    setQuizState({
+      ...quizState,
+      questions: categoryQuizzes.slice(0, quizCount),
+      category: category,
       score: 0,
       correctAnswers: [],
       incorrectAnswers: [],
@@ -58,6 +74,7 @@ function HomeStack() {
     setQuizState({
       ...quizState,
       questions: getRandomQuizzes(questionCount),
+      category: 'basic',
       score: 0,
       correctAnswers: [],
       incorrectAnswers: [],
@@ -87,6 +104,10 @@ function HomeStack() {
           <ImprovedHomeScreen
             {...props}
             onStartQuiz={() => props.navigation.navigate('QuizSetup')}
+            onCategorySelect={(category) => {
+              handleCategorySelect(category);
+              props.navigation.navigate('Quiz');
+            }}
             onNavigateToProfile={() => props.navigation.navigate('ProfileTab')}
             onNavigateToSettings={() => props.navigation.navigate('SettingsTab')}
             userName={user?.name}

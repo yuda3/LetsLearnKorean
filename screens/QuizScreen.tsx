@@ -17,8 +17,9 @@ import { useAuth } from '../contexts/AuthContext';
 interface QuizScreenProps {
   questions: Question[];
   category?: QuizCategory;
-  onComplete: (score: number) => void;
+  onComplete: (score: number, correctAnswers: number[], incorrectAnswers: number[]) => void;
   onExit: () => void;
+  userName?: string;
 }
 
 export const QuizScreen: React.FC<QuizScreenProps> = ({
@@ -26,6 +27,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   category = 'basic',
   onComplete,
   onExit,
+  userName,
 }) => {
   const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -37,6 +39,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   const [correctAnswers, setCorrectAnswers] = useState<number[]>([]);
   const [incorrectAnswers, setIncorrectAnswers] = useState<number[]>([]);
   const [startTime] = useState(Date.now());
+  const [autoAdvanceTimer, setAutoAdvanceTimer] = useState<NodeJS.Timeout | null>(null);
 
   const currentQuestion = questions[currentQuestionIndex];
   const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
@@ -63,9 +66,21 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     } else {
       setIncorrectAnswers([...incorrectAnswers, currentQuestion.id]);
     }
+
+    // Auto-advance to next question after 3 seconds
+    const timer = setTimeout(() => {
+      handleNext();
+    }, 3000);
+    setAutoAdvanceTimer(timer);
   };
 
   const handleNext = async () => {
+    // Clear auto-advance timer
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      setAutoAdvanceTimer(null);
+    }
+
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer(null);
@@ -104,7 +119,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
         }
       }
 
-      onComplete(finalScore);
+      onComplete(finalScore, finalCorrectAnswers, finalIncorrectAnswers);
     }
   };
 
@@ -118,6 +133,15 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     outputRange: [0, 1],
   });
 
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceTimer) {
+        clearTimeout(autoAdvanceTimer);
+      }
+    };
+  }, [autoAdvanceTimer]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -127,6 +151,9 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
             <Text style={styles.exitText}>×</Text>
           </TouchableOpacity>
           <View style={styles.progressContainer}>
+            {userName && (
+              <Text style={styles.userNameText}>{userName}さん</Text>
+            )}
             <View style={styles.progressBar}>
               <View style={[styles.progressFill, { width: `${progress}%` }]} />
             </View>
@@ -314,6 +341,12 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     flex: 1,
+  },
+  userNameText: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.primary[700],
+    fontWeight: '600',
+    marginBottom: SPACING.xs,
   },
   progressBar: {
     height: 8,

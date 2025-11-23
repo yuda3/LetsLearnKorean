@@ -17,6 +17,9 @@ interface ResultScreenProps {
   onRetry: () => void;
   onHome: () => void;
   onShare?: () => void;
+  correctAnswers?: number[];
+  incorrectAnswers?: number[];
+  timeSpent?: number;
 }
 
 export const ResultScreen: React.FC<ResultScreenProps> = ({
@@ -25,11 +28,25 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   onRetry,
   onHome,
   onShare,
+  correctAnswers = [],
+  incorrectAnswers = [],
+  timeSpent,
 }) => {
   const [scaleAnimation] = useState(new Animated.Value(0));
   const [fadeAnimation] = useState(new Animated.Value(0));
 
   const percentage = Math.round((score / totalQuestions) * 100);
+
+  const formatTime = (seconds: number | undefined) => {
+    if (!seconds) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const averageTimePerQuestion = timeSpent && totalQuestions > 0
+    ? Math.round(timeSpent / totalQuestions)
+    : 0;
 
   useEffect(() => {
     Animated.parallel([
@@ -144,6 +161,26 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
                 <Text style={styles.detailLabel}>合計</Text>
               </View>
             </View>
+
+            {/* Additional Stats */}
+            {timeSpent !== undefined && (
+              <View style={styles.additionalStatsContainer}>
+                <View style={styles.statRow}>
+                  <Text style={styles.statIcon}>⏱️</Text>
+                  <View style={styles.statInfo}>
+                    <Text style={styles.statLabel}>所要時間</Text>
+                    <Text style={styles.statValue}>{formatTime(timeSpent)}</Text>
+                  </View>
+                </View>
+                <View style={styles.statRow}>
+                  <Text style={styles.statIcon}>⚡</Text>
+                  <View style={styles.statInfo}>
+                    <Text style={styles.statLabel}>平均解答時間</Text>
+                    <Text style={styles.statValue}>{averageTimePerQuestion}秒</Text>
+                  </View>
+                </View>
+              </View>
+            )}
 
             {/* Motivational Message */}
             <View style={styles.messageContainer}>
@@ -299,6 +336,28 @@ const styles = StyleSheet.create({
     width: 1,
     height: 40,
     backgroundColor: COLORS.primary[200],
+  },
+  additionalStatsContainer: {
+    width: '100%',
+    marginTop: SPACING.lg,
+    paddingTop: SPACING.lg,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.primary[200],
+    gap: SPACING.md,
+  },
+  statRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+  },
+  statIcon: {
+    fontSize: 24,
+  },
+  statInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   messageContainer: {
     marginTop: SPACING.xl,

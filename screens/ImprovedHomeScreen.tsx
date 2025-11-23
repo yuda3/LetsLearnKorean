@@ -11,6 +11,7 @@ import {
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { ProgressBar } from '../components/ProgressBar';
+import { SpeechButton } from '../components/SpeechButton';
 import { TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -220,9 +221,12 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
                       <Text style={[styles.categoryTitleJa, { color: colors.primary[600] }]}>
                         {category.titleJa}
                       </Text>
-                      <Text style={[styles.categoryTitleKo, { color: colors.primary[800] }]}>
-                        {category.titleKo}
-                      </Text>
+                      <View style={styles.categoryTitleWithSpeech}>
+                        <Text style={[styles.categoryTitleKo, { color: colors.primary[800] }]}>
+                          {category.titleKo}
+                        </Text>
+                        <SpeechButton text={category.titleKo} size="sm" />
+                      </View>
                       <Text
                         style={[
                           styles.categoryDescription,
@@ -438,10 +442,15 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.fontSize.sm,
     marginBottom: 2,
   },
+  categoryTitleWithSpeech: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    marginBottom: SPACING.xs,
+  },
   categoryTitleKo: {
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: '700',
-    marginBottom: SPACING.xs,
   },
   categoryDescription: {
     fontSize: TYPOGRAPHY.fontSize.sm,

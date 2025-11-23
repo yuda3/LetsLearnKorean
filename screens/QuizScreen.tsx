@@ -49,6 +49,24 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
+  // Reset quiz state when questions change (new quiz started)
+  useEffect(() => {
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
+    setShowResult(false);
+    setScore(0);
+    setShowDetailedExplanation(false);
+    setCorrectAnswers([]);
+    setIncorrectAnswers([]);
+    feedbackAnimation.setValue(0);
+
+    // Clear any pending auto-advance timer
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      setAutoAdvanceTimer(null);
+    }
+  }, [questions]);
+
   const handleAnswerSelect = (answerIndex: number) => {
     if (showResult) return;
 

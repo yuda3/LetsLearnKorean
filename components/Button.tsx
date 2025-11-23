@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
-import { COLORS, TYPOGRAPHY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { TYPOGRAPHY, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -26,6 +27,8 @@ export const Button: React.FC<ButtonProps> = ({
   fullWidth = false,
   icon,
 }) => {
+  const { colors } = useTheme();
+
   const getButtonStyle = (): ViewStyle => {
     const baseStyle: ViewStyle = {
       borderRadius: BORDER_RADIUS.lg,
@@ -45,15 +48,15 @@ export const Button: React.FC<ButtonProps> = ({
     // Variant styles
     const variantStyles: Record<ButtonVariant, ViewStyle> = {
       primary: {
-        backgroundColor: COLORS.sage[500],
+        backgroundColor: colors.sage[500],
       },
       secondary: {
-        backgroundColor: COLORS.coral[500],
+        backgroundColor: colors.coral[500],
       },
       outline: {
         backgroundColor: 'transparent',
         borderWidth: 2,
-        borderColor: COLORS.primary[300],
+        borderColor: colors.primary[300],
       },
     };
 
@@ -84,7 +87,7 @@ export const Button: React.FC<ButtonProps> = ({
     const variantStyles: Record<ButtonVariant, TextStyle> = {
       primary: { color: '#FFFFFF' },
       secondary: { color: '#FFFFFF' },
-      outline: { color: COLORS.primary[700] },
+      outline: { color: colors.primary[700] },
     };
 
     return {
@@ -102,7 +105,7 @@ export const Button: React.FC<ButtonProps> = ({
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'outline' ? COLORS.primary[700] : '#FFFFFF'} />
+        <ActivityIndicator color={variant === 'outline' ? colors.primary[700] : '#FFFFFF'} />
       ) : (
         <>
           {icon && <>{icon}</>}

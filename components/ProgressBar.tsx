@@ -6,7 +6,8 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { COLORS, TYPOGRAPHY, BORDER_RADIUS, SPACING } from '../constants/theme';
+import { TYPOGRAPHY, BORDER_RADIUS, SPACING } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface ProgressBarProps {
   progress: number; // 0-100
@@ -19,6 +20,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   label,
   showPercentage = true,
 }) => {
+  const { colors } = useTheme();
   const progressValue = useSharedValue(0);
 
   useEffect(() => {
@@ -38,14 +40,14 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     <View style={styles.container}>
       {label && (
         <View style={styles.labelContainer}>
-          <Text style={styles.label}>{label}</Text>
+          <Text style={[styles.label, { color: colors.primary[700] }]}>{label}</Text>
           {showPercentage && (
-            <Text style={styles.percentage}>{Math.round(progress)}%</Text>
+            <Text style={[styles.percentage, { color: colors.sage[600] }]}>{Math.round(progress)}%</Text>
           )}
         </View>
       )}
-      <View style={styles.track}>
-        <Animated.View style={[styles.fill, animatedStyle]} />
+      <View style={[styles.track, { backgroundColor: colors.primary[100] }]}>
+        <Animated.View style={[styles.fill, { backgroundColor: colors.sage[500] }, animatedStyle]} />
       </View>
     </View>
   );
@@ -62,23 +64,19 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.primary[700],
     fontWeight: '500',
   },
   percentage: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.sage[600],
     fontWeight: '600',
   },
   track: {
     height: 12,
-    backgroundColor: COLORS.primary[100],
     borderRadius: BORDER_RADIUS.sm,
     overflow: 'hidden',
   },
   fill: {
     height: '100%',
-    backgroundColor: COLORS.sage[500],
     borderRadius: BORDER_RADIUS.sm,
   },
 });

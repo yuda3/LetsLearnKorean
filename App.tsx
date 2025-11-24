@@ -20,7 +20,9 @@ function AppContent() {
   const { user, isLoading: authLoading } = useAuth();
   const { colors, mode } = useTheme();
   const [appIsReady, setAppIsReady] = useState(false);
+  const [showSecondLogo, setShowSecondLogo] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(1));
+  const [logo2FadeAnim] = useState(new Animated.Value(0));
 
   const [fontsLoaded] = useFonts({
     NotoSansJP_400Regular,
@@ -33,10 +35,33 @@ function AppContent() {
       try {
         // 폰트와 인증이 모두 로드될 때까지 대기
         if (fontsLoaded && !authLoading) {
-          // 스플래시 스크린을 약간 보여준 후 숨김 (최소 2초)
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          // 페이드 아웃 애니메이션
+          // 첫 번째 로고 표시 (1.2초)
+          await new Promise(resolve => setTimeout(resolve, 1200));
+
+          // 첫 번째 로고 페이드 아웃
           Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 400,
+            useNativeDriver: true,
+          }).start();
+
+          await new Promise(resolve => setTimeout(resolve, 400));
+
+          // 두 번째 로고로 전환
+          setShowSecondLogo(true);
+
+          // 두 번째 로고 페이드 인
+          Animated.timing(logo2FadeAnim, {
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: true,
+          }).start();
+
+          // 두 번째 로고 표시 (1.5초)
+          await new Promise(resolve => setTimeout(resolve, 1500));
+
+          // 두 번째 로고 페이드 아웃
+          Animated.timing(logo2FadeAnim, {
             toValue: 0,
             duration: 500,
             useNativeDriver: true,
@@ -51,20 +76,30 @@ function AppContent() {
     }
 
     prepare();
-  }, [fontsLoaded, authLoading, fadeAnim]);
+  }, [fontsLoaded, authLoading, fadeAnim, logo2FadeAnim]);
 
   // Show splash screen while loading
   if (!appIsReady) {
     return (
-      <View style={[styles.splashContainer, { backgroundColor: '#7B947E' }]}>
-        <Animated.View style={[styles.splashContent, { opacity: fadeAnim }]}>
-          <Image
-            source={require('./assets/logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <ActivityIndicator size="large" color="#ffffff" style={styles.splashLoader} />
-        </Animated.View>
+      <View style={[styles.splashContainer, { backgroundColor: '#ffffff' }]}>
+        {!showSecondLogo ? (
+          <Animated.View style={[styles.splashContent, { opacity: fadeAnim }]}>
+            <Image
+              source={require('./assets/logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </Animated.View>
+        ) : (
+          <Animated.View style={[styles.splashContent, { opacity: logo2FadeAnim }]}>
+            <Image
+              source={require('./assets/logo2.png')}
+              style={styles.logo2}
+              resizeMode="contain"
+            />
+            <ActivityIndicator size="large" color="#6B9BD1" style={styles.splashLoader} />
+          </Animated.View>
+        )}
       </View>
     );
   }
@@ -108,7 +143,11 @@ const styles = StyleSheet.create({
   logo: {
     width: 200,
     height: 200,
-    marginBottom: 40,
+  },
+  logo2: {
+    width: 250,
+    height: 250,
+    marginBottom: 20,
   },
   splashLoader: {
     marginTop: 20,

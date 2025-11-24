@@ -143,47 +143,32 @@ export const SettingsScreen: React.FC = () => {
   };
 
   const handleDailyGoalChange = () => {
-    if (Platform.OS === 'web') {
-      const input = window.prompt(
-        '일일 목표 / 1日の目標\n\n하루에 완료하고 싶은 퀴즈 수를 입력하세요 (3, 5, 10, 15, 20)\n1日に完了したいクイズの数を入力してください',
-        dailyGoal.toString()
-      );
-      if (input !== null) {
-        const goal = parseInt(input);
-        if (!isNaN(goal) && goal > 0 && goal <= 50) {
-          updateGoal(goal);
-        } else {
-          window.alert('올바른 숫자를 입력해주세요 (1-50)\n\n正しい数値を入力してください (1-50)');
-        }
-      }
-    } else {
-      Alert.alert(
-        '일일 목표 / 1日の目標',
-        '하루에 완료하고 싶은 퀴즈 수를 선택하세요\n\n1日に完了したいクイズの数を選択してください',
-        [
-          {
-            text: '3개 / 3個',
-            onPress: () => updateGoal(3),
+    Alert.alert(
+      '일일 목표 / 1日の目標',
+      '하루에 완료하고 싶은 퀴즈 수를 선택하세요\n\n1日に完了したいクイズの数を選択してください',
+      [
+        {
+          text: '3개 / 3個',
+          onPress: () => updateGoal(3),
+        },
+        {
+          text: '5개 / 5個',
+          onPress: () => updateGoal(5),
+        },
+        {
+          text: '10개 / 10個',
+          onPress: () => updateGoal(10),
+        },
+        {
+          text: '더보기 / さらに表示',
+          onPress: showMoreGoalOptions,
           },
-          {
-            text: '5개 / 5個',
-            onPress: () => updateGoal(5),
-          },
-          {
-            text: '10개 / 10個',
-            onPress: () => updateGoal(10),
-          },
-          {
-            text: '더보기 / さらに表示',
-            onPress: showMoreGoalOptions,
-          },
-          {
-            text: '취소 / キャンセル',
-            style: 'cancel',
-          },
-        ]
-      );
-    }
+        {
+          text: '취소 / キャンセル',
+          style: 'cancel',
+        },
+      ]
+    );
   };
 
   const showMoreGoalOptions = () => {

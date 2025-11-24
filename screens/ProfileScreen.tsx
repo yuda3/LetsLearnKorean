@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Card } from '../components/Card';
@@ -13,7 +14,7 @@ import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constant
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { storageService } from '../services/storageService';
-import { LearningStats, Badge } from '../types';
+import { LearningStats, Badge, UserLevel } from '../types';
 
 const BADGE_DEFINITIONS: Badge[] = [
   {
@@ -181,6 +182,15 @@ export const ProfileScreen: React.FC = () => {
     return Math.min(100, rate); // 최대 100%로 제한
   };
 
+  const handleLevelChange = () => {
+    // 현재는 잠금 상태이므로 아무 동작도 하지 않음
+    Alert.alert(
+      '機能ロック',
+      'この機能は現在ロックされています。\n\nこの機能は現在ロックされています。',
+      [{ text: 'OK' }]
+    );
+  };
+
   const unlockedBadges = badges.filter((b) => b.unlockedAt);
   const lockedBadges = badges.filter((b) => !b.unlockedAt);
 
@@ -199,11 +209,20 @@ export const ProfileScreen: React.FC = () => {
           <Text style={[styles.userName, { color: colors.primary[800] }]}>
             {user?.name || 'ユーザー'}
           </Text>
-          <Text style={[styles.userLevel, { color: colors.primary[600] }]}>
-            {user?.level === 'beginner' && '初級者'}
-            {user?.level === 'intermediate' && '中級者'}
-            {user?.level === 'advanced' && '上級者'}
-          </Text>
+          <TouchableOpacity
+            style={styles.levelContainer}
+            onPress={handleLevelChange}
+            disabled={true}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.userLevel, { color: colors.primary[600] }]}>
+              {user?.level === 'beginner' && '初級者'}
+              {user?.level === 'intermediate' && '中級者'}
+              {user?.level === 'advanced' && '上級者'}
+              {!user?.level && '未設定'}
+            </Text>
+            <Text style={[styles.lockIcon, { color: colors.primary[400] }]}>🔒</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Stats Cards */}
@@ -331,9 +350,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: SPACING.xs,
   },
+  levelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    opacity: 0.6,
+  },
   userLevel: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: '500',
+  },
+  lockIcon: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
   },
   statsContainer: {
     flexDirection: 'row',

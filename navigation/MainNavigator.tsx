@@ -212,6 +212,8 @@ function PracticeStack() {
     if (mode === 'random') {
       // Random quiz from all categories
       questions = getRandomQuizzes(10);
+      category = 'basic'; // 랜덤 퀴즈는 기본 카테고리로 저장
+      isReviewMode = false;
     } else if (mode.startsWith('review_')) {
       // Review specific category - get only incorrect answers
       isReviewMode = true;

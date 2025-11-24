@@ -147,10 +147,11 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
         };
 
         try {
-          // 복습 모드가 아닐 때만 새로운 결과를 저장
+          // 복습 모드가 아닐 때만 새로운 결과를 저장 (랜덤 퀴즈 포함)
           if (!isReviewMode) {
             await storageService.saveQuizResult(result);
             await storageService.updateLearningStats(result);
+            // 랜덤 퀴즈의 경우 category가 'basic'이므로 카테고리 진행도도 업데이트
             await storageService.updateCategoryProgress(result);
           }
         } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Card } from '../components/Card';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
@@ -100,23 +101,12 @@ export const ProfileScreen: React.FC = () => {
   const [stats, setStats] = useState<LearningStats | null>(null);
   const [badges, setBadges] = useState<Badge[]>([]);
 
-  useEffect(() => {
-    if (user) {
-      loadStats();
-      loadBadges();
-    } else {
-      // 로그아웃 시 데이터 초기화
-      setStats(null);
-      setBadges([]);
-    }
-  }, [user]);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     const learningStats = await storageService.getLearningStats();
     setStats(learningStats);
-  };
+  }, []);
 
-  const loadBadges = async () => {
+  const loadBadges = useCallback(async () => {
     let savedBadges = await storageService.getBadges();
 
     // Initialize badges if not exist
@@ -162,7 +152,28 @@ export const ProfileScreen: React.FC = () => {
     } else {
       setBadges(savedBadges);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      loadStats();
+      loadBadges();
+    } else {
+      // 로그아웃 시 데이터 초기화
+      setStats(null);
+      setBadges([]);
+    }
+  }, [user, loadStats, loadBadges]);
+
+  // 화면이 포커스될 때마다 데이터를 다시 로드
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        loadStats();
+        loadBadges();
+      }
+    }, [user, loadStats, loadBadges])
+  );
 
   const getAccuracyRate = () => {
     if (!stats || stats.totalQuestions === 0) return 0;

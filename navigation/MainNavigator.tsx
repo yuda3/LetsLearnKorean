@@ -11,7 +11,7 @@ import { QuizScreen } from '../screens/QuizScreen';
 import { ResultScreen } from '../screens/ResultScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { getRandomQuizzes, getQuizzesByCategory } from '../data/quizData';
+import { getRandomQuizzes, getQuizzesByCategory } from '../data/quizzes';
 import { UserLevel, QuizCategory } from '../types';
 
 const Tab = createBottomTabNavigator();

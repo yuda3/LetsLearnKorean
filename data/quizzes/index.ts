@@ -35,15 +35,43 @@ export {
 };
 
 // Category-specific question getters
-export const getQuizzesByCategory = (category: string): Question[] => {
-  const filtered = quizQuestions.filter((q) => q.category === category);
+export const getQuizzesByCategory = (category: string, userLevel?: 'beginner' | 'intermediate' | 'advanced'): Question[] => {
+  // カテゴリのデフォルト難易度マッピング
+  const categoryDefaultDifficulty: Record<string, 'beginner' | 'intermediate' | 'advanced'> = {
+    basic: 'beginner',
+    gratitude: 'beginner',
+    daily: 'beginner',
+    numbers: 'beginner',
+    travel: 'intermediate',
+    shopping: 'intermediate',
+    restaurant: 'intermediate',
+    emergency: 'advanced',
+  };
+
+  let filtered = quizQuestions.filter((q) => q.category === category);
+
+  // ユーザーレベルが指定されている場合は、そのレベルに合った問題のみフィルター
+  if (userLevel) {
+    filtered = filtered.filter((q) => {
+      const questionDifficulty = q.difficulty || categoryDefaultDifficulty[q.category] || 'beginner';
+      return questionDifficulty === userLevel;
+    });
+  }
+
   // Shuffle to avoid repeating same questions consecutively
   return [...filtered].sort(() => 0.5 - Math.random());
 };
 
 // Get random quizzes
-export const getRandomQuizzes = (count: number): Question[] => {
-  const shuffled = [...quizQuestions].sort(() => 0.5 - Math.random());
+export const getRandomQuizzes = (count: number, userLevel?: 'beginner' | 'intermediate' | 'advanced'): Question[] => {
+  let questions = quizQuestions;
+
+  // ユーザーレベルが指定されている場合は、そのレベルに合った問題のみ取得
+  if (userLevel) {
+    questions = getQuizzesByDifficulty(userLevel);
+  }
+
+  const shuffled = [...questions].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, Math.min(count, shuffled.length));
 };
 
@@ -59,16 +87,25 @@ export const categoryInfo = {
   emergency: { name: '緊急時', icon: '🚨', color: '#FBB8A8' },
 };
 
-// Get questions by difficulty level (based on category)
+// Get questions by difficulty level (based on question's difficulty field or category default)
 export const getQuizzesByDifficulty = (difficulty: 'beginner' | 'intermediate' | 'advanced'): Question[] => {
-  const categoryMap = {
-    beginner: ['basic', 'gratitude', 'daily', 'numbers'],
-    intermediate: ['travel', 'shopping', 'restaurant'],
-    advanced: ['emergency'],
+  // カテゴリのデフォルト難易度マッピング
+  const categoryDefaultDifficulty: Record<string, 'beginner' | 'intermediate' | 'advanced'> = {
+    basic: 'beginner',
+    gratitude: 'beginner',
+    daily: 'beginner',
+    numbers: 'beginner',
+    travel: 'intermediate',
+    shopping: 'intermediate',
+    restaurant: 'intermediate',
+    emergency: 'advanced',
   };
 
-  const categories = categoryMap[difficulty] || [];
-  return quizQuestions.filter((q) => categories.includes(q.category));
+  return quizQuestions.filter((q) => {
+    // 問題に難易度が設定されている場合はそれを使用、なければカテゴリのデフォルトを使用
+    const questionDifficulty = q.difficulty || categoryDefaultDifficulty[q.category] || 'beginner';
+    return questionDifficulty === difficulty;
+  });
 };
 
 // Statistics

@@ -52,7 +52,9 @@ function HomeStack() {
   };
 
   const handleCategorySelect = (category: QuizCategory) => {
-    const categoryQuizzes = getQuizzesByCategory(category);
+    // ユーザーレベルに合った問題を取得
+    const userLevel = user?.level;
+    const categoryQuizzes = getQuizzesByCategory(category, userLevel);
     const quizCount = Math.min(5, categoryQuizzes.length);
 
     setQuizState({
@@ -71,9 +73,12 @@ function HomeStack() {
       await updateUserLevel(level);
     }
 
+    // ユーザーレベルに合った問題を取得
+    const userLevel = level || user?.level;
+
     setQuizState({
       ...quizState,
-      questions: getRandomQuizzes(questionCount),
+      questions: getRandomQuizzes(questionCount, userLevel),
       category: 'basic',
       score: 0,
       correctAnswers: [],

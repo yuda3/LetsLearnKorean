@@ -13,6 +13,7 @@ export interface User {
 export interface Question {
   id: number;
   category: QuizCategory;
+  difficulty?: UserLevel; // 問題の難易度（未指定の場合はカテゴリのデフォルト難易度を使用）
   questionJa: string;
   question: string;
   options: string[];

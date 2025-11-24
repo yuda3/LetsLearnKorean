@@ -2,9 +2,11 @@ import { Question } from '../../types';
 
 // basic - beginner level
 export const basicQuestions: Question[] = [
-{
+  // Beginner level - 基本フレーズ (既存の問題)
+  {
     id: 10,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: '謝罪の表現',
     question: '「すみません」「ごめんなさい」は？',
     options: [
@@ -18,9 +20,10 @@ export const basicQuestions: Question[] = [
     detailedExplanation:
       '謝罪のレベル：미안해(カジュアル)< 미안해요(丁寧)< 미안합니다(より丁寧)< 죄송합니다(最も丁寧)。ビジネスや目上の人には「죄송합니다」を使います。',
   },
-{
+  {
     id: 11,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: '食事の前に',
     question: '「いただきます」は韓国語で？',
     options: [
@@ -34,9 +37,10 @@ export const basicQuestions: Question[] = [
     detailedExplanation:
       '食事の挨拶：잘 먹겠습니다(いただきます・before)、잘 먹었습니다(ごちそうさまでした・after)。レストランなどでは省略されることも多いです。',
   },
-{
+  {
     id: 12,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: '質問をするとき',
     question: '「すみません、質問があります」は？',
     options: [
@@ -50,9 +54,10 @@ export const basicQuestions: Question[] = [
     detailedExplanation:
       '저기요(すみません・人を呼ぶ)、질문(質問)、있어요(あります)。レストランで店員を呼ぶ時も「저기요」を使います。',
   },
-{
+  {
     id: 44,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: '理解を示す',
     question: '「わかりました」は韓国語で？',
     options: [
@@ -66,9 +71,10 @@ export const basicQuestions: Question[] = [
     detailedExplanation:
       '알다(知る・わかる)、모르다(知らない・わからない)、겠(意志・推測)、어요(丁寧語尾)。カジュアルには「알았어」も使います。',
   },
-{
+  {
     id: 45,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: 'お願いするとき',
     question: '「お願いします」は韓国語で？',
     options: [
@@ -82,9 +88,10 @@ export const basicQuestions: Question[] = [
     detailedExplanation:
       '부탁하다(お願いする)。부탁해요(お願いします・普通)、부탁드려요(お願いします・謙譲)、부탁합니다(お願いします・フォーマル)。',
   },
-{
+  {
     id: 46,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: '許可を求める',
     question: '「〜してもいいですか？」は？',
     options: [
@@ -98,9 +105,10 @@ export const basicQuestions: Question[] = [
     detailedExplanation:
       '아도/어도 되다(〜してもよい)、아야/어야 되다(〜しなければならない)、으면/면 안 되다(〜してはいけない)、을/를 수 없다(〜できない)。',
   },
-{
+  {
     id: 47,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: '禁止を伝える',
     question: '「〜してはいけません」は？',
     options: [
@@ -114,9 +122,10 @@ export const basicQuestions: Question[] = [
     detailedExplanation:
       '으면/면 안 되다(〜してはいけない)、아도/어도 되다(〜してもよい)、을/를 수 있다(〜できる)、고 싶다(〜したい)。',
   },
-{
+  {
     id: 48,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: 'ちょっと待って',
     question: '「ちょっと待ってください」は？',
     options: [
@@ -130,9 +139,10 @@ export const basicQuestions: Question[] = [
     detailedExplanation:
       '잠깐(ちょっと・短い時間)、잠시(少しの間)、기다리다(待つ)、주세요(ください)。잠깐만요と잠시만요は略された形で、最も自然によく使われます。',
   },
-{
+  {
     id: 49,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: '体調が悪いとき',
     question: '「気分が悪いです」は韓国語で？',
     options: [
@@ -146,9 +156,10 @@ export const basicQuestions: Question[] = [
     detailedExplanation:
       '기분이 안 좋아요(気分が悪い・心理的)、몸이 안 좋아요(体調が悪い)、아파요(痛い・病気)。状況に応じて使い分けます。',
   },
-{
+  {
     id: 50,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: '好きを伝える',
     question: '「〜が好きです」は韓国語で？',
     options: [
@@ -162,9 +173,10 @@ export const basicQuestions: Question[] = [
     detailedExplanation:
       '좋아하다(好きだ・動詞)、싫어하다(嫌いだ)、사랑하다(愛する)。「좋다」(良い・形容詞)との違いに注意：이/가 좋아요(〜が良い)。',
   },
-{
+  {
     id: 51,
     category: 'basic',
+    difficulty: 'beginner',
     questionJa: '確認をする',
     question: '「本当ですか？」は韓国語で？',
     options: [
@@ -177,5 +189,822 @@ export const basicQuestions: Question[] = [
     explanation: 'すべて「本当ですか？」の意味で使えます。',
     detailedExplanation:
       '정말(本当に・やや正式)、진짜(本当に・口語)、정말요?(本当ですか?・丁寧)、진짜?(マジで?・カジュアル)。',
-  }
+  },
+  // 追加の50問 - 日常でよく使う基本表現
+  {
+    id: 52,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '自己紹介',
+    question: '「私は〜です」は韓国語で？',
+    options: [
+      '저는 〜입니다',
+      '나는 〜이에요',
+      '저는 〜예요',
+      'すべて正解（丁寧さ違い）',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて「私は〜です」の意味で、丁寧さのレベルが異なります。',
+    detailedExplanation:
+      '저는(私は・謙譲語)、나는(私は・普通)、입니다(です・フォーマル)、예요/이에요(です・丁寧)。初対面やフォーマルな場では「저는 〜입니다」を使います。',
+  },
+  {
+    id: 53,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '名前を聞く',
+    question: '「お名前は何ですか？」は？',
+    options: [
+      '이름이 뭐예요?',
+      '이름이 어떻게 돼요?',
+      '성함이 어떻게 되세요?',
+      '모두 정답（丁寧さ違い）',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて名前を尋ねる表現ですが、丁寧さが異なります。',
+    detailedExplanation:
+      '이름(名前)、성함(お名前・敬語)、뭐예요?(何ですか?)、어떻게 돼요?(どうなりますか?)、되세요?(なられますか?・敬語)。',
+  },
+  {
+    id: 54,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '出身を聞く',
+    question: '「どこから来ましたか？」は？',
+    options: [
+      '어디에서 왔어요?',
+      '어디로 갔어요?',
+      '어디에 있어요?',
+      '어디를 가요?',
+    ],
+    correctAnswer: 0,
+    explanation: '「어디에서 왔어요?」は「どこから来ましたか?」という意味です。',
+    detailedExplanation:
+      '어디(どこ)、에서(から)、왔어요(来ました)、갔어요(行きました)、있어요(います/あります)、가요(行きます)。',
+  },
+  {
+    id: 55,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '年齢を聞く',
+    question: '「おいくつですか？（丁寧）」は？',
+    options: [
+      '연세가 어떻게 되세요?',
+      '나이가 몇 살이에요?',
+      '몇 살이에요?',
+      '나이가 뭐예요?',
+    ],
+    correctAnswer: 0,
+    explanation: '「연세가 어떻게 되세요?」は最も丁寧な年齢の尋ね方です。',
+    detailedExplanation:
+      '연세(お年・敬語)、나이(年齢)、몇 살(何歳)。目上の方には「연세」、友達には「나이」や「몇 살」を使います。',
+  },
+  {
+    id: 56,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '職業を聞く',
+    question: '「お仕事は何ですか？」は？',
+    options: [
+      '직업이 뭐예요?',
+      '일이 뭐예요?',
+      '무슨 일 하세요?',
+      'すべて正解',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて職業を尋ねる表現として使えます。',
+    detailedExplanation:
+      '직업(職業)、일(仕事)、무슨(何の)、하세요(されますか)。「무슨 일 하세요?」が最も自然でよく使われます。',
+  },
+  {
+    id: 57,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '天気の話題',
+    question: '「今日は天気がいいですね」は？',
+    options: [
+      '오늘 날씨가 좋네요',
+      '오늘 날씨가 나쁘네요',
+      '오늘 날씨가 더워요',
+      '오늘 날씨가 추워요',
+    ],
+    correctAnswer: 0,
+    explanation: '「날씨가 좋다」は「天気がいい」という意味です。',
+    detailedExplanation:
+      '오늘(今日)、날씨(天気)、좋다(良い)、나쁘다(悪い)、덥다(暑い)、춥다(寒い)、네요(〜ですね)。',
+  },
+  {
+    id: 58,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '暑い時',
+    question: '「暑いですね」は韓国語で？',
+    options: [
+      '덥네요',
+      '춥네요',
+      '더워요',
+      '더웠어요',
+    ],
+    correctAnswer: 0,
+    explanation: '「덥네요」は「暑いですね」という感嘆の表現です。',
+    detailedExplanation:
+      '덥다(暑い)、춥다(寒い)、네요(〜ですね・感嘆)、어요(です・平叙)、었어요(でした・過去)。',
+  },
+  {
+    id: 59,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '寒い時',
+    question: '「寒いです」は韓国語で？',
+    options: [
+      '추워요',
+      '더워요',
+      '따뜻해요',
+      '시원해요',
+    ],
+    correctAnswer: 0,
+    explanation: '「추워요」は「寒いです」という意味です。',
+    detailedExplanation:
+      '춥다(寒い)、덥다(暑い)、따뜻하다(暖かい)、시원하다(涼しい)。天気や気温について話す時によく使います。',
+  },
+  {
+    id: 60,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '美味しい時',
+    question: '「美味しいです」は韓国語で？',
+    options: [
+      '맛있어요',
+      '맛없어요',
+      '맛이 좋아요',
+      '맛이 나빠요',
+    ],
+    correctAnswer: 0,
+    explanation: '「맛있어요」は「美味しいです」という意味です。',
+    detailedExplanation:
+      '맛있다(美味しい)、맛없다(まずい)、맛(味)、있다(ある)、없다(ない)。食事中によく使う基本表現です。',
+  },
+  {
+    id: 61,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '疲れた時',
+    question: '「疲れました」は韓国語で？',
+    options: [
+      '피곤해요',
+      '힘들어요',
+      '지쳤어요',
+      'すべて正解（ニュアンス違い）',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて疲労を表しますが、ニュアンスが異なります。',
+    detailedExplanation:
+      '피곤하다(疲れている・身体的)、힘들다(大変だ・しんどい)、지치다(疲れ果てる・exhausted)。状況に応じて使い分けます。',
+  },
+  {
+    id: 62,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '眠い時',
+    question: '「眠いです」は韓国語で？',
+    options: [
+      '졸려요',
+      '피곤해요',
+      '자고 싶어요',
+      '잠이 와요',
+    ],
+    correctAnswer: 0,
+    explanation: '「졸려요」は「眠いです」という意味です。',
+    detailedExplanation:
+      '졸리다(眠い)、피곤하다(疲れている)、자고 싶다(寝たい)、잠이 오다(眠気が来る)。すべて似た意味ですが、「졸려요」が最も一般的です。',
+  },
+  {
+    id: 63,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'お腹が空いた',
+    question: '「お腹が空きました」は？',
+    options: [
+      '배고파요',
+      '배불러요',
+      '목말라요',
+      '배아파요',
+    ],
+    correctAnswer: 0,
+    explanation: '「배고파요」は「お腹が空きました」という意味です。',
+    detailedExplanation:
+      '배고프다(お腹が空く)、배부르다(お腹いっぱい)、목마르다(喉が渇く)、배아프다(お腹が痛い)。',
+  },
+  {
+    id: 64,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'お腹いっぱい',
+    question: '「お腹いっぱいです」は？',
+    options: [
+      '배불러요',
+      '배고파요',
+      '맛있어요',
+      '많이 먹었어요',
+    ],
+    correctAnswer: 0,
+    explanation: '「배불러요」は「お腹いっぱいです」という意味です。',
+    detailedExplanation:
+      '배부르다(お腹いっぱい)、배고프다(お腹が空く)、맛있다(美味しい)、많이 먹다(たくさん食べる)。',
+  },
+  {
+    id: 65,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '喉が渇いた',
+    question: '「喉が渇きました」は？',
+    options: [
+      '목말라요',
+      '목이 아파요',
+      '배고파요',
+      '물 주세요',
+    ],
+    correctAnswer: 0,
+    explanation: '「목말라요」は「喉が渇きました」という意味です。',
+    detailedExplanation:
+      '목마르다(喉が渇く)、목이 아프다(喉が痛い)、배고프다(お腹が空く)、물 주세요(水をください)。',
+  },
+  {
+    id: 66,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '楽しい時',
+    question: '「楽しいです」は韓国語で？',
+    options: [
+      '재미있어요',
+      '즐거워요',
+      '행복해요',
+      'すべて正解（ニュアンス違い）',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて肯定的な感情を表しますが、ニュアンスが異なります。',
+    detailedExplanation:
+      '재미있다(面白い・楽しい)、즐겁다(楽しい・嬉しい)、행복하다(幸せだ)。재미있다は活動が面白い、즐겁다は気分が楽しい感じです。',
+  },
+  {
+    id: 67,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '嬉しい時',
+    question: '「嬉しいです」は韓国語で？',
+    options: [
+      '기뻐요',
+      '슬퍼요',
+      '화나요',
+      '무서워요',
+    ],
+    correctAnswer: 0,
+    explanation: '「기뻐요」は「嬉しいです」という意味です。',
+    detailedExplanation:
+      '기쁘다(嬉しい)、슬프다(悲しい)、화나다(怒る)、무섭다(怖い)。感情を表す基本的な形容詞です。',
+  },
+  {
+    id: 68,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '悲しい時',
+    question: '「悲しいです」は韓国語で？',
+    options: [
+      '슬퍼요',
+      '기뻐요',
+      '화나요',
+      '외로워요',
+    ],
+    correctAnswer: 0,
+    explanation: '「슬퍼요」は「悲しいです」という意味です。',
+    detailedExplanation:
+      '슬프다(悲しい)、기쁘다(嬉しい)、화나다(怒る)、외롭다(寂しい)。感情を表現する時に使います。',
+  },
+  {
+    id: 69,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '怖い時',
+    question: '「怖いです」は韓国語で？',
+    options: [
+      '무서워요',
+      '두려워요',
+      '겁나요',
+      'すべて正解',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて「怖い」という意味で使えます。',
+    detailedExplanation:
+      '무섭다(怖い・一般的)、두렵다(恐ろしい・やや文語的)、겁나다(怖い・口語的)。すべて恐怖を表現します。',
+  },
+  {
+    id: 70,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '忙しい時',
+    question: '「忙しいです」は韓国語で？',
+    options: [
+      '바빠요',
+      '한가해요',
+      '심심해요',
+      '피곤해요',
+    ],
+    correctAnswer: 0,
+    explanation: '「바빠요」は「忙しいです」という意味です。',
+    detailedExplanation:
+      '바쁘다(忙しい)、한가하다(暇だ)、심심하다(退屈だ)、피곤하다(疲れている)。状態を表す形容詞です。',
+  },
+  {
+    id: 71,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '暇な時',
+    question: '「暇です」は韓国語で？',
+    options: [
+      '한가해요',
+      '바빠요',
+      '심심해요',
+      '지루해요',
+    ],
+    correctAnswer: 0,
+    explanation: '「한가해요」は「暇です」という意味です。',
+    detailedExplanation:
+      '한가하다(暇だ・時間がある)、바쁘다(忙しい)、심심하다(退屈だ)、지루하다(飽きる・つまらない)。',
+  },
+  {
+    id: 72,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '退屈な時',
+    question: '「退屈です」は韓国語で？',
+    options: [
+      '심심해요',
+      '재미있어요',
+      '한가해요',
+      '바빠요',
+    ],
+    correctAnswer: 0,
+    explanation: '「심심해요」は「退屈です」という意味です。',
+    detailedExplanation:
+      '심심하다(退屈だ)、재미있다(面白い)、한가하다(暇だ)、바쁘다(忙しい)。することがなくて退屈な時に使います。',
+  },
+  {
+    id: 73,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '大丈夫です',
+    question: '「大丈夫です」は韓国語で？',
+    options: [
+      '괜찮아요',
+      '좋아요',
+      '안 돼요',
+      '나빠요',
+    ],
+    correctAnswer: 0,
+    explanation: '「괜찮아요」は「大丈夫です」という意味です。',
+    detailedExplanation:
+      '괜찮다(大丈夫だ・問題ない)、좋다(良い)、안 되다(だめだ)、나쁘다(悪い)。許可や状態確認でよく使います。',
+  },
+  {
+    id: 74,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'いいえ、結構です',
+    question: '丁寧に断る時「結構です」は？',
+    options: [
+      '괜찮아요',
+      '됐어요',
+      '필요 없어요',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて断る表現として使えますが、ニュアンスが異なります。',
+    detailedExplanation:
+      '괜찮아요(大丈夫です・丁寧)、됐어요(結構です)、필요 없어요(必要ありません)。状況に応じて使い分けます。',
+  },
+  {
+    id: 75,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'もう一度言って',
+    question: '「もう一度言ってください」は？',
+    options: [
+      '다시 한번 말씀해 주세요',
+      '다시 한번 들어 주세요',
+      '한번 더 보여 주세요',
+      '한번 더 써 주세요',
+    ],
+    correctAnswer: 0,
+    explanation: '「다시 한번 말씀해 주세요」は「もう一度言ってください」です。',
+    detailedExplanation:
+      '다시(もう一度)、한번(一回)、말씀하다(おっしゃる・言う敬語)、듣다(聞く)、보여주다(見せる)、쓰다(書く)、주세요(ください)。',
+  },
+  {
+    id: 76,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'ゆっくり話して',
+    question: '「ゆっくり話してください」は？',
+    options: [
+      '천천히 말씀해 주세요',
+      '빨리 말씀해 주세요',
+      '크게 말씀해 주세요',
+      '작게 말씀해 주세요',
+    ],
+    correctAnswer: 0,
+    explanation: '「천천히」は「ゆっくり」という意味です。',
+    detailedExplanation:
+      '천천히(ゆっくり)、빨리(速く)、크게(大きく)、작게(小さく)、말씀하다(おっしゃる)、주세요(ください)。',
+  },
+  {
+    id: 77,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '書いてください',
+    question: '「書いてください」は韓国語で？',
+    options: [
+      '써 주세요',
+      '읽어 주세요',
+      '말씀해 주세요',
+      '보여 주세요',
+    ],
+    correctAnswer: 0,
+    explanation: '「써 주세요」は「書いてください」という意味です。',
+    detailedExplanation:
+      '쓰다(書く)、읽다(読む)、말하다(言う)、보여주다(見せる)、주세요(ください)。依頼表現の基本形です。',
+  },
+  {
+    id: 78,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '手伝ってください',
+    question: '「手伝ってください」は？',
+    options: [
+      '도와주세요',
+      '기다려 주세요',
+      '가르쳐 주세요',
+      '보여 주세요',
+    ],
+    correctAnswer: 0,
+    explanation: '「도와주세요」は「手伝ってください」という意味です。',
+    detailedExplanation:
+      '돕다(手伝う)、기다리다(待つ)、가르치다(教える)、보여주다(見せる)、주세요(ください)。助けを求める時の表現です。',
+  },
+  {
+    id: 79,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '教えてください',
+    question: '「教えてください」は韓国語で？',
+    options: [
+      '가르쳐 주세요',
+      '알려 주세요',
+      '설명해 주세요',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて「教えてください」の意味で使えます。',
+    detailedExplanation:
+      '가르치다(教える・教育的)、알려주다(知らせる・情報)、설명하다(説明する)。状況に応じて使い分けます。',
+  },
+  {
+    id: 80,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'どこですか？',
+    question: '「どこですか？」は韓国語で？',
+    options: [
+      '어디예요?',
+      '어디에요?',
+      '어디 있어요?',
+      'すべて正解',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて場所を尋ねる表現として使えます。',
+    detailedExplanation:
+      '어디(どこ)、예요/이에요(です)、있어요(あります/います)。どれも自然に使えます。',
+  },
+  {
+    id: 81,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'いつですか？',
+    question: '「いつですか？」は韓国語で？',
+    options: [
+      '언제예요?',
+      '어디예요?',
+      '누구예요?',
+      '뭐예요?',
+    ],
+    correctAnswer: 0,
+    explanation: '「언제」は「いつ」という意味です。',
+    detailedExplanation:
+      '언제(いつ)、어디(どこ)、누구(誰)、뭐(何)、예요(です)。疑問詞の基本です。',
+  },
+  {
+    id: 82,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '誰ですか？',
+    question: '「誰ですか？」は韓国語で？',
+    options: [
+      '누구예요?',
+      '누구세요?',
+      '누가요?',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて「誰ですか？」という意味で使えます。',
+    detailedExplanation:
+      '누구(誰)、예요(です)、세요(ですか・敬語)、가(が)。「누구세요?」が最も丁寧です。',
+  },
+  {
+    id: 83,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '何ですか？',
+    question: '「何ですか？」は韓国語で？',
+    options: [
+      '뭐예요?',
+      '무엇이에요?',
+      '뭡니까?',
+      'すべて正解',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて「何ですか？」の意味で、丁寧さが異なります。',
+    detailedExplanation:
+      '뭐(何・口語)、무엇(何・やや正式)、예요(です)、니까(ですか・フォーマル)。状況に応じて使い分けます。',
+  },
+  {
+    id: 84,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'なぜですか？',
+    question: '「なぜですか？」は韓国語で？',
+    options: [
+      '왜요?',
+      '왜 그래요?',
+      '무슨 이유예요?',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて理由を尋ねる表現として使えます。',
+    detailedExplanation:
+      '왜(なぜ)、요(か)、그래요(そうですか)、무슨(何の)、이유(理由)。「왜요?」が最も簡潔です。',
+  },
+  {
+    id: 85,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'どうやって？',
+    question: '「どうやって？」は韓国語で？',
+    options: [
+      '어떻게?',
+      '어떻게 해요?',
+      '어떻게 하는 거예요?',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて方法を尋ねる表現として使えます。',
+    detailedExplanation:
+      '어떻게(どのように)、해요(しますか)、하는 거예요(するんですか)。方法や手段を聞く時に使います。',
+  },
+  {
+    id: 86,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'いくらですか？',
+    question: '「いくらですか？」は韓国語で？',
+    options: [
+      '얼마예요?',
+      '몇 개예요?',
+      '몇 명이에요?',
+      '몇 시예요?',
+    ],
+    correctAnswer: 0,
+    explanation: '「얼마예요?」は「いくらですか?」という意味です。',
+    detailedExplanation:
+      '얼마(いくら)、몇 개(いくつ・個数)、몇 명(何人)、몇 시(何時)。買い物でよく使います。',
+  },
+  {
+    id: 87,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '今何時？',
+    question: '「今何時ですか？」は？',
+    options: [
+      '지금 몇 시예요?',
+      '지금 언제예요?',
+      '지금 어디예요?',
+      '지금 뭐예요?',
+    ],
+    correctAnswer: 0,
+    explanation: '「몇 시」は「何時」という意味です。',
+    detailedExplanation:
+      '지금(今)、몇(いくつ)、시(時)、예요(ですか)。時刻を尋ねる基本表現です。',
+  },
+  {
+    id: 88,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'トイレはどこ？',
+    question: '「トイレはどこですか？」は？',
+    options: [
+      '화장실이 어디예요?',
+      '화장실이 뭐예요?',
+      '화장실이 언제예요?',
+      '화장실이 누구예요?',
+    ],
+    correctAnswer: 0,
+    explanation: '「화장실」は「トイレ」、「어디」は「どこ」です。',
+    detailedExplanation:
+      '화장실(トイレ・化粧室)、이(が)、어디(どこ)、예요(ですか)。旅行でよく使う重要な表現です。',
+  },
+  {
+    id: 89,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'はい/いいえ',
+    question: '「はい」と「いいえ」は？',
+    options: [
+      '네 / 아니요',
+      '예 / 아니오',
+      '응 / 아니',
+      'すべて正解（丁寧さ違い）',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて使えますが、丁寧さのレベルが異なります。',
+    detailedExplanation:
+      '네/아니요(はい/いいえ・一般的)、예/아니오(はい/いいえ・やや正式)、응/아니(うん/ううん・カジュアル)。',
+  },
+  {
+    id: 90,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '頑張って',
+    question: '「頑張ってください」は？',
+    options: [
+      '힘내세요',
+      '화이팅',
+      '잘하세요',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて励ましの表現として使えます。',
+    detailedExplanation:
+      '힘내세요(力を出してください)、화이팅(ファイト・fighting)、잘하세요(上手にやってください)。すべてよく使われます。',
+  },
+  {
+    id: 91,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '気をつけて',
+    question: '「気をつけてください」は？',
+    options: [
+      '조심하세요',
+      '잘 가세요',
+      '안녕히 가세요',
+      '다녀오세요',
+    ],
+    correctAnswer: 0,
+    explanation: '「조심하세요」は「気をつけてください」という意味です。',
+    detailedExplanation:
+      '조심하다(気をつける)、잘 가다(よく行く)、안녕히 가다(さようなら・去る人へ)、다녀오다(行ってくる)。',
+  },
+  {
+    id: 92,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: '行ってきます',
+    question: '「行ってきます」は韓国語で？',
+    options: [
+      '다녀올게요',
+      '다녀왔어요',
+      '갔다 올게요',
+      '1番と3番正解',
+    ],
+    correctAnswer: 3,
+    explanation: '「다녀올게요」と「갔다 올게요」両方使えます。',
+    detailedExplanation:
+      '다녀오다(行ってくる)、갔다 오다(行って来る)、ㄹ게요(〜します・意志)、았어요(ました・過去)。',
+  },
+  {
+    id: 93,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'ただいま',
+    question: '「ただいま」は韓国語で？',
+    options: [
+      '다녀왔어요',
+      '다녀올게요',
+      '갔다 왔어요',
+      '1番と3番正解',
+    ],
+    correctAnswer: 3,
+    explanation: '「다녀왔어요」と「갔다 왔어요」両方使えます。',
+    detailedExplanation:
+      '다녀오다(行ってくる)、갔다 오다(行って来る)、았어요(ました・過去形)。帰宅時の挨拶です。',
+  },
+  {
+    id: 94,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'お帰りなさい',
+    question: '「お帰りなさい」は韓国語で？',
+    options: [
+      '다녀왔어요?',
+      '왔어요?',
+      '잘 다녀왔어요?',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて帰宅を迎える表現として使えます。',
+    detailedExplanation:
+      '다녀오다(行ってくる)、오다(来る)、잘(よく)、왔어요?(来ましたか?)。日本語のように決まった表現はありません。',
+  },
+  {
+    id: 95,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'いらっしゃいませ',
+    question: '店での「いらっしゃいませ」は？',
+    options: [
+      '어서 오세요',
+      '안녕하세요',
+      '환영합니다',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて歓迎の意味で使えます。',
+    detailedExplanation:
+      '어서 오세요(早く来てください・一般的)、안녕하세요(こんにちは)、환영합니다(歓迎します・フォーマル)。店でよく聞きます。',
+  },
+  {
+    id: 96,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'お疲れ様',
+    question: '「お疲れ様です」は韓国語で？',
+    options: [
+      '수고하세요',
+      '수고하셨어요',
+      '고생하셨어요',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて労をねぎらう表現として使えます。',
+    detailedExplanation:
+      '수고하다(苦労する・頑張る)、고생하다(苦労する・大変)、세요(してください)、셨어요(されました)。状況で使い分けます。',
+  },
+  {
+    id: 97,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'おやすみなさい',
+    question: '「おやすみなさい」は韓国語で？',
+    options: [
+      '잘 자요',
+      '안녕히 주무세요',
+      '편안한 밤 되세요',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて就寝の挨拶として使えます。',
+    detailedExplanation:
+      '잘 자다(よく寝る)、안녕히 주무시다(安らかにお休みになる・敬語)、편안한 밤(安らかな夜)。相手に応じて使い分けます。',
+  },
+  {
+    id: 98,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'かまいません',
+    question: '「かまいません/大丈夫です」は？',
+    options: [
+      '괜찮아요',
+      '상관없어요',
+      '문제없어요',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて「大丈夫/問題ない」の意味で使えます。',
+    detailedExplanation:
+      '괜찮다(大丈夫だ)、상관없다(関係ない)、문제없다(問題ない)。許可や確認の返答でよく使います。',
+  },
+  {
+    id: 99,
+    category: 'basic',
+    difficulty: 'beginner',
+    questionJa: 'すごい！',
+    question: '「すごい！」は韓国語で？',
+    options: [
+      '대단해요',
+      '훌륭해요',
+      '멋있어요',
+      'すべて使える',
+    ],
+    correctAnswer: 3,
+    explanation: 'すべて称賛の表現として使えます。',
+    detailedExplanation:
+      '대단하다(すごい・立派)、훌륭하다(立派だ・素晴らしい)、멋있다(かっこいい・素敵)。感嘆を表現します。',
+  },
 ];

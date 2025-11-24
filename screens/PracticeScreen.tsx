@@ -284,6 +284,14 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({ onStartPractice 
               </View>
               <View style={styles.statItem}>
                 <Text style={[styles.statValue, { color: colors.sage[600] }]}>
+                  {quizResults.reduce((sum, r) => sum + r.totalQuestions, 0)}
+                </Text>
+                <Text style={[styles.statLabel, { color: colors.primary[600] }]}>
+                  解いた問題
+                </Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: colors.sage[600] }]}>
                   {quizResults.reduce((sum, r) => sum + r.incorrectAnswers.length, 0)}
                 </Text>
                 <Text style={[styles.statLabel, { color: colors.primary[600] }]}>
@@ -418,7 +426,8 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: 'row',
-    gap: SPACING.lg,
+    gap: SPACING.md,
+    justifyContent: 'space-around',
   },
   statItem: {
     flex: 1,

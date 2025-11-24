@@ -46,6 +46,9 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   const [incorrectAnswers, setIncorrectAnswers] = useState<number[]>([]);
   const [startTime] = useState(Date.now());
   const [autoAdvanceTimer, setAutoAdvanceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [timeLeft, setTimeLeft] = useState(30); // 30초 타이머
+  const [timerInterval, setTimerInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+  const [timeExpired, setTimeExpired] = useState(false);
 
   const currentQuestion = questions[currentQuestionIndex];
   const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
@@ -61,16 +64,92 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     setCorrectAnswers([]);
     setIncorrectAnswers([]);
     feedbackAnimation.setValue(0);
+    setTimeLeft(30);
+    setTimeExpired(false);
 
     // Clear any pending auto-advance timer
     if (autoAdvanceTimer) {
       clearTimeout(autoAdvanceTimer);
       setAutoAdvanceTimer(null);
     }
+    // Clear timer interval
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
   }, [questions]);
 
-  const handleAnswerSelect = (answerIndex: number) => {
+  // 타이머 시작 및 관리
+  useEffect(() => {
+    if (showResult) {
+      // 결과가 표시되면 타이머 정지
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        setTimerInterval(null);
+      }
+      return;
+    }
+
+    // 새 문제가 시작되면 타이머 리셋
+    setTimeLeft(30);
+    setTimeExpired(false);
+
+    // 타이머 시작
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          // 시간 만료
+          clearInterval(interval);
+          setTimerInterval(null);
+          // 자동으로 정답 표시하고 다음 문제로
+          handleTimeExpired();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    setTimerInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [currentQuestionIndex, showResult]);
+
+  const handleTimeExpired = () => {
     if (showResult) return;
+
+    // 시간 만료 시 정답을 자동으로 선택한 것으로 처리
+    setSelectedAnswer(null); // 선택하지 않음으로 표시
+    setShowResult(true);
+    setTimeExpired(true);
+
+    // 정답이 아니므로 오답으로 처리
+    setIncorrectAnswers([...incorrectAnswers, currentQuestion.id]);
+
+    // Animate feedback
+    Animated.spring(feedbackAnimation, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 7,
+    }).start();
+
+    // Auto-advance to next question after 3 seconds
+    const timer = setTimeout(() => {
+      handleNext();
+    }, 3000);
+    setAutoAdvanceTimer(timer);
+  };
+
+  const handleAnswerSelect = (answerIndex: number) => {
+    if (showResult || timeExpired) return;
+
+    // 타이머 정지
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
 
     setSelectedAnswer(answerIndex);
     setShowResult(true);
@@ -105,11 +184,19 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       setAutoAdvanceTimer(null);
     }
 
+    // Clear timer interval
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
+
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer(null);
       setShowResult(false);
       setShowDetailedExplanation(false);
+      setTimeExpired(false);
+      setTimeLeft(30);
       feedbackAnimation.setValue(0);
     } else {
       // Save quiz result
@@ -199,12 +286,28 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
               {userName && (
                 <Text style={[styles.userNameText, { color: colors.primary[700] }]}>{userName}さん</Text>
               )}
-              <View style={[styles.progressBar, { backgroundColor: colors.primary[100] }]}>
-                <View style={[styles.progressFill, { width: `${progress}%`, backgroundColor: colors.sage[500] }]} />
+              <View style={styles.progressAndTimerRow}>
+                <View style={styles.progressSection}>
+                  <View style={[styles.progressBar, { backgroundColor: colors.primary[100] }]}>
+                    <View style={[styles.progressFill, { width: `${progress}%`, backgroundColor: colors.sage[500] }]} />
+                  </View>
+                  <Text style={[styles.progressText, { color: colors.primary[600] }]}>
+                    {currentQuestionIndex + 1} / {questions.length}
+                  </Text>
+                </View>
+                {/* 타이머 */}
+                <View style={[
+                  styles.timerContainer,
+                  { backgroundColor: timeLeft <= 10 ? colors.coral[100] : colors.primary[100] }
+                ]}>
+                  <Text style={[
+                    styles.timerText,
+                    { color: timeLeft <= 10 ? colors.coral[600] : colors.primary[700] }
+                  ]}>
+                    ⏱️ {timeLeft}秒
+                  </Text>
+                </View>
               </View>
-              <Text style={[styles.progressText, { color: colors.primary[600] }]}>
-                {currentQuestionIndex + 1} / {questions.length}
-              </Text>
             </View>
           </View>
 
@@ -222,10 +325,11 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                 text={option}
                 onPress={() => handleAnswerSelect(index)}
                 selected={selectedAnswer === index}
-                correct={showResult && index === currentQuestion.correctAnswer}
-                incorrect={showResult && selectedAnswer === index && !isCorrect}
-                disabled={showResult}
+                correct={showResult && index === currentQuestion.correctAnswer && !timeExpired}
+                incorrect={(showResult && selectedAnswer === index && !isCorrect) || (timeExpired && index === currentQuestion.correctAnswer)}
+                disabled={showResult || timeExpired}
                 colors={colors}
+                timeExpired={timeExpired && index === currentQuestion.correctAnswer}
               />
             ))}
           </View>
@@ -250,18 +354,18 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                   style={[
                     styles.feedbackCircle,
                     {
-                      backgroundColor: isCorrect ? colors.sage[500] : colors.coral[500],
+                      backgroundColor: timeExpired ? colors.coral[500] : isCorrect ? colors.sage[500] : colors.coral[500],
                     },
                   ]}
                 >
                   <Text style={styles.feedbackIcon}>
-                    {isCorrect ? '✓' : '×'}
+                    {timeExpired ? '⏱️' : isCorrect ? '✓' : '×'}
                   </Text>
                 </View>
 
                 <Card style={styles.explanationCard}>
                   <Text style={[styles.explanationTitle, { color: colors.primary[800] }]}>
-                    {isCorrect ? '正解です！' : '不正解'}
+                    {timeExpired ? '時間切れ' : isCorrect ? '正解です！' : '不正解'}
                   </Text>
                   <Text style={[styles.explanationText, { color: colors.primary[700] }]}>
                     {currentQuestion.explanation}
@@ -324,6 +428,7 @@ interface AnswerOptionProps {
   incorrect: boolean;
   disabled: boolean;
   colors: any;
+  timeExpired?: boolean; // 시간 만료로 인한 정답 표시
 }
 
 const AnswerOption: React.FC<AnswerOptionProps> = ({
@@ -334,8 +439,10 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
   incorrect,
   disabled,
   colors,
+  timeExpired = false,
 }) => {
   const getBackgroundColor = () => {
+    if (timeExpired) return colors.coral[100]; // 시간 만료 시 빨간색
     if (correct) return colors.sage[100];
     if (incorrect) return colors.coral[100];
     if (selected) return colors.primary[100];
@@ -343,6 +450,7 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
   };
 
   const getBorderColor = () => {
+    if (timeExpired) return colors.coral[500]; // 시간 만료 시 빨간색 테두리
     if (correct) return colors.sage[500];
     if (incorrect) return colors.coral[500];
     if (selected) return colors.primary[400];
@@ -374,7 +482,8 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
         >
           {text}
         </Text>
-        {correct && <Text style={[styles.checkMark, { color: colors.sage[600] }]}>✓</Text>}
+                {correct && !timeExpired && <Text style={[styles.checkMark, { color: colors.sage[600] }]}>✓</Text>}
+                {timeExpired && <Text style={[styles.checkMark, { color: colors.coral[600] }]}>⏱️</Text>}
       </TouchableOpacity>
       <SpeechButton text={text} size="sm" style={{ marginLeft: SPACING.xs }} />
     </View>
@@ -414,6 +523,25 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     flex: 1,
+  },
+  progressAndTimerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+  },
+  progressSection: {
+    flex: 1,
+  },
+  timerContainer: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.md,
+    minWidth: 70,
+    alignItems: 'center',
+  },
+  timerText: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontWeight: '700',
   },
   userNameText: {
     fontSize: TYPOGRAPHY.fontSize.sm,

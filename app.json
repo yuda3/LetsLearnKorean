@@ -4,13 +4,13 @@
     "slug": "LetsLearnKorean",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/logo2.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/logo.png",
+      "image": "./assets/logo2.png",
       "resizeMode": "contain",
-      "backgroundColor": "#7B947E"
+      "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -29,15 +29,15 @@
       "package": "com.letslearnkorean.app",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.png",
-        "backgroundColor": "#7B947E"
+        "foregroundImage": "./assets/logo2.png",
+        "backgroundColor": "#ffffff"
       },
       "permissions": [],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/logo.png"
+      "favicon": "./assets/logo2.png"
     },
     "plugins": [
       "expo-font"

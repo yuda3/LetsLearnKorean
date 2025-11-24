@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, Image, Animated } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import {
@@ -19,6 +19,8 @@ import './global.css';
 function AppContent() {
   const { user, isLoading: authLoading } = useAuth();
   const { colors, mode } = useTheme();
+  const [appIsReady, setAppIsReady] = useState(false);
+  const [fadeAnim] = useState(new Animated.Value(1));
 
   const [fontsLoaded] = useFonts({
     NotoSansJP_400Regular,
@@ -26,11 +28,43 @@ function AppContent() {
     NotoSansJP_700Bold,
   });
 
-  // Show loading while fonts or auth is loading
-  if (!fontsLoaded || authLoading) {
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // 폰트와 인증이 모두 로드될 때까지 대기
+        if (fontsLoaded && !authLoading) {
+          // 스플래시 스크린을 약간 보여준 후 숨김 (최소 2초)
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          // 페이드 아웃 애니메이션
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
+          }).start(() => {
+            setAppIsReady(true);
+          });
+        }
+      } catch (e) {
+        console.warn(e);
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, [fontsLoaded, authLoading, fadeAnim]);
+
+  // Show splash screen while loading
+  if (!appIsReady) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.background.ivory }]}>
-        <ActivityIndicator size="large" color={colors.sage[500]} />
+      <View style={[styles.splashContainer, { backgroundColor: '#7B947E' }]}>
+        <Animated.View style={[styles.splashContent, { opacity: fadeAnim }]}>
+          <Image
+            source={require('./assets/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <ActivityIndicator size="large" color="#ffffff" style={styles.splashLoader} />
+        </Animated.View>
       </View>
     );
   }
@@ -62,9 +96,21 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
+  splashContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  splashContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    marginBottom: 40,
+  },
+  splashLoader: {
+    marginTop: 20,
   },
 });

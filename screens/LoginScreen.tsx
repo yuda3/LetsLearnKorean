@@ -9,6 +9,7 @@ import {
   Platform,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
@@ -41,6 +42,11 @@ export const LoginScreen: React.FC = () => {
         <View style={styles.content}>
           {/* Header */}
           <View style={styles.header}>
+            <Image
+              source={require('../assets/logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
             <Text style={styles.appTitle}>한국어 학습</Text>
             <Text style={styles.subtitle}>韓国語を学びましょう</Text>
           </View>
@@ -118,6 +124,11 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: SPACING['2xl'],
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    marginBottom: SPACING.lg,
   },
   appTitle: {
     fontSize: TYPOGRAPHY.fontSize['4xl'],

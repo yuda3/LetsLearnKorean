@@ -23,6 +23,7 @@ interface QuizScreenProps {
   onComplete: (score: number, correctAnswers: number[], incorrectAnswers: number[]) => void;
   onExit: () => void;
   userName?: string;
+  isReviewMode?: boolean; // 복습 모드인지 여부
 }
 
 export const QuizScreen: React.FC<QuizScreenProps> = ({
@@ -31,6 +32,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   onComplete,
   onExit,
   userName,
+  isReviewMode = false,
 }) => {
   const { user } = useAuth();
   const { colors } = useTheme();
@@ -119,6 +121,19 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
 
       if (user) {
         const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+        
+        // 복습 모드에서 맞춘 문제를 기존 결과에서 제거
+        if (isReviewMode && finalCorrectAnswers.length > 0) {
+          try {
+            await storageService.removeIncorrectAnswersFromResults(
+              category,
+              finalCorrectAnswers
+            );
+          } catch (error) {
+            console.error('Error removing incorrect answers from results:', error);
+          }
+        }
+
         const result: QuizResult = {
           id: Date.now().toString(),
           userId: user.id,
@@ -132,9 +147,12 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
         };
 
         try {
-          await storageService.saveQuizResult(result);
-          await storageService.updateLearningStats(result);
-          await storageService.updateCategoryProgress(result);
+          // 복습 모드가 아닐 때만 새로운 결과를 저장
+          if (!isReviewMode) {
+            await storageService.saveQuizResult(result);
+            await storageService.updateLearningStats(result);
+            await storageService.updateCategoryProgress(result);
+          }
         } catch (error) {
           console.error('Error saving quiz result:', error);
         }

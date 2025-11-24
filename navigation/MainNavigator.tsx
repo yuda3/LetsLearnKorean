@@ -192,6 +192,7 @@ function PracticeStack() {
     incorrectAnswers: number[];
     quizStartTime: number;
     timeSpent: number;
+    isReviewMode: boolean;
   }>({
     questions: getRandomQuizzes(5),
     category: 'basic',
@@ -200,17 +201,20 @@ function PracticeStack() {
     incorrectAnswers: [],
     quizStartTime: Date.now(),
     timeSpent: 0,
+    isReviewMode: false,
   });
 
   const handleStartPractice = async (mode: string) => {
     let questions: any[];
     let category: QuizCategory = 'basic';
+    let isReviewMode = false;
 
     if (mode === 'random') {
       // Random quiz from all categories
       questions = getRandomQuizzes(10);
     } else if (mode.startsWith('review_')) {
       // Review specific category - get only incorrect answers
+      isReviewMode = true;
       const reviewCategory = mode.replace('review_', '') as QuizCategory;
       category = reviewCategory;
 
@@ -246,6 +250,7 @@ function PracticeStack() {
       correctAnswers: [],
       incorrectAnswers: [],
       quizStartTime: Date.now(),
+      isReviewMode,
     });
   };
 
@@ -283,6 +288,7 @@ function PracticeStack() {
             {...props}
             questions={quizState.questions}
             category={quizState.category}
+            isReviewMode={quizState.isReviewMode}
             onComplete={(score, correct, incorrect) => {
               handleQuizComplete(score, correct, incorrect);
               props.navigation.navigate('PracticeResult');

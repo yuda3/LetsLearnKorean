@@ -404,4 +404,37 @@ export const storageService = {
       return 5;
     }
   },
+
+  // Remove incorrect answers from quiz results when answered correctly in review mode
+  async removeIncorrectAnswersFromResults(
+    category: string,
+    questionIds: number[]
+  ): Promise<void> {
+    try {
+      const userId = await this.getCurrentUserId();
+      if (!userId) {
+        throw new Error('No current user ID found');
+      }
+      const results = await this.getQuizResults();
+      
+      // Update results to remove the question IDs from incorrectAnswers
+      const updatedResults = results.map((result) => {
+        if (result.category === category) {
+          const updatedIncorrectAnswers = result.incorrectAnswers.filter(
+            (id) => !questionIds.includes(id)
+          );
+          return {
+            ...result,
+            incorrectAnswers: updatedIncorrectAnswers,
+          };
+        }
+        return result;
+      });
+
+      await AsyncStorage.setItem(KEYS.QUIZ_RESULTS(userId), JSON.stringify(updatedResults));
+    } catch (error) {
+      console.error('Error removing incorrect answers from results:', error);
+      throw error;
+    }
+  },
 };

@@ -41,20 +41,7 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
   const [categoryProgress, setCategoryProgress] = useState<CategoryProgress[]>([]);
   const [todayQuizCount, setTodayQuizCount] = useState(0);
 
-  // 화면이 포커스될 때마다 데이터 다시 로드
-  useFocusEffect(
-    React.useCallback(() => {
-      if (user) {
-        loadData();
-      } else {
-        setStats(null);
-        setCategoryProgress([]);
-        setTodayQuizCount(0);
-      }
-    }, [user])
-  );
-
-  const loadData = async () => {
+  const loadData = React.useCallback(async () => {
     const learningStats = await storageService.getLearningStats();
     setStats(learningStats);
 
@@ -71,7 +58,20 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
     // 퀴즈 세션 개수가 아니라 총 문제 수를 계산
     const totalQuestionsToday = todayResults.reduce((sum, result) => sum + result.totalQuestions, 0);
     setTodayQuizCount(totalQuestionsToday);
-  };
+  }, []);
+
+  // 화면이 포커스될 때마다 데이터 다시 로드
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user) {
+        loadData();
+      } else {
+        setStats(null);
+        setCategoryProgress([]);
+        setTodayQuizCount(0);
+      }
+    }, [user, loadData])
+  );
 
   const isCategoryUnlocked = (categoryId: QuizCategory): boolean => {
     const categoryConfig = CATEGORY_CONFIGS.find((c) => c.id === categoryId);

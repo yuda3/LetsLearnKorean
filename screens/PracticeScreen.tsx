@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
@@ -121,6 +122,15 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({ onStartPractice 
       setWeakCategories([]);
     }
   }, [user]);
+
+  // 화면이 포커스될 때마다 데이터 다시 로드
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user) {
+        loadQuizResults();
+      }
+    }, [user])
+  );
 
   const loadQuizResults = async () => {
     const results = await storageService.getQuizResults();

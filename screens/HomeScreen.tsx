@@ -27,13 +27,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onReview,
   userName = 'ユーザー',
 }) => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { colors, mode, toggleTheme } = useTheme();
   const [stats, setStats] = useState<LearningStats | null>(null);
 
   useEffect(() => {
-    loadStats();
-  }, []);
+    if (user) {
+      loadStats();
+    } else {
+      setStats(null);
+    }
+  }, [user]);
 
   const loadStats = async () => {
     const learningStats = await storageService.getLearningStats();

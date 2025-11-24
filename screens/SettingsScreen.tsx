@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Card } from '../components/Card';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
+import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { storageService } from '../services/storageService';
 
@@ -51,14 +52,19 @@ const SettingItem: React.FC<SettingItemProps> = ({
 );
 
 export const SettingsScreen: React.FC = () => {
+  const { user } = useAuth();
   const { colors, mode, toggleTheme } = useTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [dailyGoal, setDailyGoal] = useState(5);
 
   useEffect(() => {
-    loadDailyGoal();
-  }, []);
+    if (user) {
+      loadDailyGoal();
+    } else {
+      setDailyGoal(5);
+    }
+  }, [user]);
 
   const loadDailyGoal = async () => {
     const goal = await storageService.getDailyGoal();

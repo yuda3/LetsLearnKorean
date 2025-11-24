@@ -10,6 +10,7 @@ import {
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
+import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { storageService } from '../services/storageService';
 import { QuizResult, QuizCategory } from '../types';
@@ -105,6 +106,7 @@ interface PracticeScreenProps {
 }
 
 export const PracticeScreen: React.FC<PracticeScreenProps> = ({ onStartPractice }) => {
+  const { user } = useAuth();
   const { colors } = useTheme();
   const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
   const [weakCategories, setWeakCategories] = useState<
@@ -112,8 +114,13 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({ onStartPractice 
   >([]);
 
   useEffect(() => {
-    loadQuizResults();
-  }, []);
+    if (user) {
+      loadQuizResults();
+    } else {
+      setQuizResults([]);
+      setWeakCategories([]);
+    }
+  }, [user]);
 
   const loadQuizResults = async () => {
     const results = await storageService.getQuizResults();

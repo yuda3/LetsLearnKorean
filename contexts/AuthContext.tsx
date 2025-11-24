@@ -12,6 +12,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// 이름에서 일관된 사용자 ID 생성 (같은 이름이면 같은 ID)
+const generateUserIdFromName = (name: string): string => {
+  const normalized = name.toLowerCase().trim();
+  let hash = 0;
+  for (let i = 0; i < normalized.length; i++) {
+    const char = normalized.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return `user_${Math.abs(hash).toString()}`;
+};
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,8 +45,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (name: string) => {
     try {
+      // 이름 기반으로 일관된 ID 생성 (같은 이름 = 같은 사용자)
+      const userId = generateUserIdFromName(name);
+
       const newUser: User = {
-        id: Date.now().toString(),
+        id: userId,
         name,
         createdAt: new Date().toISOString(),
       };

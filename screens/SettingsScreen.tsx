@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
+  Platform,
 } from 'react-native';
 import { Card } from '../components/Card';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
@@ -72,78 +73,117 @@ export const SettingsScreen: React.FC = () => {
   };
 
   const handleClearData = () => {
-    Alert.alert(
-      '모든 데이터 삭제 / データをクリア',
-      '정말로 모든 데이터를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.\n\n本当にすべてのデータを削除しますか？この操作は取り消せません。',
-      [
-        {
-          text: '취소 / キャンセル',
-          style: 'cancel',
-        },
-        {
-          text: '삭제 / 削除',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await storageService.clearAll();
-              Alert.alert(
-                '성공 / 成功',
-                '모든 데이터가 삭제되었습니다. 앱을 다시 시작해주세요.\n\nすべてのデータが削除されました。アプリを再起動してください。'
-              );
-            } catch (error) {
-              console.error('Error clearing data:', error);
-              Alert.alert(
-                '오류 / エラー',
-                '데이터 삭제에 실패했습니다.\n\nデータの削除に失敗しました。'
-              );
-            }
+    if (Platform.OS === 'web') {
+      // Web環境での処理
+      const confirmMessage = '정말로 모든 데이터를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.\n\n本当にすべてのデータを削除しますか？この操作は取り消せません。';
+      if (window.confirm(confirmMessage)) {
+        storageService.clearAll()
+          .then(() => {
+            window.alert('성공 / 成功\n\n모든 데이터가 삭제되었습니다. 앱을 다시 시작해주세요.\n\nすべてのデータが削除されました。アプリを再起動してください。');
+          })
+          .catch((error) => {
+            console.error('Error clearing data:', error);
+            window.alert('오류 / エラー\n\n데이터 삭제에 실패했습니다.\n\nデータの削除に失敗しました。');
+          });
+      }
+    } else {
+      // ネイティブ環境での処理
+      Alert.alert(
+        '모든 데이터 삭제 / データをクリア',
+        '정말로 모든 데이터를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.\n\n本当にすべてのデータを削除しますか？この操作は取り消せません。',
+        [
+          {
+            text: '취소 / キャンセル',
+            style: 'cancel',
           },
-        },
-      ]
-    );
+          {
+            text: '삭제 / 削除',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                await storageService.clearAll();
+                Alert.alert(
+                  '성공 / 成功',
+                  '모든 데이터가 삭제되었습니다. 앱을 다시 시작해주세요.\n\nすべてのデータが削除されました。アプリを再起動してください。'
+                );
+              } catch (error) {
+                console.error('Error clearing data:', error);
+                Alert.alert(
+                  '오류 / エラー',
+                  '데이터 삭제에 실패했습니다.\n\nデータの削除に失敗しました。'
+                );
+              }
+            },
+          },
+        ]
+      );
+    }
   };
 
   const handleAbout = () => {
-    Alert.alert(
-      'LetsLearnKorean について',
-      'バージョン: 1.0.0\n\n楽しく日本語を学習できるクイズアプリです。\n\n開発: LetsLearnKorean Team'
-    );
+    if (Platform.OS === 'web') {
+      window.alert('LetsLearnKorean について\n\nバージョン: 1.0.0\n\n楽しく日本語を学習できるクイズアプリです。\n\n開発: LetsLearnKorean Team');
+    } else {
+      Alert.alert(
+        'LetsLearnKorean について',
+        'バージョン: 1.0.0\n\n楽しく日本語を学習できるクイズアプリです。\n\n開発: LetsLearnKorean Team'
+      );
+    }
   };
 
   const handleHelp = () => {
-    Alert.alert(
-      'ヘルプ',
-      '使い方:\n\n1. ホーム画面からカテゴリを選択\n2. クイズに挑戦\n3. 結果を確認して復習\n4. 毎日学習して連続記録を伸ばそう！'
-    );
+    if (Platform.OS === 'web') {
+      window.alert('ヘルプ\n\n使い方:\n\n1. ホーム画面からカテゴリを選択\n2. クイズに挑戦\n3. 結果を確認して復習\n4. 毎日学習して連続記録を伸ばそう！');
+    } else {
+      Alert.alert(
+        'ヘルプ',
+        '使い方:\n\n1. ホーム画面からカテゴリを選択\n2. クイズに挑戦\n3. 結果を確認して復習\n4. 毎日学習して連続記録を伸ばそう！'
+      );
+    }
   };
 
   const handleDailyGoalChange = () => {
-    Alert.alert(
-      '일일 목표 / 1日の目標',
-      '하루에 완료하고 싶은 퀴즈 수를 선택하세요\n\n1日に完了したいクイズの数を選択してください',
-      [
-        {
-          text: '3개 / 3個',
-          onPress: () => updateGoal(3),
-        },
-        {
-          text: '5개 / 5個',
-          onPress: () => updateGoal(5),
-        },
-        {
-          text: '10개 / 10個',
-          onPress: () => updateGoal(10),
-        },
-        {
-          text: '더보기 / さらに表示',
-          onPress: showMoreGoalOptions,
-        },
-        {
-          text: '취소 / キャンセル',
-          style: 'cancel',
-        },
-      ]
-    );
+    if (Platform.OS === 'web') {
+      const input = window.prompt(
+        '일일 목표 / 1日の目標\n\n하루에 완료하고 싶은 퀴즈 수를 입력하세요 (3, 5, 10, 15, 20)\n1日に完了したいクイズの数を入力してください',
+        dailyGoal.toString()
+      );
+      if (input !== null) {
+        const goal = parseInt(input);
+        if (!isNaN(goal) && goal > 0 && goal <= 50) {
+          updateGoal(goal);
+        } else {
+          window.alert('올바른 숫자를 입력해주세요 (1-50)\n\n正しい数値を入力してください (1-50)');
+        }
+      }
+    } else {
+      Alert.alert(
+        '일일 목표 / 1日の目標',
+        '하루에 완료하고 싶은 퀴즈 수를 선택하세요\n\n1日に完了したいクイズの数を選択してください',
+        [
+          {
+            text: '3개 / 3個',
+            onPress: () => updateGoal(3),
+          },
+          {
+            text: '5개 / 5個',
+            onPress: () => updateGoal(5),
+          },
+          {
+            text: '10개 / 10個',
+            onPress: () => updateGoal(10),
+          },
+          {
+            text: '더보기 / さらに表示',
+            onPress: showMoreGoalOptions,
+          },
+          {
+            text: '취소 / キャンセル',
+            style: 'cancel',
+          },
+        ]
+      );
+    }
   };
 
   const showMoreGoalOptions = () => {
@@ -175,16 +215,24 @@ export const SettingsScreen: React.FC = () => {
     try {
       await storageService.updateDailyGoal(goal);
       setDailyGoal(goal);
-      Alert.alert(
-        '성공 / 成功',
-        `일일 목표를 ${goal}개로 설정했습니다.\n\n1日の目標を${goal}個に設定しました。`
-      );
+      if (Platform.OS === 'web') {
+        window.alert(`성공 / 成功\n\n일일 목표를 ${goal}개로 설정했습니다.\n\n1日の目標を${goal}個に設定しました。`);
+      } else {
+        Alert.alert(
+          '성공 / 成功',
+          `일일 목표를 ${goal}개로 설정했습니다.\n\n1日の目標を${goal}個に設定しました。`
+        );
+      }
     } catch (error) {
       console.error('Error updating daily goal:', error);
-      Alert.alert(
-        '오류 / エラー',
-        '목표 설정에 실패했습니다.\n\n目標の設定に失敗しました。'
-      );
+      if (Platform.OS === 'web') {
+        window.alert('오류 / エラー\n\n목표 설정에 실패했습니다.\n\n目標の設定に失敗しました。');
+      } else {
+        Alert.alert(
+          '오류 / エラー',
+          '목표 설정에 실패했습니다.\n\n目標の設定に失敗しました。'
+        );
+      }
     }
   };
 

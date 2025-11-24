@@ -11,8 +11,9 @@ import { QuizScreen } from '../screens/QuizScreen';
 import { ResultScreen } from '../screens/ResultScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { getRandomQuizzes, getQuizzesByCategory } from '../data/quizzes';
+import { getRandomQuizzes, getQuizzesByCategory, getQuizzesByIds } from '../data/quizzes';
 import { UserLevel, QuizCategory } from '../types';
+import { storageService } from '../services/storageService';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -201,7 +202,7 @@ function PracticeStack() {
     timeSpent: 0,
   });
 
-  const handleStartPractice = (mode: string) => {
+  const handleStartPractice = async (mode: string) => {
     let questions: any[];
     let category: QuizCategory = 'basic';
 
@@ -209,10 +210,29 @@ function PracticeStack() {
       // Random quiz from all categories
       questions = getRandomQuizzes(10);
     } else if (mode.startsWith('review_')) {
-      // Review specific category
+      // Review specific category - get only incorrect answers
       const reviewCategory = mode.replace('review_', '') as QuizCategory;
-      questions = getQuizzesByCategory(reviewCategory).slice(0, 10);
       category = reviewCategory;
+
+      // Get all quiz results to find incorrect answers for this category
+      const allResults = await storageService.getQuizResults();
+      const incorrectIds = new Set<number>();
+
+      // Collect all incorrect answer IDs for this category
+      allResults.forEach((result) => {
+        if (result.category === reviewCategory) {
+          result.incorrectAnswers.forEach((id) => incorrectIds.add(id));
+        }
+      });
+
+      // Get questions by IDs
+      const incorrectIdsArray = Array.from(incorrectIds);
+      if (incorrectIdsArray.length > 0) {
+        questions = getQuizzesByIds(incorrectIdsArray);
+      } else {
+        // If no incorrect answers, get random questions from category
+        questions = getQuizzesByCategory(reviewCategory).slice(0, 10);
+      }
     } else {
       // Default random
       questions = getRandomQuizzes(10);

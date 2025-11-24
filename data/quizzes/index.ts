@@ -34,6 +34,37 @@ export {
   emergencyQuestions,
 };
 
+// Fisher-Yates shuffle algorithm for better randomization
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+// Shuffle question options and update correctAnswer index
+const shuffleQuestionOptions = (question: Question): Question => {
+  const { options, correctAnswer } = question;
+  const correctOption = options[correctAnswer];
+
+  // Create array of indices and shuffle them
+  const indices = shuffleArray(options.map((_, i) => i));
+
+  // Reorder options based on shuffled indices
+  const shuffledOptions = indices.map(i => options[i]);
+
+  // Find new index of correct answer
+  const newCorrectAnswer = shuffledOptions.indexOf(correctOption);
+
+  return {
+    ...question,
+    options: shuffledOptions,
+    correctAnswer: newCorrectAnswer,
+  };
+};
+
 // Category-specific question getters
 export const getQuizzesByCategory = (category: string, userLevel?: 'beginner' | 'intermediate' | 'advanced'): Question[] => {
   // カテゴリのデフォルト難易度マッピング
@@ -58,8 +89,11 @@ export const getQuizzesByCategory = (category: string, userLevel?: 'beginner' | 
     });
   }
 
-  // Shuffle to avoid repeating same questions consecutively
-  return [...filtered].sort(() => 0.5 - Math.random());
+  // Shuffle questions using Fisher-Yates algorithm
+  const shuffledQuestions = shuffleArray(filtered);
+
+  // Shuffle options for each question
+  return shuffledQuestions.map(shuffleQuestionOptions);
 };
 
 // Get random quizzes
@@ -71,8 +105,12 @@ export const getRandomQuizzes = (count: number, userLevel?: 'beginner' | 'interm
     questions = getQuizzesByDifficulty(userLevel);
   }
 
-  const shuffled = [...questions].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, Math.min(count, shuffled.length));
+  // Shuffle questions using Fisher-Yates algorithm
+  const shuffled = shuffleArray(questions);
+  const selected = shuffled.slice(0, Math.min(count, shuffled.length));
+
+  // Shuffle options for each question
+  return selected.map(shuffleQuestionOptions);
 };
 
 // Category information
@@ -106,6 +144,17 @@ export const getQuizzesByDifficulty = (difficulty: 'beginner' | 'intermediate' |
     const questionDifficulty = q.difficulty || categoryDefaultDifficulty[q.category] || 'beginner';
     return questionDifficulty === difficulty;
   });
+};
+
+// Get specific questions by their IDs (for review mode)
+export const getQuizzesByIds = (questionIds: number[]): Question[] => {
+  const questions = quizQuestions.filter((q) => questionIds.includes(q.id));
+
+  // Shuffle questions using Fisher-Yates algorithm
+  const shuffled = shuffleArray(questions);
+
+  // Shuffle options for each question
+  return shuffled.map(shuffleQuestionOptions);
 };
 
 // Statistics

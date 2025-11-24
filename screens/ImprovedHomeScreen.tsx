@@ -61,14 +61,16 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
     const progress = await storageService.getCategoryProgress();
     setCategoryProgress(progress);
 
-    // 오늘 완료한 퀴즈 수 계산
+    // 오늘 완료한 총 문제 수 계산
     const today = new Date().toISOString().split('T')[0];
     const allResults = await storageService.getQuizResults();
     const todayResults = allResults.filter(result => {
       const resultDate = new Date(result.completedAt).toISOString().split('T')[0];
       return resultDate === today;
     });
-    setTodayQuizCount(todayResults.length);
+    // 퀴즈 세션 개수가 아니라 총 문제 수를 계산
+    const totalQuestionsToday = todayResults.reduce((sum, result) => sum + result.totalQuestions, 0);
+    setTodayQuizCount(totalQuestionsToday);
   };
 
   const isCategoryUnlocked = (categoryId: QuizCategory): boolean => {

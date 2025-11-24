@@ -167,16 +167,29 @@ export const storageService = {
       }
 
       // Update existing stats
-      const lastStudyDate = new Date(stats.lastStudyDate);
-      const todayDate = new Date(today);
-      const daysDiff = Math.floor(
-        (todayDate.getTime() - lastStudyDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
+      // 날짜 문자열을 UTC 기준으로 비교하여 정확한 날짜 차이 계산
+      let daysDiff: number;
+      if (today === stats.lastStudyDate) {
+        // 같은 날
+        daysDiff = 0;
+      } else {
+        // UTC 기준으로 날짜 객체 생성
+        const lastDate = new Date(stats.lastStudyDate + 'T00:00:00.000Z');
+        const todayDate = new Date(today + 'T00:00:00.000Z');
+        daysDiff = Math.floor(
+          (todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
+      }
 
       let newStreak = stats.currentStreak;
-      if (daysDiff === 1) {
+      if (daysDiff === 0) {
+        // 같은 날에 여러 번 퀴즈를 풀 경우 streak 유지
+        newStreak = stats.currentStreak;
+      } else if (daysDiff === 1) {
+        // 하루 연속 학습
         newStreak += 1;
-      } else if (daysDiff > 1) {
+      } else {
+        // 2일 이상 차이나면 streak 초기화
         newStreak = 1;
       }
 

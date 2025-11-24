@@ -166,7 +166,8 @@ export const ProfileScreen: React.FC = () => {
 
   const getAccuracyRate = () => {
     if (!stats || stats.totalQuestions === 0) return 0;
-    return Math.round((stats.totalCorrectAnswers / stats.totalQuestions) * 100);
+    const rate = Math.round((stats.totalCorrectAnswers / stats.totalQuestions) * 100);
+    return Math.min(100, rate); // 최대 100%로 제한
   };
 
   const unlockedBadges = badges.filter((b) => b.unlockedAt);

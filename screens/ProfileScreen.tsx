@@ -101,9 +101,15 @@ export const ProfileScreen: React.FC = () => {
   const [badges, setBadges] = useState<Badge[]>([]);
 
   useEffect(() => {
-    loadStats();
-    loadBadges();
-  }, []);
+    if (user) {
+      loadStats();
+      loadBadges();
+    } else {
+      // 로그아웃 시 데이터 초기화
+      setStats(null);
+      setBadges([]);
+    }
+  }, [user]);
 
   const loadStats = async () => {
     const learningStats = await storageService.getLearningStats();

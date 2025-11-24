@@ -3,18 +3,48 @@ import { User, QuizResult, LearningStats, ThemeMode, CategoryProgress, Badge } f
 
 const KEYS = {
   USER: '@user',
-  QUIZ_RESULTS: '@quiz_results',
-  LEARNING_STATS: '@learning_stats',
+  CURRENT_USER_ID: '@current_user_id',
+  QUIZ_RESULTS: (userId: string) => `@quiz_results_${userId}`,
+  LEARNING_STATS: (userId: string) => `@learning_stats_${userId}`,
   THEME_MODE: '@theme_mode',
-  CATEGORY_PROGRESS: '@category_progress',
-  BADGES: '@badges',
+  CATEGORY_PROGRESS: (userId: string) => `@category_progress_${userId}`,
+  BADGES: (userId: string) => `@badges_${userId}`,
 };
 
 export const storageService = {
+  // Current user ID management
+  async saveCurrentUserId(userId: string): Promise<void> {
+    try {
+      await AsyncStorage.setItem(KEYS.CURRENT_USER_ID, userId);
+    } catch (error) {
+      console.error('Error saving current user ID:', error);
+      throw error;
+    }
+  },
+
+  async getCurrentUserId(): Promise<string | null> {
+    try {
+      return await AsyncStorage.getItem(KEYS.CURRENT_USER_ID);
+    } catch (error) {
+      console.error('Error getting current user ID:', error);
+      return null;
+    }
+  },
+
+  async removeCurrentUserId(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(KEYS.CURRENT_USER_ID);
+    } catch (error) {
+      console.error('Error removing current user ID:', error);
+      throw error;
+    }
+  },
+
   // User management
   async saveUser(user: User): Promise<void> {
     try {
       await AsyncStorage.setItem(KEYS.USER, JSON.stringify(user));
+      await this.saveCurrentUserId(user.id);
     } catch (error) {
       console.error('Error saving user:', error);
       throw error;
@@ -34,6 +64,7 @@ export const storageService = {
   async removeUser(): Promise<void> {
     try {
       await AsyncStorage.removeItem(KEYS.USER);
+      await this.removeCurrentUserId();
     } catch (error) {
       console.error('Error removing user:', error);
       throw error;
@@ -43,9 +74,13 @@ export const storageService = {
   // Quiz results management
   async saveQuizResult(result: QuizResult): Promise<void> {
     try {
+      const userId = await this.getCurrentUserId();
+      if (!userId) {
+        throw new Error('No current user ID found');
+      }
       const existingResults = await this.getQuizResults();
       const updatedResults = [...existingResults, result];
-      await AsyncStorage.setItem(KEYS.QUIZ_RESULTS, JSON.stringify(updatedResults));
+      await AsyncStorage.setItem(KEYS.QUIZ_RESULTS(userId), JSON.stringify(updatedResults));
     } catch (error) {
       console.error('Error saving quiz result:', error);
       throw error;
@@ -54,7 +89,11 @@ export const storageService = {
 
   async getQuizResults(): Promise<QuizResult[]> {
     try {
-      const resultsData = await AsyncStorage.getItem(KEYS.QUIZ_RESULTS);
+      const userId = await this.getCurrentUserId();
+      if (!userId) {
+        return [];
+      }
+      const resultsData = await AsyncStorage.getItem(KEYS.QUIZ_RESULTS(userId));
       return resultsData ? JSON.parse(resultsData) : [];
     } catch (error) {
       console.error('Error getting quiz results:', error);
@@ -75,7 +114,11 @@ export const storageService = {
   // Learning stats management
   async saveLearningStats(stats: LearningStats): Promise<void> {
     try {
-      await AsyncStorage.setItem(KEYS.LEARNING_STATS, JSON.stringify(stats));
+      const userId = await this.getCurrentUserId();
+      if (!userId) {
+        throw new Error('No current user ID found');
+      }
+      await AsyncStorage.setItem(KEYS.LEARNING_STATS(userId), JSON.stringify(stats));
     } catch (error) {
       console.error('Error saving learning stats:', error);
       throw error;
@@ -84,7 +127,11 @@ export const storageService = {
 
   async getLearningStats(): Promise<LearningStats | null> {
     try {
-      const statsData = await AsyncStorage.getItem(KEYS.LEARNING_STATS);
+      const userId = await this.getCurrentUserId();
+      if (!userId) {
+        return null;
+      }
+      const statsData = await AsyncStorage.getItem(KEYS.LEARNING_STATS(userId));
       return statsData ? JSON.parse(statsData) : null;
     } catch (error) {
       console.error('Error getting learning stats:', error);
@@ -202,7 +249,11 @@ export const storageService = {
   // Category progress management
   async getCategoryProgress(): Promise<CategoryProgress[]> {
     try {
-      const progressData = await AsyncStorage.getItem(KEYS.CATEGORY_PROGRESS);
+      const userId = await this.getCurrentUserId();
+      if (!userId) {
+        return [];
+      }
+      const progressData = await AsyncStorage.getItem(KEYS.CATEGORY_PROGRESS(userId));
       return progressData ? JSON.parse(progressData) : [];
     } catch (error) {
       console.error('Error getting category progress:', error);
@@ -212,7 +263,11 @@ export const storageService = {
 
   async saveCategoryProgress(progress: CategoryProgress[]): Promise<void> {
     try {
-      await AsyncStorage.setItem(KEYS.CATEGORY_PROGRESS, JSON.stringify(progress));
+      const userId = await this.getCurrentUserId();
+      if (!userId) {
+        throw new Error('No current user ID found');
+      }
+      await AsyncStorage.setItem(KEYS.CATEGORY_PROGRESS(userId), JSON.stringify(progress));
     } catch (error) {
       console.error('Error saving category progress:', error);
       throw error;
@@ -259,7 +314,11 @@ export const storageService = {
   // Badges management
   async getBadges(): Promise<Badge[]> {
     try {
-      const badgesData = await AsyncStorage.getItem(KEYS.BADGES);
+      const userId = await this.getCurrentUserId();
+      if (!userId) {
+        return [];
+      }
+      const badgesData = await AsyncStorage.getItem(KEYS.BADGES(userId));
       return badgesData ? JSON.parse(badgesData) : [];
     } catch (error) {
       console.error('Error getting badges:', error);
@@ -269,7 +328,11 @@ export const storageService = {
 
   async saveBadges(badges: Badge[]): Promise<void> {
     try {
-      await AsyncStorage.setItem(KEYS.BADGES, JSON.stringify(badges));
+      const userId = await this.getCurrentUserId();
+      if (!userId) {
+        throw new Error('No current user ID found');
+      }
+      await AsyncStorage.setItem(KEYS.BADGES(userId), JSON.stringify(badges));
     } catch (error) {
       console.error('Error saving badges:', error);
       throw error;

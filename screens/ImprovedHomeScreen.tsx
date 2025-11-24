@@ -35,6 +35,7 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
   onNavigateToSettings,
   userName = 'ユーザー',
 }) => {
+  const { user } = useAuth();
   const { colors } = useTheme();
   const [stats, setStats] = useState<LearningStats | null>(null);
   const [categoryProgress, setCategoryProgress] = useState<CategoryProgress[]>([]);
@@ -43,8 +44,14 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
   // 화면이 포커스될 때마다 데이터 다시 로드
   useFocusEffect(
     React.useCallback(() => {
-      loadData();
-    }, [])
+      if (user) {
+        loadData();
+      } else {
+        setStats(null);
+        setCategoryProgress([]);
+        setTodayQuizCount(0);
+      }
+    }, [user])
   );
 
   const loadData = async () => {

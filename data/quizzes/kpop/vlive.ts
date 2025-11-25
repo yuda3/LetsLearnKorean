@@ -13,7 +13,7 @@ export const vliveQuestions: Question[] = [
       '안녕하십니까',              // 過度に丁寧・ニュースキャスター風
       '여러분 안녕하세요',         // ← 正解
       '하이 에브리바디',           // 英語混じり・不自然
-      '안녕하세요만'               // 短すぎ・そっけない
+      '여보세요'               // 短すぎ・そっけない
     ],
     correctAnswer: 1,
     explanation: '「여러분 안녕하세요」が最も標準的で自然な配信開始の挨拶です。',
@@ -289,12 +289,12 @@ export const vliveQuestions: Question[] = [
     question: 'V LIVE開始時に「今日はダンス練習を見せます」と言う時は？',
     options: [
       '오늘은 댄스 연습을 보여드리겠습니다', // やや堅い
-      '오늘 댄스 연습 보여줄게요',  // ← 正解
+      '오늘 안무 연습 보여줄게요',  // ← 正解
       '금일 무용 연습을 공개하겠습니다', // 過度にフォーマル・ニュース風
       '오늘은 춤 연습할 거예요'     // 「練習します」見せるじゃない
     ],
     correctAnswer: 1,
-    explanation: '「오늘 댄스 연습 보여줄게요」が最も自然です。',
+    explanation: '「오늘 안무 연습 보여줄게요」が最も自然です。',
     detailedExplanation: 'V LIVEでは簡潔でカジュアルな表現が好まれる。금일(今日)は新聞、무용(舞踊)は古典的。「보여줄게요」が最頻出。',
     context: 'V LIVE',
     usage: 'announcement',
@@ -438,13 +438,13 @@ export const vliveQuestions: Question[] = [
     question: 'V LIVEを終える5分前に言う言葉は？',
     options: [
       '종료 시간이 다가옵니다',    // 「終了時間が迫る」アナウンス風
-      '이제 끝낼게요',             // ← 正解
+      '이제 가볼게요',             // ← 正解
       '마감할 예정입니다',         // 「締め切り予定」業務風
       '방송을 종료하겠습니다'     // フォーマルすぎ
     ],
     correctAnswer: 1,
-    explanation: '「이제 끝낼게요」が最も自然な終了予告です。',
-    detailedExplanation: '이제(もう)、끝내다(終える)、ㄹ게요(〜するね)。종료、마감は業務用語。「이제 끝낼게요」が最頻出。',
+    explanation: '「이제 가볼게요」が最も自然な終了予告です。',
+    detailedExplanation: '이제(もう)、끝내다(終える)、ㄹ게요(〜するね)。종료、마감は業務用語。「이제 가볼게요」が最頻出。',
     context: 'V LIVE',
     usage: 'closing',
     frequency: 'extremely_high',
@@ -592,17 +592,17 @@ export const vliveQuestions: Question[] = [
     question: '忙しい中、ファンのために配信する気持ちを伝える表現は？',
     options: [
       '업무 중임에도 불구하고 방송합니다', // 「業務中にもかかわらず」会社員風
-      '바쁜데 또 올게요',          // ← 正解
+      '바쁘지만 잠깐 왔어요',      // ← 자연스러운 정답
       '다망한 와중에 시간을 냈습니다', // 文語的・スピーチ風
       '스케줄을 조정해서 왔습니다'  // 「スケジュール調整」事務的
     ],
     correctAnswer: 1,
-    explanation: '「바쁜데 또 올게요」が最も自然で温かい表現です。',
-    detailedExplanation: '바쁘다(忙しい)、은데/ㄴ데(〜だけど)、오다(来る)。업무、다망は業務的。「바쁜데」は「忙しいけど君たちのために」のニュアンス。',
+    explanation: '「바쁘지만 잠깐 왔어요」가 바쁜 일정 속에서도 팬을 보러 왔다는 뉘앙스입니다.',
+    detailedExplanation: '「바쁘지만(忙しいけど) + 잠깐(少しの間) + 왔어요(来ました)」. 이동 중이나 대기 시간에 짬을 내서 켰을 때 가장 많이 쓰는 말입니다.',
     context: 'V LIVE',
     usage: 'promise',
     frequency: 'medium',
-    emotion: 'caring',
+    emotion: 'happy',
     formality: 'casual'
   },
 
@@ -614,17 +614,17 @@ export const vliveQuestions: Question[] = [
     question: 'カムバックまで2ヶ月、ファンに「待っててね」と言う時は？',
     options: [
       '대기해 주시기 바랍니다',    // 「待機を」空港アナウンス風
-      '조금만 기다려요',           // ← 正解
+      '조금만 기다려 주세요',           // ← 正解
       '인내심을 가져주세요',       // 「忍耐を」説教風
       '참고 기다려 주십시오'       // 「我慢して」過度に丁寧
     ],
     correctAnswer: 1,
-    explanation: '「조금만 기다려요」が最も温かくて期待感を持たせます。',
+    explanation: '「조금만 기다려 주세요」が最も温かくて期待感を持たせます。',
     detailedExplanation: '조금만(ちょっとだけ)、기다리다(待つ)。대기、인내심は距離感あり。「조금만」で「もうすぐだよ」のニュアンス。',
     context: 'V LIVE',
     usage: 'request',
     frequency: 'high',
-    emotion: 'caring',
+    emotion: 'longing',
     formality: 'polite',
     realExample: 'カムバック前のV LIVEで頻出'
   },
@@ -637,12 +637,12 @@ export const vliveQuestions: Question[] = [
     question: 'デビュー5周年V LIVEで、長年のファンに伝える最も感動的な言葉は？',
     options: [
       '장기간 응원해 주셔서 감사합니다',  // 「長期間」事務的
-      '앞으로도 잘 부탁합니다',    // ← 正解
+      '앞으로도 잘 부탁해요',    // ← 正解
       '지속적인 성원에 감사드립니다',     // 「継続的なご声援」公式風
       '5년간 응원 감사합니다'      // 普通
     ],
     correctAnswer: 1,
-    explanation: '「앞으로도 잘 부탁합니다」が最も感情がこもり、将来への約束を含みます。',
+    explanation: '「앞으로도 잘 부탁해요」が最も感情がこもり、将来への約束を含みます。',
     detailedExplanation: '앞으로도(これからも)、잘 부탁하다(よろしくお願いする)。過去の感謝だけでなく未来の約束を含む。장기간、지속적は距離感あり。',
     context: 'V LIVE',
     usage: 'closing',

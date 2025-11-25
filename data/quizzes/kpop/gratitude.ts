@@ -8,16 +8,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'beginner',
     questionJa: '基本の感謝',
-    question: 'V LIVEでファンに「ありがとうございます」と言う最も一般的な表現は？',
+    question: 'V LIVE放送中、ファンに軽く「ありがとう」と言う時の自然な表現は？',
     options: [
-      '감사드립니다',              // 謙譲語・やや距離感
-      '감사합니다',                // ← 正解
-      '고맙습니다',                // 温かいが少し古風
-      '땡큐'                       // 英語・カジュアルすぎ
+      '감사드립니다',              // (격식: 뉴스 앵커 느낌)
+      '감사합니다',                // 정답 (가장 무난함)
+      '성은이 망극하옵니다',        // (사극 말투: 왕에게 하는 말)
+      '수고하세요'                 // (오답: 일을 시킬 때/헤어질 때)
     ],
     correctAnswer: 1,
-    explanation: '「감사합니다」が最も標準的で自然な感謝表現です。',
-    detailedExplanation: '감사하다(感謝する)。드리다は謙譲語で距離感、고맙다は温かいが少し古風。V LIVEでは「감사합니다」が最頻出。',
+    explanation: '「감사합니다」が最も標準的です。「감사드립니다」は少し堅く聞こえることがあります。',
+    detailedExplanation: 'V LIVEのような少しカジュアルな場では、あまり堅苦しくない「감사합니다」や「고마워요」がよく使われます。',
     context: 'V LIVE',
     usage: 'gratitude',
     frequency: 'extremely_high',
@@ -32,14 +32,14 @@ export const kpopGratitudeQuestions: Question[] = [
     questionJa: '強調の感謝',
     question: 'コンサート後、SNSで「本当にありがとうございました」と投稿する時は？',
     options: [
-      '진심으로 감사합니다',       // 「心から」やや堅い
-      '정말 감사합니다',           // ← 正解
-      '대단히 감사합니다',         // 「大変」フォーマルすぎ
-      '몹시 감사합니다'            // 古語的・不自然
+      '진짜 감사합니다',           // (조금 가벼운 표현)
+      '정말 감사합니다',           // 정답 (진정성 있고 정중함)
+      '참 감사합니다',             // (약간 어색한 강조)
+      '매우 감사합니다'            // (문어체: 편지나 글에서 주로 사용)
     ],
     correctAnswer: 1,
-    explanation: '「정말 감사합니다」が最も自然で頻繁に使われます。',
-    detailedExplanation: '정말(本当に)は最も一般的な強調語。진심으로はやや堅い、대단히は過度にフォーマル、몹시は古語的。SNSでは「정말」が最頻出。',
+    explanation: '「정말（本当に）」が最も自然で、感情がこもった表現として頻繁に使われます。',
+    detailedExplanation: '「진짜」は少しカジュアル、「매우」は書き言葉のニュアンスが強いです。SNSでは「정말」がベストです。',
     usage: 'gratitude',
     frequency: 'extremely_high',
     emotion: 'grateful',
@@ -52,16 +52,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'beginner',
     questionJa: '量を強調',
-    question: 'ファンミーティングで「たくさんありがとうございます」と言う時は？',
+    question: '「（愛を）たくさんくださってありがとうございます」と言う時は？',
     options: [
-      '대량으로 감사합니다',       // 「大量に」物を数える表現
-      '많이 감사합니다',           // ← 正解
-      '다수 감사합니다',           // 「多数」ビジネス用語
-      '무수히 감사합니다'          // 「無数に」詩的すぎ
+      '무겁게 감사합니다',         // (오답: 重く)
+      '많이 감사합니다',           // 정답
+      '높게 감사합니다',           // (오답: 高く)
+      '넓게 감사합니다'            // (오답: 広く)
     ],
     correctAnswer: 1,
-    explanation: '「많이 감사합니다」が最も自然な表現です。',
-    detailedExplanation: '많이(たくさん)は感謝の深さを表す。대량은物、다수はビジネス、무수히は文学的。ファンミで「많이 감사합니다」が定番。',
+    explanation: '感謝の大きさや量は「많이（たくさん）」で表現します。',
+    detailedExplanation: '「사랑을 많이 주셔서 감사합니다（愛をたくさんくださって〜）」の略としてよく使われます。',
     usage: 'gratitude',
     frequency: 'very_high',
     context: 'concert',
@@ -73,16 +73,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'beginner',
     questionJa: '継続的な感謝',
-    question: 'デビュー記念日のV LIVEで「いつもありがとうございます」と言う時は？',
+    question: 'デビュー記念日に「いつもありがとうございます」と伝える時は？',
     options: [
-      '언제든지 감사합니다',       // 「いつでも」意味が違う
-      '항상 감사합니다',           // ← 正解
-      '매번 감사합니다',           // 「毎回」やや不自然
-      '상시 감사합니다'            // 「常時」業務用語
+      '가끔 감사합니다',           // (오답: たまに)
+      '항상 감사합니다',           // 정답
+      '잠깐 감사합니다',           // (오답: しばらく/少しの間)
+      '이따가 감사합니다'          // (오답: あとで)
     ],
     correctAnswer: 1,
-    explanation: '「항상 감사합니다」が最も自然で温かい表現です。',
-    detailedExplanation: '항상(いつも)は継続的な感謝を表す最適語。언제든지は「いつでもOK」、매번は「毎回」、상시は業務用語。',
+    explanation: '「항상（いつも・常に）」を使います。「늘（いつも）」も同じ意味でよく使われます。',
+    detailedExplanation: '長期間応援してくれているファンへの感謝を伝える際の必須単語です。',
     usage: 'gratitude',
     frequency: 'extremely_high',
     context: 'V LIVE',
@@ -95,16 +95,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'beginner',
     questionJa: '心がいっぱい',
-    question: '初めて1位を取った時、スピーチで感謝の気持ちを表現する言葉は？',
+    question: '1位の感想で「感謝の気持ちでいっぱいです」と言う時は？',
     options: [
-      '감사의 마음이 충만합니다',  // 「充満」固すぎ
-      '감사한 마음 가득해요',      // ← 正解
-      '감사의 정이 넘칩니다',      // 「情が溢れる」古風
-      '감사의 감정이 충전됐어요'   // 「充電された」機械的
+      '감사한 마음이 터질 것 같아요', // (조금 과격하지만 쓸 수는 있음: 爆発しそうです)
+      '감사한 마음 가득해요',      // 정답
+      '감사한 마음이 텅 비었어요',   // (오답: 空っぽです)
+      '감사한 마음이 부족해요'      // (오답: 足りません)
     ],
     correctAnswer: 1,
-    explanation: '「감사한 마음 가득해요」が最も自然で感情がこもっています。',
-    detailedExplanation: '마음(心・気持ち)、가득하다(いっぱいだ)。充만・넘치다は文語的、충전は機械的。「가득해요」が最も温かい。',
+    explanation: '「가득하다（いっぱいだ）」を使って、心が満たされていることを表現します。',
+    detailedExplanation: '感動して言葉が出ない時によく使われる表現です。',
     usage: 'gratitude',
     frequency: 'high',
     emotion: 'moved',
@@ -117,16 +117,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'beginner',
     questionJa: 'おかげです',
-    question: '音楽番組で1位を取った時、「皆さんのおかげです」と言う表現は？',
+    question: '「皆さんのおかげです」の正しい表現は？（※間違いやすい文法に注意）',
     options: [
-      '여러분의 공로입니다',       // 「功労」会社の表彰式風
-      '여러분 덕분입니다',         // ← 正解
-      '여러분의 기여입니다',       // 「寄与」論文風
-      '여러분의 은혜입니다'        // 「恩恵」宗教的
+      '여러분 때문입니다',         // (오답: 〜のせいです ※ネガティブ)
+      '여러분 덕분입니다',         // 정답
+      '여러분 탓입니다',           // (오답: 〜のせいです ※非難)
+      '여러분 잘못입니다'          // (오답: 〜の過ちです)
     ],
     correctAnswer: 1,
-    explanation: '「여러분 덕분입니다」が最も自然で頻出の表現です。',
-    detailedExplanation: '덕분(おかげ)は感謝を表す最適語。공로・기여はビジネス、은혜は宗教的。「덕분입니다」がK-POP業界の定番。',
+    explanation: '良い結果には「덕분（おかげ）」、悪い結果には「때문/탓（せい）」を使います。',
+    detailedExplanation: '「여러분 때문입니다」と言うと「皆さんのせいです」と聞こえる場合があるので、必ず「덕분입니다」を使いましょう。',
     usage: 'gratitude',
     frequency: 'extremely_high',
     context: 'award_speech',
@@ -139,16 +139,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'beginner',
     questionJa: '愛してます',
-    question: 'コンサート終了時、「愛してます」と叫ぶ最も一般的な表現は？',
+    question: 'コンサートのエンディングで叫ぶ「愛してます！」は？',
     options: [
-      '애정합니다',                // 「愛情します」不自然
-      '사랑합니다',                // やや堅い
-      '사랑해요',                  // ← 正解
-      '러브합니다'                 // 英語混じり・不自然
+      '좋아해요!',                 // (고백 느낌, 콘서트 엔딩으로는 조금 약함)
+      '사랑해요!',                 // 정답
+      '사랑했었어요!',              // (과거형: 愛していました ※別れの時)
+      '사랑할까요?'                // (의문형: 愛しましょうか？)
     ],
-    correctAnswer: 2,
-    explanation: '「사랑해요」が最も自然で頻繁に使われます。',
-    detailedExplanation: '사랑하다(愛する)。애정하다は不自然、합니다はやや距離感、러브は不自然。コンサートでは「사랑해요」が定番。',
+    correctAnswer: 1,
+    explanation: 'コンサートの最後は、最も直接的な愛情表現である「사랑해요!」が定番です。',
+    detailedExplanation: '頭の上に手でハートを作りながら叫ぶのがお決まりのポーズです。',
     usage: 'gratitude',
     frequency: 'extremely_high',
     emotion: 'love',
@@ -162,16 +162,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'beginner',
     questionJa: '簡潔な感謝',
-    question: 'SNSでファンアートに対して一言お礼を言う時は？',
+    question: 'SNSでファンに「（応援）ありがとう！」と親しみを込めて言う時は？',
     options: [
-      '감사의 뜻을 전합니다',      // 「感謝の意を伝える」公文書風
-      '고마워요',                  // ← 正解
-      '사의를 표합니다',           // 「謝意を表す」ビジネス風
-      '감사 인사 드립니다'         // 「感謝の挨拶」冗長
+      '수고했어',                  // (오답: お疲れ - ※スタッフやメンバーに言う言葉)
+      '고마워요',                  // 정답
+      '미안해요',                  // (오답: ごめんね)
+      '축하해요'                   // (오답: おめでとう)
     ],
     correctAnswer: 1,
-    explanation: '「고마워요」が最も自然で親しみやすい表現です。',
-    detailedExplanation: '고맙다(ありがたい)は温かいニュアンス。뜻을 전하다、사의를 표하다は公式文書。SNSには「고마워요」が最適。',
+    explanation: '「고마워요」は「감사합니다」よりも柔らかく、親近感のある表現です。',
+    detailedExplanation: 'さらにカジュアルに「고마워!（タメ口）」を使うこともありますが、まずは「고마워요」を覚えましょう。',
     usage: 'gratitude',
     frequency: 'very_high',
     emotion: 'grateful',
@@ -186,16 +186,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '心から感謝',
-    question: 'MAMA授賞式で大賞を受賞、心からの感謝を伝える最も適切な表現は？',
+    question: '授賞式のような公的な場で「心より感謝申し上げます」と言う時は？',
     options: [
-      '깊이 감사드립니다',         // 「深く」やや堅い
-      '진심으로 감사합니다',       // ← 正解
-      '심심한 감사를 드립니다',    // 「深甚な」文語的
-      '중심에서 감사합니다'        // 「中心から」不自然
+      '마음으로 고맙습니다',        // (약간 어색한 표현)
+      '진심으로 감사드립니다',      // 정답
+      '진짜로 땡큐',               // (너무 가벼움)
+      '정말로 고마워'              // (반말: 친구에게 하는 말)
     ],
     correctAnswer: 1,
-    explanation: '「진심으로 감사합니다」が最も誠実で適切な表現です。',
-    detailedExplanation: '진심(真心)、으로(で)。깊이は少し堅い、심심한は古語、중심은不自然。授賞式では「진심으로」が最頻出。',
+    explanation: '格式高い場では「진심으로（心から/本心で）」＋「감사드립니다（感謝申し上げます）」を使います。',
+    detailedExplanation: '「드립니다（差し上げる）」を使うことで、ファンへの敬意を最大限に表します。',
     usage: 'gratitude',
     frequency: 'very_high',
     formality: 'formal',
@@ -208,16 +208,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '恩返しの約束',
-    question: 'ファンミーティングで「恩返しします」と約束する時、最も自然な表現は？',
+    question: '「この愛に必ず応えます（恩返しします）」という決まり文句は？',
     options: [
-      '은혜를 갚겠습니다',         // 「恩を返す」古典的
-      '보답하겠습니다',            // ← 正解
-      '반대급부를 제공하겠습니다', // 「対価を提供」契約書風
-      '보상하겠습니다'             // 「補償」損害賠償風
+      '반드시 보상하겠습니다',      // (보상: 損害賠償のニュアンスがある)
+      '꼭 보답하겠습니다',          // 정답
+      '꼭 배상하겠습니다',          // (배상: 弁償します)
+      '반드시 갚아주겠습니다'       // (복수: 復讐してやる、とも聞こえる)
     ],
     correctAnswer: 1,
-    explanation: '「보답하겠습니다」が最も自然で温かい約束の表現です。',
-    detailedExplanation: '보답하다(報いる)は感謝を行動で返す意。은혜を 갚다は古典的、반대급부はビジネス、보상は賠償。',
+    explanation: '「보답하다（報いる・恩返しする）」がアイドルの決まり文句です。',
+    detailedExplanation: '「보상（補償）」や「배상（賠償）」はお金や損害に関わる言葉なので使いません。',
     usage: 'gratitude',
     frequency: 'high',
     context: 'concert',
@@ -230,16 +230,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '応援への感謝',
-    question: 'カムバックショーで「応援ありがとうございます」と言う最も自然な表現は？',
+    question: '「応援してくださってありがとうございます」の自然な敬語表現は？',
     options: [
-      '성원에 감사드립니다',       // 「ご声援」やや堅い
-      '응원해 주셔서 감사합니다',   // ← 正解
-      '지원에 감사합니다',         // 「支援」ビジネス風
-      '후원해 주셔서 감사합니다'   // 「後援」スポンサー風
+      '응원해 줘서 고마워',         // (반말: 友達同士)
+      '응원해 주셔서 감사합니다',   // 정답
+      '응원하고 감사합니다',        // (문법 오류: 応援して、感謝します)
+      '응원해서 감사합니다'         // (약간 어색함: 応援したので感謝します)
     ],
     correctAnswer: 1,
-    explanation: '「응원해 주셔서 감사합니다」が最も自然で頻出の表現です。',
-    detailedExplanation: '응원하다(応援する)、아/어 주시다(〜してくださる)。성원はやや堅い、지원・후원はビジネス。「응원해 주셔서」が最頻出。',
+    explanation: '「주셔서（〜してくださって）」を使うのがポイントです。',
+    detailedExplanation: '「아/어 주다（〜してくれる）」の尊敬語「아/어 주시다」を活用します。',
     usage: 'gratitude',
     frequency: 'extremely_high',
     context: 'concert',
@@ -252,16 +252,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '力をもらう',
-    question: 'V LIVEで「皆さんから力をもらっています」と伝える最も自然な表現は？',
+    question: '「皆さんのおかげで力が湧きます（頑張れます）」は？',
     options: [
-      '여러분께서 힘을 부여하십니다',  // 「付与」ビジネス風
-      '여러분 덕분에 힘이 나요',       // ← 正解
-      '여러분이 에너지를 공급합니다',  // 「供給」機械的
-      '여러분께 활력을 받습니다'       // 「活力」やや堅い
+      '여러분 덕분에 힘들어요',      // (오답: 皆さんのせいで「しんどい」です)
+      '여러분 덕분에 힘이 나요',     // 정답
+      '여러분 덕분에 힘이 없어요',   // (오답: 力がありません)
+      '여러분 덕분에 힘을 뺐어요'    // (오답: 力を抜きました)
     ],
     correctAnswer: 1,
-    explanation: '「여러분 덕분에 힘이 나요」が最も自然で温かい表現です。',
-    detailedExplanation: '덕분에(おかげで)、힘이 나다(力が出る)。부여・공급は業務的、활力はやや堅い。「힘이 나요」が最も自然。',
+    explanation: '「힘이 나다（力が出る・湧く）」を使います。',
+    detailedExplanation: 'よく似た「힘들어요（辛いです）」と間違えないように注意しましょう！全く逆の意味になります。',
     usage: 'gratitude',
     frequency: 'very_high',
     emotion: 'grateful',
@@ -274,16 +274,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '頑張れる理由',
-    question: 'つらい時期を乗り越えた後、「皆さんがいるから頑張れました」と言う時は？',
+    question: '「皆さんがいるから頑張れました」と過去を振り返る時は？',
     options: [
-      '여러분이 계셔서 분발할 수 있었습니다',  // 「奮発」古語的
-      '여러분 덕분에 힘낼 수 있었어요',       // ← 正解
-      '여러분의 존재로 노력 가능했습니다',    // 「努力可能」不自然
-      '여러분이 있어 동력을 얻었습니다'       // 「動力」機械的
+      '여러분이 없어서 힘냈어요',     // (오답: 皆さんがいなくて頑張りました)
+      '여러분 덕분에 힘낼 수 있었어요', // 정답
+      '여러분이 있어서 포기했어요',    // (오답: 皆さんがいて諦めました)
+      '여러분 때문에 망했어요'        // (오답: 皆さんのせいで失敗しました)
     ],
     correctAnswer: 1,
-    explanation: '「여러분 덕분에 힘낼 수 있었어요」が最も自然で感情がこもっています。',
-    detailedExplanation: '덕분에(おかげで)、힘내다(頑張る)、ㄹ 수 있다(〜できる)。분발は古語、동력は機械的。「힘낼 수 있었어요」が最頻出。',
+    explanation: '「힘내다（頑張る/力を出す）」＋「ㄹ 수 있었다（〜できた）」の形です。',
+    detailedExplanation: '困難な時期をファンの応援で乗り越えた、という感動的な文脈で使われます。',
     usage: 'gratitude',
     frequency: 'very_high',
     context: 'V LIVE',
@@ -297,16 +297,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: 'エネルギー源',
-    question: 'ファンレターで「皆さんが私のエネルギーです」と書く時は？',
+    question: 'ファンは「私のビタミン（活力の源）」だと言いたい時は？',
     options: [
-      '여러분이 제 동력원입니다',   // 「動力源」機械工学
-      '여러분이 제 에너지예요',    // ← 正解
-      '여러분이 제 활력소입니다',  // 「活力素」やや古風
-      '여러분이 제 전원입니다'     // 「電源」電気機器
+      '여러분은 제 약이에요',        // (약: 薬 ※病気みたいに聞こえる)
+      '여러분은 제 비타민이에요',     // 정답
+      '여러분은 제 독이에요',        // (독: 毒)
+      '여러분은 제 병이에요'         // (병: 病気)
     ],
     correctAnswer: 1,
-    explanation: '「여러분이 제 에너지예요」が最も自然でストレートな表現です。',
-    detailedExplanation: '에너지(エネルギー)はそのまま使う。동력원・전원は工学用語、활력소は少し古い。シンプルが最適。',
+    explanation: 'K-POPではファンを「비타민（ビタミン）」や「에너지（エネルギー）」に例えることがよくあります。',
+    detailedExplanation: '「인간 비타민（人間ビタミン＝見ると元気になる人）」というあだ名もよく使われます。',
     usage: 'gratitude',
     frequency: 'high',
     emotion: 'love',
@@ -319,16 +319,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '幸せの理由',
-    question: 'コンサートで「皆さんのおかげで幸せです」と叫ぶ時は？',
+    question: '「皆さんのおかげで幸せです」の自然な表現は？',
     options: [
-      '여러분으로 인해 행복합니다',  // 「により」文語的
-      '여러분 덕분에 행복해요',     // ← 正解
-      '여러분 때문에 행복합니다',   // 「せいで」若干ネガティブ
-      '여러분의 영향으로 행복합니다' // 「影響で」研究論文風
+      '여러분 덕분에 행복해요',     // 정답
+      '여러분 덕분에 불행해요',     // (불행: 不幸です)
+      '여러분 덕분에 우울해요',     // (우울: 憂鬱です)
+      '여러분 덕분에 심심해요'      // (심심: 退屈です)
     ],
-    correctAnswer: 1,
-    explanation: '「여러분 덕분에 행복해요」が最も自然で温かい表現です。',
-    detailedExplanation: '덕분에(おかげで)はポジティブ。로 인해は文語、때문에は時にネガティブ、영향으로は学術的。「덕분에」が最適。',
+    correctAnswer: 0,
+    explanation: '「행복하다（幸せだ）」を使います。最もポジティブな感謝の言葉です。',
+    detailedExplanation: '「너무 행복해서 눈물이 나요（幸せすぎて涙が出ます）」などの応用表現もあります。',
     usage: 'gratitude',
     frequency: 'very_high',
     emotion: 'happy',
@@ -341,16 +341,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '一緒にいてくれて',
-    question: 'デビュー5周年V LIVEで「ずっと一緒にいてくれてありがとう」と言う時は？',
+    question: '「ずっと一緒にいてくれてありがとう」は？',
     options: [
-      '계속 동반해 주셔서 감사합니다',    // 「同伴」ビジネス用語
-      '쭉 함께해 줘서 고마워요',         // ← 正解
-      '지속적으로 동행해 주셔서 감사합니다', // 「持続的に同行」旅行代理店風
-      '줄곧 곁에 계셔서 감사합니다'       // 「ずっとそばに」やや文語的
+      '잠깐 함께해 줘서 고마워요',    // (잠깐: 少しの間だけ)
+      '쭉 함께해 줘서 고마워요',      // 정답
+      '따로 함께해 줘서 고마워요',    // (따로: 別々に)
+      '가끔 함께해 줘서 고마워요'     // (가끔: たまに)
     ],
     correctAnswer: 1,
-    explanation: '「쭉 함께해 줘서 고마워요」が最も自然で感情がこもっています。',
-    detailedExplanation: '쭉(ずっと)、함께하다(一緒にする)、아/어 주다(〜してくれる)。동반・동행はビジネス、줄곧は文語的。',
+    explanation: '継続的な状態を表す副詞「쭉（ずっと）」を使います。',
+    detailedExplanation: '「곁에 있어 줘서 고마워요（そばにいてくれてありがとう）」も感動的な表現です。',
     usage: 'gratitude',
     frequency: 'very_high',
     emotion: 'moved',
@@ -364,16 +364,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '支え',
-    question: '困難な時期を乗り越えた後、「皆さんが私の支えでした」と言う時は？',
+    question: '「皆さんは私の支え（支柱）です」という比喩表現は？',
     options: [
-      '여러분이 제 지주였습니다',    // 「支柱」建築用語
-      '여러분이 제 버팀목이었어요',  // ← 正解
-      '여러분이 제 받침대였습니다',  // 「台座」物理的支え
-      '여러분이 제 기둥이었습니다'   // 「柱」やや比喩的すぎ
+      '여러분이 제 짐이에요',        // (짐: 荷物 ※お荷物、迷惑の意味になる)',
+      '여러분이 제 버팀목이에요',     // 정답
+      '여러분이 제 걸림돌이에요',     // (걸림돌: 邪魔者、障害物)',
+      '여러분이 제 문제예요'         // (문제: 問題)
     ],
     correctAnswer: 1,
-    explanation: '「여러분이 제 버팀목이었어요」が最も自然で感情的な表現です。',
-    detailedExplanation: '버팀목(支え)は精神的支えの定番語。지주は建築、받침대は物理的、기둥はやや比喩的。「버팀목」が最適。',
+    explanation: '倒れないように支える木「버팀목（支え木）」という言葉を、精神的な支えとして使います。',
+    detailedExplanation: '「짐（荷物）」と言ってしまうと、「負担だ/迷惑だ」という意味になるので要注意です！',
     usage: 'gratitude',
     frequency: 'high',
     emotion: 'moved',
@@ -387,16 +387,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '来場への感謝',
-    question: 'コンサート開始時、「来てくれてありがとうございます」と言う時は？',
+    question: '会場に来てくれたファンに「来てくれてありがとう」と言う時は？',
     options: [
-      '방문해 주셔서 감사합니다',    // 「訪問」ビジネス風
-      '와주셔서 감사합니다',         // ← 正解
-      '참석해 주셔서 감사합니다',    // 「参席」会議風
-      '출석해 주셔서 감사합니다'     // 「出席」学校風
+      '가줘서 고마워요',             // (가다: 行ってくれて ※ここから去ってくれて)',
+      '와줘서 고마워요',             // 정답
+      '나와줘서 고마워요',           // (나오다: 出てくれて ※番組出演などの時)',
+      '돌아가줘서 고마워요'          // (돌아가다: 帰ってくれて)
     ],
     correctAnswer: 1,
-    explanation: '「와주셔서 감사합니다」が最も自然でシンプルな表現です。',
-    detailedExplanation: '오다(来る)、아/어 주시다(〜してくださる)。방문はビジネス、참석は会議、출석は学校。「와주셔서」が最頻出。',
+    explanation: '「오다（来る）」を使って「와줘서（来てくれて）」と言います。',
+    detailedExplanation: '「가줘서（行ってくれて）」は「帰ってくれて」という意味になり、失礼になるので注意しましょう。',
     usage: 'gratitude',
     frequency: 'extremely_high',
     context: 'concert',
@@ -409,16 +409,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '聴いてくれて',
-    question: '新曲リリース後のV LIVEで「たくさん聴いてくれてありがとう」と言う時は？',
+    question: '「私の歌を聴いてくれてありがとう」は？',
     options: [
-      '청취해 주셔서 감사합니다',    // 「聴取」ラジオ・統計用語
-      '많이 들어 주셔서 감사해요',   // ← 正解
-      '경청해 주셔서 감사합니다',    // 「傾聴」カウンセリング風
-      '수신해 주셔서 감사합니다'     // 「受信」通信用語
+      '제 노래를 불러 줘서 고마워요', // (부르다: 歌ってくれて)',
+      '제 노래를 들어 줘서 고마워요', // 정답
+      '제 노래를 팔아 줘서 고마워요', // (팔다: 売ってくれて)',
+      '제 노래를 꺼 줘서 고마워요'    // (끄다: （再生を）止めて/消してくれて)'
     ],
     correctAnswer: 1,
-    explanation: '「많이 들어 주셔서 감사해요」が最も自然な表現です。',
-    detailedExplanation: '많이(たくさん)、듣다(聴く)、아/어 주시다(〜してくださる)。청취・경청・수신は専門用語。シンプルが最適。',
+    explanation: '「듣다（聴く）」の活用形「들어 줘서」を使います。',
+    detailedExplanation: 'ストリーミングで応援してくれるファンへの感謝表現です。',
     usage: 'gratitude',
     frequency: 'very_high',
     context: 'V LIVE',
@@ -431,16 +431,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'intermediate',
     questionJa: '待ってくれて',
-    question: '兵役から戻った後、「待っててくれてありがとう」と言う時は？',
+    question: '除隊や活動再開時、「待っていてくれてありがとう」と言う時は？',
     options: [
-      '대기해 주셔서 감사합니다',     // 「待機」空港アナウンス風
-      '기다려 주셔서 감사합니다',     // ← 正解
-      '대기 상태를 유지해 주셔서 감사합니다', // 「待機状態維持」軍隊用語
-      '인내해 주셔서 감사합니다'      // 「忍耐」説教風
+      '기대해 주셔서 감사합니다',     // (기대하다: 期待してくださって)',
+      '기다려 주셔서 감사합니다',     // 정답
+      '기도해 주셔서 감사합니다',     // (기도하다: 祈ってくださって)',
+      '기억해 주셔서 감사합니다'      // (기억하다: 覚えていてくださって)'
     ],
     correctAnswer: 1,
-    explanation: '「기다려 주셔서 감사합니다」が最も自然で感情がこもっています。',
-    detailedExplanation: '기다리다(待つ)、아/어 주시다(〜してくださる)。대기は業務的、인내は説教的。「기다려 주셔서」が最頻出。',
+    explanation: '「기다리다（待つ）」を使います。「기대（期待）」「기도（祈り）」など発音が似た単語に注意。',
+    detailedExplanation: '兵役を終えたアイドルの第一声として最も感動的な言葉です。',
     usage: 'gratitude',
     frequency: 'very_high',
     context: 'V LIVE',
@@ -456,16 +456,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'advanced',
     questionJa: '言葉にできない感謝',
-    question: 'MAMA大賞受賞スピーチで最も感動的な感謝表現は？',
+    question: '「言葉で表現できないほど感謝しています」という最上級の感謝は？',
     options: [
-      '형언할 수 없을 만큼 감사합니다',       // 「形言」文語的
-      '말로 표현할 수 없을 만큼 감사해요',    // ← 正解
-      '언어로 묘사 불가능할 정도로 감사합니다', // 「言語で描写不可能」論文風
-      '서술이 어려울 만큼 감사합니다'         // 「叙述困難」学術的
+      '말로 다 할 수 없을 만큼 감사해요',  // 정답
+      '말로만 감사해요',                 // (오답: 口先だけで感謝します)
+      '말없이 감사해요',                 // (오답: 無言で感謝します)
+      '말도 안 되게 감사해요'             // (관용구: とんでもなく感謝します ※これも通じるが1番がより詩的)
     ],
-    correctAnswer: 1,
-    explanation: '「말로 표현할 수 없을 만큼 감사해요」が最も自然で感情的です。',
-    detailedExplanation: '말로 표현하다(言葉で表現する)、ㄹ 수 없다(できない)、만큼(〜ほど)。형언・묘사・서술は文語的すぎ。',
+    correctAnswer: 0,
+    explanation: '「말로 다 할 수 없다（言葉ですべて言えない）」という表現を使います。',
+    detailedExplanation: '大賞受賞など、感極まった瞬間に使われる表現です。',
     usage: 'gratitude',
     frequency: 'high',
     emotion: 'moved',
@@ -479,16 +479,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'advanced',
     questionJa: '変わらない愛への感謝',
-    question: 'デビュー10周年コンサートで「変わらない愛をありがとう」と言う時は？',
+    question: '「変わらない愛をありがとうございます」は？',
     options: [
-      '불변의 애정에 감사드립니다',           // 「不変の愛情」論文風
-      '변함없는 사랑 감사해요',               // ← 正解
-      '일관된 호의에 감사합니다',             // 「一貫した好意」ビジネス風
-      '지속적 애착에 사의를 표합니다'         // 「持続的愛着」心理学用語
+      '변덕스러운 사랑 감사해요',     // (변덕: 気まぐれな愛)
+      '변함없는 사랑 감사해요',       // 정답
+      '변해버린 사랑 감사해요',       // (변해버린: 変わってしまった愛)
+      '별な 사랑 감사해요'           // (별난: 変な/変わった愛)
     ],
     correctAnswer: 1,
-    explanation: '「변함없는 사랑 감사해요」が最も自然で感情がこもっています。',
-    detailedExplanation: '변함없다(変わらない)、사랑(愛)。불변・일관は学術的、애착は心理学用語。シンプルが最も感動的。',
+    explanation: '「변함없다（変わらない）」を使います。長寿グループがよく使う言葉です。',
+    detailedExplanation: '「한결같은 사랑（一途な/変わらない愛）」という表現も高級な表現として覚えましょう。',
     usage: 'gratitude',
     frequency: 'high',
     emotion: 'moved',
@@ -502,16 +502,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'advanced',
     questionJa: '存在そのものへの感謝',
-    question: 'つらい時期を乗り越えた後、ファンの存在に対する最も深い感謝表現は？',
+    question: '「皆さんがいてくれたから、私は生きてこられました」は？',
     options: [
-      '여러분의 존재 자체에 감사합니다',      // やや堅い
-      '여러분이 있어서 살 수 있었어요',       // ← 正解
-      '여러분의 실존에 감사를 표합니다',      // 「実存」哲学用語
-      '여러분의 현존에 사의를 드립니다'       // 「現存」神学用語
+      '여러분이 있어서 살 수 있었어요',       // 정답
+      '여러분이 있어서 살기 싫었어요',        // (오답: 生きたくなかったです)
+      '여러분이 있어서 죽을 뻔했어요',        // (오답: 死ぬところでした ※冗談や悪い意味)
+      '여러분이 있어서 집에 갔어요'           // (오답: 家に帰りました)
     ],
-    correctAnswer: 1,
-    explanation: '「여러분이 있어서 살 수 있었어요」が最も感情的で深い表現です。',
-    detailedExplanation: '있다(いる)、살다(生きる)、ㄹ 수 있다(〜できる)。「살 수 있었어요(生きられた)」が最も重い・深い感謝。',
+    correctAnswer: 0,
+    explanation: '「살 수 있다（生きることができる）」の過去形で、ファンの存在が生きる力だったことを伝えます。',
+    detailedExplanation: '非常に重みのある言葉で、つらい時期を告白する際などに使われます。',
     usage: 'gratitude',
     frequency: 'medium',
     emotion: 'moved',
@@ -525,16 +525,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'advanced',
     questionJa: 'もっと良い姿で',
-    question: '受賞後、今後の抱負として「もっと良い姿でお返しします」と言う時は？',
+    question: '「もっと良い姿（成長した姿）で恩返しします」は？',
     options: [
-      '개선된 모습으로 보상하겠습니다',       // 「改善された姿で補償」ビジネス
-      '더 좋은 모습으로 보답하겠습니다',      // ← 正解
-      '향상된 이미지로 대가를 제공하겠습니다', // 「向上されたイメージで対価」契約書
-      '진화한 형태로 반대급부하겠습니다'      // 「進化した形態で反対給付」法律用語
+      '더 좋은 얼굴로 보답하겠습니다',        // (얼굴: 顔 ※整形したように聞こえるかも)
+      '더 좋은 모습으로 보답하겠습니다',      // 정답
+      '더 좋은 몸매로 보답하겠습니다',        // (몸매: 体つき/スタイル)
+      '더 비싼 모습으로 보답하겠습니다'       // (비싼: 高い)
     ],
     correctAnswer: 1,
-    explanation: '「더 좋은 모습으로 보답하겠습니다」が最も自然で温かい約束です。',
-    detailedExplanation: '더 좋다(もっと良い)、모습(姿)、보답하다(報いる)。개선・보상・대가は業務的、반대급부は法律用語。',
+    explanation: '韓国語の「모습（姿）」は、外見だけでなく、実力や人間性を含めた「あり方」を指します。',
+    detailedExplanation: 'カムバックを約束する際の決まり文句です。「기대해 주세요（期待してください）」とセットで使います。',
     usage: 'gratitude',
     frequency: 'very_high',
     context: 'award_speech',
@@ -548,16 +548,16 @@ export const kpopGratitudeQuestions: Question[] = [
     category: 'kpop_gratitude',
     difficulty: 'advanced',
     questionJa: '生涯の約束',
-    question: 'デビュー10周年の感動的な場面で「これからもずっと一緒に」と約束する時は？',
+    question: '「これからもずっと一緒にいましょう」という約束は？',
     options: [
-      '향후 지속적으로 동행하겠습니다',       // 「今後持続的に同行」旅行会社
-      '앞으로도 쭉 함께할게요',               // ← 正解
-      '미래에도 동반 관계를 유지하겠습니다',  // 「同伴関係維持」ビジネス契約
-      '장래에도 결속하겠습니다'               // 「結束」政治用語
+      '앞으로도 쭉 함께해요',               // 정답
+      '뒤로도 쭉 함께해요',                 // (뒤로: 後ろへ)
+      '옆으로만 가세요',                   // (오답: 横にだけ行ってください)
+      '앞으로는 따로 가요'                 // (오답: これからは別々に行きましょう)
     ],
-    correctAnswer: 1,
-    explanation: '「앞으로도 쭉 함께할게요」が最も自然で感情がこもっています。',
-    detailedExplanation: '앞으로도(これからも)、쭉(ずっと)、함께하다(一緒にする)、ㄹ게요(〜するね)。향후・동반・결속は業務的。',
+    correctAnswer: 0,
+    explanation: '未来を表す「앞으로도（これからも/今後も）」を使います。',
+    detailedExplanation: '「꽃길만 걷자（花道だけ歩こう）」という表現も、未来へのポジティブな約束としてよく使われます。',
     usage: 'gratitude',
     frequency: 'very_high',
     context: 'concert',

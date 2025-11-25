@@ -24,11 +24,11 @@ export interface Question {
   detailedExplanation: string;
 
   // ★ 新規追加フィールド（K-POP特化）
-  context?: 'V LIVE' | 'concert' | 'fan_letter' | 'SNS' | 'interview';
+  context?: 'V LIVE' | 'concert' | 'fan_letter' | 'SNS' | 'interview' | 'award_speech';
   idol?: 'BTS' | 'BLACKPINK' | 'NewJeans' | 'Stray Kids' | 'multiple';
   frequency?: 'extremely_high' | 'very_high' | 'high' | 'medium';
   usage?: 'greeting' | 'cheering' | 'reaction' | 'thanks' | 'closing' | 'interaction' | 'QA' | 'announcement' | 'update' | 'reassurance' | 'gratitude' | 'apology' | 'response' | 'promise' | 'request' | 'conversation' | 'mukbang';
-  emotion?: 'happy' | 'moved' | 'longing' | 'surprise' | 'love';
+  emotion?: 'happy' | 'moved' | 'longing' | 'surprise' | 'love' | 'grateful' | 'caring' | 'determined';
   formality?: 'casual' | 'polite' | 'formal';
   realExample?: string; // "BTS V LIVE 2024.3" など
 }

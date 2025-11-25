@@ -654,6 +654,17 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
     return 'この選択肢を選ぶにはタップしてください';
   };
 
+  // 일본어 문자 감지 함수 (히라가나, 가타카나, 한자)
+  const isJapanese = (text: string): boolean => {
+    // 히라가나: \u3040-\u309F
+    // 가타카나: \u30A0-\u30FF
+    // 한자: \u4E00-\u9FAF
+    const japaneseRegex = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/;
+    return japaneseRegex.test(text);
+  };
+
+  const showSpeechButton = !isJapanese(text);
+
   return (
     <View style={styles.optionWithSpeech}>
       <TouchableOpacity
@@ -689,7 +700,9 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
                 {correct && !timeExpired && <Text style={[styles.checkMark, { color: colors.sage[600] }]}>✓</Text>}
                 {timeExpired && <Text style={[styles.checkMark, { color: colors.coral[600] }]}>⏱️</Text>}
       </TouchableOpacity>
-      <SpeechButton text={text} size="sm" style={{ marginLeft: SPACING.xs }} />
+      {showSpeechButton && (
+        <SpeechButton text={text} size="sm" style={{ marginLeft: SPACING.xs }} />
+      )}
     </View>
   );
 };

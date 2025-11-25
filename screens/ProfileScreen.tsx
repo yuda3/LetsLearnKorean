@@ -204,7 +204,7 @@ export const ProfileScreen: React.FC = () => {
         {/* Profile Header */}
         <View style={styles.header}>
           <View style={[styles.avatar, { backgroundColor: colors.sage[100] }]}>
-            <Text style={styles.avatarText}>👤</Text>
+            <Text style={styles.avatarText}>{user?.character || '👤'}</Text>
           </View>
           <Text style={[styles.userName, { color: colors.primary[800] }]}>
             {user?.name || 'ユーザー'}

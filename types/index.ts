@@ -6,6 +6,7 @@ export interface User {
   name: string;
   email?: string;
   level?: UserLevel;
+  character?: string; // 선택한 캐릭터 이모지
   createdAt: string;
 }
 

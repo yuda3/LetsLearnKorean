@@ -5,7 +5,7 @@ import { storageService } from '../services/storageService';
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (name: string) => Promise<void>;
+  login: (name: string, character?: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUserLevel: (level: UserLevel) => Promise<void>;
 }
@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const login = async (name: string) => {
+  const login = async (name: string, character?: string) => {
     try {
       // 이름 기반으로 일관된 ID 생성 (같은 이름 = 같은 사용자)
       const userId = generateUserIdFromName(name);
@@ -51,6 +51,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const newUser: User = {
         id: userId,
         name,
+        character: character || '👤',
         createdAt: new Date().toISOString(),
       };
       await storageService.saveUser(newUser);

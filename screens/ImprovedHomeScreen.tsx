@@ -174,7 +174,7 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
           activeOpacity={0.8}
         >
           <View style={[styles.avatar, { backgroundColor: colors.sage[100] }]}>
-            <Text style={styles.avatarText}>👤</Text>
+            <Text style={styles.avatarText}>{user?.character || '👤'}</Text>
           </View>
           <View style={styles.headerText}>
             <Text style={[styles.greeting, { color: colors.primary[600] }]}>

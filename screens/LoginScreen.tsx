@@ -16,8 +16,20 @@ import { Card } from '../components/Card';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
 
+const CHARACTERS = [
+  { emoji: '🐱', name: '고양이' },
+  { emoji: '🐶', name: '강아지' },
+  { emoji: '🐻', name: '곰' },
+  { emoji: '🐰', name: '토끼' },
+  { emoji: '🦊', name: '여우' },
+  { emoji: '🐼', name: '팬더' },
+  { emoji: '🦁', name: '사자' },
+  { emoji: '🐯', name: '호랑이' },
+];
+
 export const LoginScreen: React.FC = () => {
   const [name, setName] = useState('');
+  const [selectedCharacter, setSelectedCharacter] = useState<string>(CHARACTERS[0].emoji);
   const { login } = useAuth();
 
   const handleLogin = async () => {
@@ -27,7 +39,7 @@ export const LoginScreen: React.FC = () => {
     }
 
     try {
-      await login(name.trim());
+      await login(name.trim(), selectedCharacter);
     } catch (error) {
       Alert.alert('エラー', 'ログインに失敗しました');
     }
@@ -71,6 +83,25 @@ export const LoginScreen: React.FC = () => {
                 returnKeyType="done"
                 onSubmitEditing={handleLogin}
               />
+            </View>
+
+            <View style={styles.characterContainer}>
+              <Text style={styles.label}>キャラクターを選ぶ</Text>
+              <View style={styles.characterGrid}>
+                {CHARACTERS.map((char) => (
+                  <TouchableOpacity
+                    key={char.emoji}
+                    style={[
+                      styles.characterButton,
+                      selectedCharacter === char.emoji && styles.characterButtonSelected,
+                    ]}
+                    onPress={() => setSelectedCharacter(char.emoji)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.characterEmoji}>{char.emoji}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
 
             <Button
@@ -174,6 +205,33 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.fontSize.lg,
     color: COLORS.primary[800],
     fontFamily: TYPOGRAPHY.fontFamily.regular,
+  },
+  characterContainer: {
+    marginBottom: SPACING.lg,
+  },
+  characterGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.sm,
+    marginTop: SPACING.sm,
+  },
+  characterButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: COLORS.background.ivory,
+    borderWidth: 2,
+    borderColor: COLORS.primary[200],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  characterButtonSelected: {
+    borderColor: COLORS.sage[500],
+    backgroundColor: COLORS.sage[50],
+    borderWidth: 3,
+  },
+  characterEmoji: {
+    fontSize: 32,
   },
   featuresContainer: {
     marginTop: SPACING.xl,

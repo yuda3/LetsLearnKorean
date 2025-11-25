@@ -10,14 +10,15 @@ import {
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
-import { UserLevel } from '../types';
+import { UserLevel, QuizCategory } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface QuizSetupScreenProps {
-  onStart: (questionCount: number, level?: UserLevel) => void;
+  onStart: (questionCount: number, level?: UserLevel, category?: QuizCategory) => void;
   onBack: () => void;
   userLevel?: UserLevel;
   showLevelSelection: boolean;
+  category?: QuizCategory;
 }
 
 export const QuizSetupScreen: React.FC<QuizSetupScreenProps> = ({
@@ -25,6 +26,7 @@ export const QuizSetupScreen: React.FC<QuizSetupScreenProps> = ({
   onBack,
   userLevel,
   showLevelSelection,
+  category,
 }) => {
   const { colors } = useTheme();
   const [selectedLevel, setSelectedLevel] = useState<UserLevel>(userLevel || 'beginner');
@@ -54,7 +56,7 @@ export const QuizSetupScreen: React.FC<QuizSetupScreenProps> = ({
   ];
 
   const handleStart = () => {
-    onStart(selectedCount, showLevelSelection ? selectedLevel : undefined);
+    onStart(selectedCount, showLevelSelection ? selectedLevel : undefined, category);
   };
 
   return (
@@ -284,11 +286,12 @@ const styles = StyleSheet.create({
   },
   countGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: SPACING.md,
+    justifyContent: 'space-between',
   },
   countButton: {
-    width: '22%',
+    flex: 1,
+    minWidth: 0,
     aspectRatio: 1,
     borderRadius: BORDER_RADIUS.lg,
     alignItems: 'center',

@@ -53,14 +53,9 @@ function HomeStack() {
   };
 
   const handleCategorySelect = (category: QuizCategory) => {
-    // ユーザーレベルに合った問題を取得
-    const userLevel = user?.level;
-    const categoryQuizzes = getQuizzesByCategory(category, userLevel);
-    const quizCount = Math.min(5, categoryQuizzes.length);
-
+    // 카테고리만 저장 (퀴즈는 나중에 시작)
     setQuizState({
       ...quizState,
-      questions: categoryQuizzes.slice(0, quizCount),
       category: category,
       score: 0,
       correctAnswers: [],
@@ -69,18 +64,41 @@ function HomeStack() {
     });
   };
 
-  const handleStartQuizWithParams = async (questionCount: number, level?: UserLevel) => {
+  const handleStartQuizWithParams = async (questionCount: number, level?: UserLevel, category?: QuizCategory) => {
     if (level && user && !user.level) {
       await updateUserLevel(level);
     }
 
     // ユーザーレベルに合った問題を取得
     const userLevel = level || user?.level;
+    const targetCategory = category || quizState.category || 'basic';
+
+    let questions: Question[] = [];
+    if (targetCategory && targetCategory !== 'basic') {
+      // 카테고리가 지정된 경우
+      questions = getQuizzesByCategory(targetCategory, userLevel);
+      const quizCount = Math.min(questionCount, questions.length);
+      questions = questions.slice(0, quizCount);
+    } else {
+      // 기본 랜덤 퀴즈
+      questions = getRandomQuizzes(questionCount, userLevel);
+    }
+    
+    // 문제가 없으면 에러 처리
+    if (!questions || questions.length === 0) {
+      console.warn(`No questions found for category: ${targetCategory}, level: ${userLevel}`);
+      // 최소한 기본 문제라도 가져오기
+      questions = getRandomQuizzes(5);
+      if (questions.length === 0) {
+        console.error('No questions available at all');
+        return;
+      }
+    }
 
     setQuizState({
       ...quizState,
-      questions: getRandomQuizzes(questionCount, userLevel),
-      category: 'basic',
+      questions,
+      category: targetCategory,
       score: 0,
       correctAnswers: [],
       incorrectAnswers: [],
@@ -112,7 +130,33 @@ function HomeStack() {
             onStartQuiz={() => props.navigation.navigate('QuizSetup')}
             onCategorySelect={(category) => {
               handleCategorySelect(category);
-              props.navigation.navigate('Quiz');
+              // 학습 레벨이 없으면 QuizSetup 화면으로 이동
+              if (!user?.level) {
+                props.navigation.navigate('QuizSetup', { category });
+              } else {
+                // 학습 레벨이 있으면 바로 퀴즈 시작
+                const userLevel = user.level;
+                const categoryQuizzes = getQuizzesByCategory(category, userLevel);
+                
+                // 문제가 없으면 QuizSetup으로 이동
+                if (!categoryQuizzes || categoryQuizzes.length === 0) {
+                  console.warn(`No questions found for category: ${category}, level: ${userLevel}`);
+                  props.navigation.navigate('QuizSetup', { category });
+                  return;
+                }
+                
+                const quizCount = Math.min(5, categoryQuizzes.length);
+                setQuizState({
+                  ...quizState,
+                  questions: categoryQuizzes.slice(0, quizCount),
+                  category: category,
+                  score: 0,
+                  correctAnswers: [],
+                  incorrectAnswers: [],
+                  quizStartTime: Date.now(),
+                });
+                props.navigation.navigate('Quiz');
+              }
             }}
             onNavigateToProfile={() => {
               const parent = props.navigation.getParent();
@@ -131,18 +175,22 @@ function HomeStack() {
         )}
       </Stack.Screen>
       <Stack.Screen name="QuizSetup">
-        {(props) => (
-          <QuizSetupScreen
-            {...props}
-            onStart={(count, level) => {
-              handleStartQuizWithParams(count, level);
-              props.navigation.navigate('Quiz');
-            }}
-            onBack={() => props.navigation.goBack()}
-            userLevel={user?.level}
-            showLevelSelection={!user?.level}
-          />
-        )}
+        {(props: any) => {
+          const category = props.route?.params?.category as QuizCategory | undefined;
+          return (
+            <QuizSetupScreen
+              {...props}
+              onStart={(count, level, cat) => {
+                handleStartQuizWithParams(count, level, cat);
+                props.navigation.navigate('Quiz');
+              }}
+              onBack={() => props.navigation.goBack()}
+              userLevel={user?.level}
+              showLevelSelection={!user?.level}
+              category={category}
+            />
+          );
+        }}
       </Stack.Screen>
       <Stack.Screen name="Quiz">
         {(props) => (

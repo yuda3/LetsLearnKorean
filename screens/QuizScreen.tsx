@@ -50,7 +50,48 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   const [timerInterval, setTimerInterval] = useState<ReturnType<typeof setInterval> | null>(null);
   const [timeExpired, setTimeExpired] = useState(false);
 
+  // 문제가 없거나 인덱스가 범위를 벗어났는지 확인
+  if (!questions || questions.length === 0) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
+        <View style={styles.container}>
+          <Text style={[styles.errorText, { color: colors.primary[800] }]}>
+            問題が見つかりませんでした
+          </Text>
+          <Button
+            title="戻る"
+            onPress={onExit}
+            variant="primary"
+            size="lg"
+            style={{ marginTop: SPACING.lg }}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   const currentQuestion = questions[currentQuestionIndex];
+  
+  // currentQuestion이 없으면 에러 처리
+  if (!currentQuestion) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
+        <View style={styles.container}>
+          <Text style={[styles.errorText, { color: colors.primary[800] }]}>
+            問題の読み込み中にエラーが発生しました
+          </Text>
+          <Button
+            title="戻る"
+            onPress={onExit}
+            variant="primary"
+            size="lg"
+            style={{ marginTop: SPACING.lg }}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
@@ -118,6 +159,9 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
 
   const handleTimeExpired = () => {
     if (showResult) return;
+    
+    // currentQuestion이 없으면 처리하지 않음
+    if (!currentQuestion) return;
 
     // 시간 만료 시 정답을 자동으로 선택한 것으로 처리
     setSelectedAnswer(null); // 선택하지 않음으로 표시
@@ -661,5 +705,10 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  errorText: {
+    fontSize: TYPOGRAPHY.fontSize.xl,
+    textAlign: 'center',
+    marginBottom: SPACING.md,
   },
 });

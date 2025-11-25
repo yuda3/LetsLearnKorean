@@ -103,6 +103,13 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled || loading}
       style={getButtonStyle()}
       activeOpacity={0.7}
+      accessibilityLabel={title}
+      accessibilityRole="button"
+      accessibilityState={{
+        disabled: disabled || loading,
+        busy: loading,
+      }}
+      accessibilityHint={loading ? '読み込み中' : undefined}
     >
       {loading ? (
         <ActivityIndicator color={variant === 'outline' ? colors.primary[700] : '#FFFFFF'} />

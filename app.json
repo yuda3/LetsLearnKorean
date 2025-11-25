@@ -21,7 +21,8 @@
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized learning content and improve your experience.",
         "NSPhotoLibraryUsageDescription": "We need access to your photo library to allow you to upload profile pictures.",
-        "NSCameraUsageDescription": "We need access to your camera to allow you to take profile pictures."
+        "NSCameraUsageDescription": "We need access to your camera to allow you to take profile pictures.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -40,6 +41,11 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "029271ea-477c-4826-9a2c-e20aca043c1a"
+      }
+    }
   }
 }

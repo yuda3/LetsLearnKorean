@@ -7,12 +7,14 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
+  FlatList,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { ProgressBar } from '../components/ProgressBar';
 import { SpeechButton } from '../components/SpeechButton';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 import { TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -40,24 +42,32 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
   const [stats, setStats] = useState<LearningStats | null>(null);
   const [categoryProgress, setCategoryProgress] = useState<CategoryProgress[]>([]);
   const [todayQuizCount, setTodayQuizCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadData = React.useCallback(async () => {
-    const learningStats = await storageService.getLearningStats();
-    setStats(learningStats);
+    try {
+      setIsLoading(true);
+      const learningStats = await storageService.getLearningStats();
+      setStats(learningStats);
 
-    const progress = await storageService.getCategoryProgress();
-    setCategoryProgress(progress);
+      const progress = await storageService.getCategoryProgress();
+      setCategoryProgress(progress);
 
-    // 오늘 완료한 총 문제 수 계산
-    const today = new Date().toISOString().split('T')[0];
-    const allResults = await storageService.getQuizResults();
-    const todayResults = allResults.filter(result => {
-      const resultDate = new Date(result.completedAt).toISOString().split('T')[0];
-      return resultDate === today;
-    });
-    // 퀴즈 세션 개수가 아니라 총 문제 수를 계산
-    const totalQuestionsToday = todayResults.reduce((sum, result) => sum + result.totalQuestions, 0);
-    setTodayQuizCount(totalQuestionsToday);
+      // 오늘 완료한 총 문제 수 계산
+      const today = new Date().toISOString().split('T')[0];
+      const allResults = await storageService.getQuizResults();
+      const todayResults = allResults.filter(result => {
+        const resultDate = new Date(result.completedAt).toISOString().split('T')[0];
+        return resultDate === today;
+      });
+      // 퀴즈 세션 개수가 아니라 총 문제 수를 계산
+      const totalQuestionsToday = todayResults.reduce((sum, result) => sum + result.totalQuestions, 0);
+      setTodayQuizCount(totalQuestionsToday);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   // 화면이 포커스될 때마다 데이터 다시 로드
@@ -134,6 +144,14 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
   const todayProgress = Math.min((todayQuizCount / dailyGoal) * 100, 100);
   const currentStreak = stats?.currentStreak || 0;
   const totalScore = stats?.totalCorrectAnswers || 0;
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
+        <LoadingIndicator message="データを読み込み中..." fullScreen />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
@@ -220,107 +238,112 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
             K-POP学習カテゴリー
           </Text>
 
-          {CATEGORY_CONFIGS.map((category) => {
-            const unlocked = isCategoryUnlocked(category.id);
-            const progressData = getCategoryProgressData(category.id);
-            const progressPercentage = progressData
-              ? Math.round((progressData.completedQuizzes / 10) * 100)
-              : 0;
+          <FlatList
+            data={CATEGORY_CONFIGS}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item: category }) => {
+              const unlocked = isCategoryUnlocked(category.id);
+              const progressData = getCategoryProgressData(category.id);
+              const progressPercentage = progressData
+                ? Math.round((progressData.completedQuizzes / 10) * 100)
+                : 0;
 
-            return (
-              <TouchableOpacity
-                key={category.id}
-                style={[
-                  styles.categoryCard,
-                  { backgroundColor: colors.background.cream },
-                  !unlocked && styles.lockedCategory,
-                ]}
-                onPress={() => handleCategoryPress(category.id)}
-                activeOpacity={0.7}
-              >
-                <View style={styles.categoryHeader}>
-                  <View style={styles.categoryLeft}>
-                    <Text style={styles.categoryIcon}>{category.icon}</Text>
-                    <View style={styles.categoryText}>
-                      <Text style={[styles.categoryTitleJa, { color: colors.primary[600] }]}>
-                        {category.titleJa}
-                      </Text>
-                      <View style={styles.categoryTitleWithSpeech}>
-                        <Text style={[styles.categoryTitleKo, { color: colors.primary[800] }]}>
-                          {category.titleKo}
+              return (
+                <TouchableOpacity
+                  style={[
+                    styles.categoryCard,
+                    { backgroundColor: colors.background.cream },
+                    !unlocked && styles.lockedCategory,
+                  ]}
+                  onPress={() => handleCategoryPress(category.id)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.categoryHeader}>
+                    <View style={styles.categoryLeft}>
+                      <Text style={styles.categoryIcon}>{category.icon}</Text>
+                      <View style={styles.categoryText}>
+                        <Text style={[styles.categoryTitleJa, { color: colors.primary[600] }]}>
+                          {category.titleJa}
                         </Text>
-                        <SpeechButton text={category.titleKo} size="sm" />
+                        <View style={styles.categoryTitleWithSpeech}>
+                          <Text style={[styles.categoryTitleKo, { color: colors.primary[800] }]}>
+                            {category.titleKo}
+                          </Text>
+                          <SpeechButton text={category.titleKo} size="sm" />
+                        </View>
+                        <Text
+                          style={[
+                            styles.categoryDescription,
+                            { color: colors.primary[500] },
+                          ]}
+                        >
+                          {category.description}
+                        </Text>
                       </View>
-                      <Text
-                        style={[
-                          styles.categoryDescription,
-                          { color: colors.primary[500] },
-                        ]}
-                      >
-                        {category.description}
-                      </Text>
                     </View>
+
+                    {!unlocked && (
+                      <View style={styles.lockIcon}>
+                        <Text style={styles.lockText}>🔒</Text>
+                      </View>
+                    )}
+
+                    {unlocked && progressData && (
+                      <View style={styles.categoryStats}>
+                        <Text
+                          style={[styles.categoryScore, { color: colors.sage[600] }]}
+                        >
+                          {progressData.bestScore}点
+                        </Text>
+                      </View>
+                    )}
                   </View>
 
-                  {!unlocked && (
-                    <View style={styles.lockIcon}>
-                      <Text style={styles.lockText}>🔒</Text>
-                    </View>
-                  )}
-
-                  {unlocked && progressData && (
-                    <View style={styles.categoryStats}>
-                      <Text
-                        style={[styles.categoryScore, { color: colors.sage[600] }]}
-                      >
-                        {progressData.bestScore}点
-                      </Text>
-                    </View>
-                  )}
-                </View>
-
-                {unlocked && progressData && progressData.completedQuizzes > 0 && (
-                  <View style={styles.categoryProgress}>
-                    <View
-                      style={[
-                        styles.categoryProgressBar,
-                        { backgroundColor: colors.primary[100] },
-                      ]}
-                    >
+                  {unlocked && progressData && progressData.completedQuizzes > 0 && (
+                    <View style={styles.categoryProgress}>
                       <View
                         style={[
-                          styles.categoryProgressFill,
-                          {
-                            width: `${Math.min(progressPercentage, 100)}%`,
-                            backgroundColor: colors.sage[500],
-                          },
+                          styles.categoryProgressBar,
+                          { backgroundColor: colors.primary[100] },
                         ]}
-                      />
+                      >
+                        <View
+                          style={[
+                            styles.categoryProgressFill,
+                            {
+                              width: `${Math.min(progressPercentage, 100)}%`,
+                              backgroundColor: colors.sage[500],
+                            },
+                          ]}
+                        />
+                      </View>
+                      <Text style={[styles.categoryProgressText, { color: colors.primary[500] }]}>
+                        {progressData.completedQuizzes}/10 完了
+                      </Text>
                     </View>
-                    <Text style={[styles.categoryProgressText, { color: colors.primary[500] }]}>
-                      {progressData.completedQuizzes}/10 完了
-                    </Text>
-                  </View>
-                )}
+                  )}
 
-                {!unlocked && category.unlockRequirement && (
-                  <View
-                    style={[
-                      styles.unlockRequirement,
-                      { backgroundColor: colors.primary[50] },
-                    ]}
-                  >
-                    <Text
-                      style={[styles.unlockRequirementText, { color: colors.primary[600] }]}
+                  {!unlocked && category.unlockRequirement && (
+                    <View
+                      style={[
+                        styles.unlockRequirement,
+                        { backgroundColor: colors.primary[50] },
+                      ]}
                     >
-                      前のカテゴリーを{category.unlockRequirement.minimumScore}点以上で
-                      {category.unlockRequirement.minimumQuizzes}回完了
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            );
-          })}
+                      <Text
+                        style={[styles.unlockRequirementText, { color: colors.primary[600] }]}
+                      >
+                        前のカテゴリーを{category.unlockRequirement.minimumScore}点以上で
+                        {category.unlockRequirement.minimumQuizzes}回完了
+                      </Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            }}
+            scrollEnabled={false}
+            ListFooterComponent={<View style={{ height: SPACING.xl }} />}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

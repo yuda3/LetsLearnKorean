@@ -12,7 +12,7 @@ import { ResultScreen } from '../screens/ResultScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { getRandomQuizzes, getQuizzesByCategory, getQuizzesByIds } from '../data/quizzes';
-import { UserLevel, QuizCategory } from '../types';
+import { UserLevel, QuizCategory, Question } from '../types';
 import { storageService } from '../services/storageService';
 
 const Tab = createBottomTabNavigator();
@@ -23,7 +23,7 @@ function HomeStack() {
   const { user, updateUserLevel } = useAuth();
   const { colors } = useTheme();
   const [quizState, setQuizState] = React.useState<{
-    questions: any[];
+    questions: Question[];
     category: QuizCategory;
     score: number;
     correctAnswers: number[];
@@ -185,7 +185,7 @@ function PracticeStack() {
   const { colors } = useTheme();
   const { user } = useAuth();
   const [quizState, setQuizState] = React.useState<{
-    questions: any[];
+    questions: Question[];
     category: QuizCategory;
     score: number;
     correctAnswers: number[];
@@ -205,7 +205,7 @@ function PracticeStack() {
   });
 
   const handleStartPractice = async (mode: string) => {
-    let questions: any[];
+    let questions: Question[];
     let category: QuizCategory = 'basic';
     let isReviewMode = false;
 

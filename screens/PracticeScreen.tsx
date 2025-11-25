@@ -22,7 +22,7 @@ interface PracticeModeCardProps {
   titleKo: string;
   description: string;
   onPress: () => void;
-  colors: any;
+  colors: ReturnType<typeof useTheme>['colors'];
   disabled?: boolean;
 }
 
@@ -66,7 +66,7 @@ interface CategoryReviewCardProps {
   icon: string;
   incorrectCount: number;
   onPress: () => void;
-  colors: any;
+  colors: ReturnType<typeof useTheme>['colors'];
 }
 
 const CategoryReviewCard: React.FC<CategoryReviewCardProps> = ({

@@ -22,7 +22,7 @@ interface SettingItemProps {
   titleKo: string;
   onPress?: () => void;
   rightElement?: React.ReactNode;
-  colors: any;
+  colors: ReturnType<typeof useTheme>['colors'];
 }
 
 const SettingItem: React.FC<SettingItemProps> = ({

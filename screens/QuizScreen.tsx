@@ -427,7 +427,7 @@ interface AnswerOptionProps {
   correct: boolean;
   incorrect: boolean;
   disabled: boolean;
-  colors: any;
+  colors: typeof COLORS;
   timeExpired?: boolean; // 시간 만료로 인한 정답 표시
 }
 

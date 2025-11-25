@@ -14,6 +14,7 @@ import { LoginScreen } from './screens/LoginScreen';
 import { MainNavigator } from './navigation/MainNavigator';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import './global.css';
 
 function AppContent() {
@@ -122,11 +123,13 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <AppContent />
-      </ThemeProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

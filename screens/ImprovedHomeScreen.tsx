@@ -217,7 +217,7 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
         {/* Learning Categories */}
         <View style={styles.categoriesSection}>
           <Text style={[styles.sectionTitle, { color: colors.primary[800] }]}>
-            学習カテゴリー
+            K-POP学習カテゴリー
           </Text>
 
           {CATEGORY_CONFIGS.map((category) => {

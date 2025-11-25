@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Card } from '../components/Card';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -101,78 +102,106 @@ export const ProfileScreen: React.FC = () => {
   const { colors } = useTheme();
   const [stats, setStats] = useState<LearningStats | null>(null);
   const [badges, setBadges] = useState<Badge[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadStats = useCallback(async () => {
-    const learningStats = await storageService.getLearningStats();
-    setStats(learningStats);
+    try {
+      const learningStats = await storageService.getLearningStats();
+      setStats(learningStats);
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
   }, []);
 
   const loadBadges = useCallback(async () => {
-    let savedBadges = await storageService.getBadges();
+    try {
+      let savedBadges = await storageService.getBadges();
 
-    // Initialize badges if not exist
-    if (savedBadges.length === 0) {
-      await storageService.saveBadges(BADGE_DEFINITIONS);
-      savedBadges = BADGE_DEFINITIONS;
-    }
+      // Initialize badges if not exist
+      if (savedBadges.length === 0) {
+        await storageService.saveBadges(BADGE_DEFINITIONS);
+        savedBadges = BADGE_DEFINITIONS;
+      }
 
-    // Check and unlock badges based on current stats
-    const currentStats = await storageService.getLearningStats();
-    const categoryProgress = await storageService.getCategoryProgress();
+      // Check and unlock badges based on current stats
+      const currentStats = await storageService.getLearningStats();
+      const categoryProgress = await storageService.getCategoryProgress();
 
-    if (currentStats) {
-      // Count completed categories (bestScore >= 70 and completedQuizzes >= 3)
-      const completedCategories = categoryProgress.filter(
-        (cat) => cat.bestScore >= 70 && cat.completedQuizzes >= 3
-      ).length;
+      if (currentStats) {
+        // Count completed categories (bestScore >= 70 and completedQuizzes >= 3)
+        const completedCategories = categoryProgress.filter(
+          (cat) => cat.bestScore >= 70 && cat.completedQuizzes >= 3
+        ).length;
 
-      const updatedBadges = savedBadges.map((badge) => {
-        if (badge.unlockedAt) return badge;
+        const updatedBadges = savedBadges.map((badge) => {
+          if (badge.unlockedAt) return badge;
 
-        let shouldUnlock = false;
-        switch (badge.requirement.type) {
-          case 'streak':
-            shouldUnlock = currentStats.currentStreak >= badge.requirement.value;
-            break;
-          case 'quizzes':
-            shouldUnlock = currentStats.totalQuizzesTaken >= badge.requirement.value;
-            break;
-          case 'category':
-            shouldUnlock = completedCategories >= badge.requirement.value;
-            break;
-        }
+          let shouldUnlock = false;
+          switch (badge.requirement.type) {
+            case 'streak':
+              shouldUnlock = currentStats.currentStreak >= badge.requirement.value;
+              break;
+            case 'quizzes':
+              shouldUnlock = currentStats.totalQuizzesTaken >= badge.requirement.value;
+              break;
+            case 'category':
+              shouldUnlock = completedCategories >= badge.requirement.value;
+              break;
+          }
 
-        if (shouldUnlock) {
-          return { ...badge, unlockedAt: new Date().toISOString() };
-        }
-        return badge;
-      });
+          if (shouldUnlock) {
+            return { ...badge, unlockedAt: new Date().toISOString() };
+          }
+          return badge;
+        });
 
-      await storageService.saveBadges(updatedBadges);
-      setBadges(updatedBadges);
-    } else {
-      setBadges(savedBadges);
+        await storageService.saveBadges(updatedBadges);
+        setBadges(updatedBadges);
+      } else {
+        setBadges(savedBadges);
+      }
+    } catch (error) {
+      console.error('Error loading badges:', error);
     }
   }, []);
 
   useEffect(() => {
-    if (user) {
-      loadStats();
-      loadBadges();
-    } else {
-      // 로그아웃 시 데이터 초기화
-      setStats(null);
-      setBadges([]);
-    }
+    const loadData = async () => {
+      if (user) {
+        try {
+          setIsLoading(true);
+          await Promise.all([loadStats(), loadBadges()]);
+        } catch (error) {
+          console.error('Error loading profile data:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        // 로그아웃 시 데이터 초기화
+        setStats(null);
+        setBadges([]);
+        setIsLoading(false);
+      }
+    };
+    loadData();
   }, [user, loadStats, loadBadges]);
 
   // 화면이 포커스될 때마다 데이터를 다시 로드
   useFocusEffect(
     useCallback(() => {
-      if (user) {
-        loadStats();
-        loadBadges();
-      }
+      const loadData = async () => {
+        if (user) {
+          try {
+            setIsLoading(true);
+            await Promise.all([loadStats(), loadBadges()]);
+          } catch (error) {
+            console.error('Error loading profile data:', error);
+          } finally {
+            setIsLoading(false);
+          }
+        }
+      };
+      loadData();
     }, [user, loadStats, loadBadges])
   );
 
@@ -193,6 +222,14 @@ export const ProfileScreen: React.FC = () => {
 
   const unlockedBadges = badges.filter((b) => b.unlockedAt);
   const lockedBadges = badges.filter((b) => !b.unlockedAt);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
+        <LoadingIndicator message="データを読み込み中..." fullScreen />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>

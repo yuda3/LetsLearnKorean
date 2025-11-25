@@ -10,6 +10,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -114,6 +115,7 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({ onStartPractice 
   const [weakCategories, setWeakCategories] = useState<
     { category: QuizCategory; incorrectCount: number }[]
   >([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
@@ -121,6 +123,7 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({ onStartPractice 
     } else {
       setQuizResults([]);
       setWeakCategories([]);
+      setIsLoading(false);
     }
   }, [user]);
 
@@ -134,30 +137,37 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({ onStartPractice 
   );
 
   const loadQuizResults = async () => {
-    const results = await storageService.getQuizResults();
-    setQuizResults(results);
+    try {
+      setIsLoading(true);
+      const results = await storageService.getQuizResults();
+      setQuizResults(results);
 
-    // Calculate weak categories (categories with many incorrect answers)
-    const categoryIncorrects: { [key: string]: number } = {};
+      // Calculate weak categories (categories with many incorrect answers)
+      const categoryIncorrects: { [key: string]: number } = {};
 
-    results.forEach((result) => {
-      const category = result.category;
-      if (!categoryIncorrects[category]) {
-        categoryIncorrects[category] = 0;
-      }
-      categoryIncorrects[category] += result.incorrectAnswers.length;
-    });
+      results.forEach((result) => {
+        const category = result.category;
+        if (!categoryIncorrects[category]) {
+          categoryIncorrects[category] = 0;
+        }
+        categoryIncorrects[category] += result.incorrectAnswers.length;
+      });
 
-    const weak = Object.entries(categoryIncorrects)
-      .filter(([_, count]) => count > 0)
-      .map(([category, count]) => ({
-        category: category as QuizCategory,
-        incorrectCount: count,
-      }))
-      .sort((a, b) => b.incorrectCount - a.incorrectCount)
-      .slice(0, 5);
+      const weak = Object.entries(categoryIncorrects)
+        .filter(([_, count]) => count > 0)
+        .map(([category, count]) => ({
+          category: category as QuizCategory,
+          incorrectCount: count,
+        }))
+        .sort((a, b) => b.incorrectCount - a.incorrectCount)
+        .slice(0, 5);
 
-    setWeakCategories(weak);
+      setWeakCategories(weak);
+    } catch (error) {
+      console.error('Error loading quiz results:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getCategoryName = (category: QuizCategory): { ja: string; ko: string; icon: string } => {
@@ -201,6 +211,14 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({ onStartPractice 
       onStartPractice(mode);
     }
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
+        <LoadingIndicator message="データを読み込み中..." fullScreen />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>

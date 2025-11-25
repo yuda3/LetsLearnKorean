@@ -10,6 +10,7 @@ import {
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { ProgressBar } from '../components/ProgressBar';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 import { TYPOGRAPHY, SPACING, SHADOWS, COLORS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -30,24 +31,41 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const { user, logout } = useAuth();
   const { colors, mode, toggleTheme } = useTheme();
   const [stats, setStats] = useState<LearningStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
       loadStats();
     } else {
       setStats(null);
+      setIsLoading(false);
     }
   }, [user]);
 
   const loadStats = async () => {
-    const learningStats = await storageService.getLearningStats();
-    setStats(learningStats);
+    try {
+      setIsLoading(true);
+      const learningStats = await storageService.getLearningStats();
+      setStats(learningStats);
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const todayProgress = stats ? Math.min((stats.totalQuizzesTaken / 5) * 100, 100) : 0;
   const weeklyGoal = 5;
   const completedDays = stats ? Math.min(stats.totalQuizzesTaken, weeklyGoal) : 0;
   const currentStreak = stats?.currentStreak || 0;
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
+        <LoadingIndicator message="データを読み込み中..." fullScreen />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>

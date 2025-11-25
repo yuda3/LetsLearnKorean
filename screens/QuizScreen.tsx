@@ -53,6 +53,8 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   const handleTimeExpiredRef = useRef<() => void>();
   // useRef로 timerInterval을 관리하여 state 업데이트로 인한 리렌더링 방지
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // showDetailedExplanation의 최신 값을 참조하기 위한 ref
+  const showDetailedExplanationRef = useRef(false);
 
   // currentQuestion 계산 (안전하게 처리)
   const currentQuestion = questions && questions.length > 0 
@@ -80,6 +82,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     setSelectedAnswer(null);
     setShowResult(false);
     setScore(0);
+    showDetailedExplanationRef.current = false;
     setShowDetailedExplanation(false);
     setCorrectAnswers([]);
     setIncorrectAnswers([]);
@@ -119,6 +122,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       setCurrentQuestionIndex((prev) => prev + 1);
       setSelectedAnswer(null);
       setShowResult(false);
+      showDetailedExplanationRef.current = false;
       setShowDetailedExplanation(false);
       setTimeExpired(false);
       setTimeLeft(30);
@@ -212,9 +216,12 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       friction: 7,
     }).start();
 
-    // Auto-advance to next question after 3 seconds
+    // Auto-advance to next question after 3 seconds (only if detailed explanation is not shown)
     const timer = setTimeout(() => {
-      handleNext();
+      // showDetailedExplanation가 true가 되면 자동 진행하지 않음
+      if (!showDetailedExplanationRef.current) {
+        handleNext();
+      }
     }, 3000);
     setAutoAdvanceTimer(timer);
   }, [showResult, currentQuestion, feedbackAnimation, handleNext]);
@@ -224,8 +231,8 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
 
   // 타이머 시작 및 관리
   useEffect(() => {
-    // Don't start timer if result is already showing
-    if (showResult) {
+    // Don't start timer if result is already showing or detailed explanation is shown
+    if (showResult || showDetailedExplanation) {
       // 타이머가 실행 중이면 정지
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
@@ -281,7 +288,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       timerIntervalRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentQuestionIndex, showResult]);
+  }, [currentQuestionIndex, showResult, showDetailedExplanation]);
 
   const handleAnswerSelect = useCallback(
     (answerIndex: number) => {
@@ -308,9 +315,12 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
         friction: 7,
       }).start();
 
-      // Auto-advance to next question after 3 seconds
+      // Auto-advance to next question after 3 seconds (only if detailed explanation is not shown)
       const timer = setTimeout(() => {
-        handleNext();
+        // showDetailedExplanation가 true가 되면 자동 진행하지 않음
+        if (!showDetailedExplanationRef.current) {
+          handleNext();
+        }
       }, 3000);
       setAutoAdvanceTimer(timer);
     },
@@ -461,11 +471,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
 
           {/* Feedback & Explanation */}
           {showResult && (
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={handleNext}
-              style={styles.feedbackTouchable}
-            >
+            <View style={styles.feedbackTouchable}>
               <Animated.View
                 style={[
                   styles.feedbackContainer,
@@ -508,6 +514,18 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                         <TouchableOpacity
                           onPress={(e) => {
                             e.stopPropagation();
+                            // 자동 진행 타이머 취소
+                            if (autoAdvanceTimer) {
+                              clearTimeout(autoAdvanceTimer);
+                              setAutoAdvanceTimer(null);
+                            }
+                            // 타이머 정지
+                            if (timerIntervalRef.current) {
+                              clearInterval(timerIntervalRef.current);
+                              timerIntervalRef.current = null;
+                            }
+                            // ref 업데이트
+                            showDetailedExplanationRef.current = true;
                             setShowDetailedExplanation(true);
                           }}
                           style={styles.moreButton}
@@ -519,11 +537,21 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                   )}
                 </Card>
 
-                <Text style={[styles.tapToNextText, { color: colors.primary[500] }]}>
-                  {currentQuestionIndex < questions.length - 1
-                    ? '🖐️ タップで次の問題へ'
-                    : '🖐️ タップで結果を見る'}
-                </Text>
+                {showDetailedExplanation && (
+                  <View style={[styles.noticeBox, { backgroundColor: colors.sage[50], borderColor: colors.sage[300] }]}>
+                    <Text style={[styles.noticeText, { color: colors.sage[700] }]}>
+                      📌 「次へ」ボタンを押して次の問題に進んでください
+                    </Text>
+                  </View>
+                )}
+
+                {!showDetailedExplanation && (
+                  <Text style={[styles.tapToNextText, { color: colors.primary[500] }]}>
+                    {currentQuestionIndex < questions.length - 1
+                      ? '🖐️ タップで次の問題へ'
+                      : '🖐️ タップで結果を見る'}
+                  </Text>
+                )}
 
                 <Button
                   title={
@@ -537,7 +565,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                   fullWidth
                 />
               </Animated.View>
-            </TouchableOpacity>
+            </View>
           )}
         </View>
       </ScrollView>
@@ -807,6 +835,19 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  noticeBox: {
+    marginTop: SPACING.md,
+    marginBottom: SPACING.md,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+  },
+  noticeText: {
+    fontSize: TYPOGRAPHY.fontSize.base,
+    fontWeight: '600',
+    textAlign: 'center',
+    lineHeight: 22,
   },
   errorText: {
     fontSize: TYPOGRAPHY.fontSize.xl,

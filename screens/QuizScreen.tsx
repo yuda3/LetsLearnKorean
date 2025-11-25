@@ -54,60 +54,28 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   // useRef로 timerInterval을 관리하여 state 업데이트로 인한 리렌더링 방지
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // 문제가 없거나 인덱스가 범위를 벗어났는지 확인
-  if (!questions || questions.length === 0) {
-    return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
-        <View style={styles.container}>
-          <Text style={[styles.errorText, { color: colors.primary[800] }]}>
-            問題が見つかりませんでした
-          </Text>
-          <Button
-            title="戻る"
-            onPress={onExit}
-            variant="primary"
-            size="lg"
-            style={{ marginTop: SPACING.lg }}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
+  // currentQuestion 계산 (안전하게 처리)
+  const currentQuestion = questions && questions.length > 0 
+    ? questions[currentQuestionIndex] 
+    : null;
 
-  const currentQuestion = questions[currentQuestionIndex];
-  
-  // currentQuestion이 없으면 에러 처리
-  if (!currentQuestion) {
-    return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
-        <View style={styles.container}>
-          <Text style={[styles.errorText, { color: colors.primary[800] }]}>
-            問題の読み込み中にエラーが発生しました
-          </Text>
-          <Button
-            title="戻る"
-            onPress={onExit}
-            variant="primary"
-            size="lg"
-            style={{ marginTop: SPACING.lg }}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
+  // 모든 hooks를 early return 전에 호출
   const isCorrect = useMemo(
-    () => selectedAnswer === currentQuestion.correctAnswer,
-    [selectedAnswer, currentQuestion.correctAnswer]
+    () => currentQuestion ? selectedAnswer === currentQuestion.correctAnswer : false,
+    [selectedAnswer, currentQuestion]
   );
 
   const progress = useMemo(
-    () => ((currentQuestionIndex + 1) / questions.length) * 100,
-    [currentQuestionIndex, questions.length]
+    () => questions && questions.length > 0 
+      ? ((currentQuestionIndex + 1) / questions.length) * 100 
+      : 0,
+    [currentQuestionIndex, questions]
   );
 
   // Reset quiz state when questions change (new quiz started)
   useEffect(() => {
+    if (!questions || questions.length === 0) return;
+    
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
     setShowResult(false);
@@ -129,6 +97,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       clearInterval(timerIntervalRef.current);
       timerIntervalRef.current = null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions]);
 
   const handleNext = useCallback(async () => {
@@ -143,6 +112,8 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       clearInterval(timerIntervalRef.current);
       timerIntervalRef.current = null;
     }
+
+    if (!questions || questions.length === 0) return;
 
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
@@ -314,7 +285,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
 
   const handleAnswerSelect = useCallback(
     (answerIndex: number) => {
-      if (showResult || timeExpired) return;
+      if (showResult || timeExpired || !currentQuestion) return;
 
       setSelectedAnswer(answerIndex);
 
@@ -364,6 +335,45 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       }
     };
   }, [autoAdvanceTimer]);
+
+  // Early return을 조건부 렌더링으로 변경 (모든 hooks 호출 후)
+  if (!questions || questions.length === 0) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
+        <View style={styles.container}>
+          <Text style={[styles.errorText, { color: colors.primary[800] }]}>
+            問題が見つかりませんでした
+          </Text>
+          <Button
+            title="戻る"
+            onPress={onExit}
+            variant="primary"
+            size="lg"
+            style={{ marginTop: SPACING.lg }}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!currentQuestion) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>
+        <View style={styles.container}>
+          <Text style={[styles.errorText, { color: colors.primary[800] }]}>
+            問題の読み込み中にエラーが発生しました
+          </Text>
+          <Button
+            title="戻る"
+            onPress={onExit}
+            variant="primary"
+            size="lg"
+            style={{ marginTop: SPACING.lg }}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.ivory }]}>

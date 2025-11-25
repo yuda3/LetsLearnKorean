@@ -9,12 +9,15 @@
 ### 주요 특징
 
 - 🎨 **자연스럽고 모던한 디자인**: 무인양품 스타일의 미니멀 디자인
-- 📚 **8가지 학습 카테고리**: 기본 표현부터 긴급 상황까지 단계별 학습
+- 🎵 **K-POP 특화 콘텐츠**: K-POP 팬을 위한 실용적인 한국어 표현 학습
+- 📚 **9가지 학습 카테고리**: 기본 표현 + 8개 K-POP 카테고리 + 여행 회화
 - 🎯 **진행도 기반 잠금 해제**: 이전 카테고리 완료 후 다음 단계 해제
 - 📊 **학습 통계**: 개인별 학습 진행 상황 및 통계 추적
 - 🔊 **음성 재생**: 한국어 발음 듣기 기능
 - 🌓 **다크 모드**: 라이트/다크 테마 지원
 - 💾 **로컬 저장**: AsyncStorage를 통한 학습 데이터 저장
+- 🛡️ **에러 처리**: 에러 바운더리를 통한 안정적인 앱 운영
+- ⚡ **성능 최적화**: FlatList를 활용한 효율적인 렌더링
 
 ## 🎨 디자인 컨셉
 
@@ -62,6 +65,7 @@
 ### 기타
 - **Expo Speech** `^14.0.7` - 텍스트 음성 변환
 - **AsyncStorage** `^2.2.0` - 로컬 데이터 저장
+- **React Error Boundary** `^6.0.0` - 에러 처리 및 복구
 
 ## 📦 설치 및 실행 방법
 
@@ -135,15 +139,24 @@ npm run web
 
 ### 5. 빌드 (프로덕션)
 
-#### iOS 빌드
+#### EAS Build 사용 (권장)
+
+**Preview 빌드 (TestFlight용)**
 ```bash
-expo build:ios
+npm run build:ios:preview
 ```
 
-#### Android 빌드
+**Production 빌드**
 ```bash
-expo build:android
+npm run build:ios:production
 ```
+
+**App Store Connect 제출**
+```bash
+npm run submit:ios
+```
+
+자세한 내용은 `TESTFLIGHT_SETUP.md`를 참고하세요.
 
 ## 📁 프로젝트 구조
 
@@ -175,7 +188,9 @@ LetsLearnKorean/
 │   ├── Button.tsx             # 버튼 컴포넌트
 │   ├── Card.tsx               # 카드 컴포넌트
 │   ├── ProgressBar.tsx        # 진행 바 컴포넌트
-│   └── SpeechButton.tsx       # 음성 재생 버튼
+│   ├── SpeechButton.tsx       # 음성 재생 버튼
+│   ├── ErrorBoundary.tsx      # 에러 바운더리
+│   └── LoadingIndicator.tsx    # 로딩 인디케이터
 │
 ├── contexts/                  # React Context
 │   ├── AuthContext.tsx        # 인증 컨텍스트
@@ -193,6 +208,15 @@ LetsLearnKorean/
 │       ├── shopping.ts        # 쇼핑
 │       ├── restaurant.ts      # 레스토랑
 │       ├── emergency.ts       # 긴급 상황
+│       ├── kpop/              # K-POP 카테고리
+│       │   ├── vlive.ts       # V LIVE
+│       │   ├── gratitude.ts   # K-POP 감사 표현
+│       │   ├── reactions.ts   # 리액션
+│       │   ├── fanLetter.ts   # 팬레터
+│       │   ├── sns.ts         # SNS
+│       │   ├── concert.ts     # 콘서트
+│       │   ├── slang.ts       # 슬랭
+│       │   └── kpopTerms.ts   # K-POP 용어
 │       └── README.md          # 퀴즈 데이터 가이드
 │
 ├── services/                  # 서비스 레이어
@@ -213,8 +237,11 @@ LetsLearnKorean/
 │   ├── analyze_patterns.js    # 패턴 분석 스크립트
 │   └── split_quizzes.js       # 퀴즈 분할 스크립트
 │
-└── docs/                      # 문서
-    └── QUIZ_IMPROVEMENT_GUIDE.md  # 퀴즈 개선 가이드
+├── docs/                      # 문서
+│   └── QUIZ_IMPROVEMENT_GUIDE.md  # 퀴즈 개선 가이드
+├── eas.json                   # EAS Build 설정
+├── APP_EVALUATION.md          # 앱 평가 문서
+└── TESTFLIGHT_SETUP.md        # TestFlight 배포 가이드
 ```
 
 ## 🎯 주요 기능
@@ -252,45 +279,62 @@ LetsLearnKorean/
 
 ### 카테고리 구성
 
+#### 기본 카테고리
+
 1. **기본 표현 (基本フレーズ)** ✨
    - 항상 잠금 해제됨
    - 초급 난이도
    - 자주 사용하는 기본 표현
 
-2. **감사 표현 (感謝の表現)** 💝
-   - 잠금 해제 조건: 기본 표현 60점 이상, 2회 이상 완료
+#### K-POP 카테고리 (모두 잠금 해제)
+
+2. **V LIVE** 📱
+   - 항상 잠금 해제됨
    - 초급 난이도
-   - 감사 인사 표현
+   - V LIVE配信で使える表現
 
-3. **일상 회화 (日常会話)** 💬
-   - 잠금 해제 조건: 감사 표현 60점 이상, 2회 이상 완료
+3. **K-POP感謝表現** 💜
+   - 항상 잠금 해제됨
    - 초급 난이도
-   - 일상에서 자주 사용하는 회화
+   - K-POPアイドルへの感謝を伝える表現
 
-4. **숫자 (数字)** 🔢
-   - 잠금 해제 조건: 일상 회화 60점 이상, 2회 이상 완료
+4. **リアクション** 😲
+   - 항상 잠금 해제됨
    - 초급 난이도
-   - 숫자 세기 및 시간 표현
+   - 配信やSNSでのリアクション表現
 
-5. **여행 회화 (旅行会話)** 🗺️
-   - 잠금 해제 조건: 숫자 70점 이상, 3회 이상 완료
+5. **ファンレター** 💌
+   - 항상 잠금 해제됨
    - 중급 난이도
-   - 여행에서 사용할 수 있는 표현
+   - ファンレターで使える表現
 
-6. **쇼핑 (ショッピング)** 🛍️
-   - 잠금 해제 조건: 여행 회화 70점 이상, 3회 이상 완료
+6. **SNS** 📲
+   - 항상 잠금 해제됨
+   - 초급 난이도
+   - SNSで使える表現
+
+7. **コンサート** 🎤
+   - 항상 잠금 해제됨
+   - 초급 난이도
+   - コンサートで使える表現
+
+8. **スラング** 💬
+   - 항상 잠금 해제됨
    - 중급 난이도
-   - 쇼핑에서 사용할 수 있는 표현
+   - K-POPファンがよく使うスラング
 
-7. **레스토랑 (レストラン)** 🍜
-   - 잠금 해제 조건: 쇼핑 70점 이상, 3회 이상 완료
+9. **K-POP用語** 🎵
+   - 항상 잠금 해제됨
    - 중급 난이도
-   - 레스토랑에서 사용할 수 있는 표현
+   - K-POPでよく使われる専門用語
 
-8. **긴급 상황 (緊急時)** 🚨
-   - 잠금 해제 조건: 레스토랑 80점 이상, 5회 이상 완료
-   - 고급 난이도
-   - 긴급 상황에서 사용할 수 있는 표현
+#### 통합 카테고리
+
+10. **旅行で使える日常会話** 🗺️
+    - 항상 잠금 해제됨
+    - 중급 난이도
+    - 旅行・ショッピング・レストラン・緊急時などで使える表現
+    - (기존 일반 카테고리들을 통합)
 
 ## 🛠 개발 가이드
 
@@ -329,6 +373,24 @@ import { COLORS, TYPOGRAPHY, SPACING } from './constants/theme';
   label="완료율"
   showPercentage
 />
+```
+
+#### LoadingIndicator
+```typescript
+<LoadingIndicator
+  message="データを読み込み中..."
+  size="large"
+  fullScreen
+/>
+```
+
+#### ErrorBoundary
+```typescript
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+<ErrorBoundary>
+  <YourComponent />
+</ErrorBoundary>
 ```
 
 ### 퀴즈 데이터 추가
@@ -390,16 +452,29 @@ node scripts/analyze_patterns.js
 node scripts/split_quizzes.js
 ```
 
+## ✨ 최근 개선 사항
+
+### v1.0.0 (최신)
+
+- ✅ **에러 바운더리 추가**: 예상치 못한 에러 발생 시 앱 크래시 방지
+- ✅ **타입 안전성 강화**: 모든 `any` 타입 제거, 완전한 TypeScript 타입 체크
+- ✅ **로딩 상태 개선**: 데이터 로딩 중 사용자 피드백 제공
+- ✅ **성능 최적화**: FlatList 도입으로 렌더링 성능 향상
+- ✅ **K-POP 카테고리 중심**: 8개의 K-POP 특화 카테고리 추가
+- ✅ **캐릭터 선택 기능**: 사용자 개인화를 위한 캐릭터 선택
+- ✅ **TestFlight 배포 준비**: EAS Build 설정 완료
+
 ## 🚀 향후 계획
 
 - [ ] 사용자 인증 기능 (서버 연동)
 - [ ] 클라우드 동기화
-- [ ] 더 많은 퀴즈 카테고리
+- [ ] 더 많은 K-POP 그룹별 콘텐츠 추가
 - [ ] SNS 공유 기능
 - [ ] 오프라인 모드 개선
 - [ ] 학습 통계 대시보드 개선
 - [ ] 배지 및 성취 시스템 확장
 - [ ] 복습 알림 기능
+- [ ] 단위 테스트 작성
 
 ## 📄 라이선스
 

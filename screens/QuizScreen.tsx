@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -47,8 +47,12 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   const [startTime] = useState(Date.now());
   const [autoAdvanceTimer, setAutoAdvanceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [timeLeft, setTimeLeft] = useState(30); // 30초 타이머
-  const [timerInterval, setTimerInterval] = useState<ReturnType<typeof setInterval> | null>(null);
   const [timeExpired, setTimeExpired] = useState(false);
+  
+  // useRef로 handleTimeExpired의 최신 참조를 유지하여 무한 루프 방지
+  const handleTimeExpiredRef = useRef<() => void>();
+  // useRef로 timerInterval을 관리하여 state 업데이트로 인한 리렌더링 방지
+  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // 문제가 없거나 인덱스가 범위를 벗어났는지 확인
   if (!questions || questions.length === 0) {
@@ -121,53 +125,11 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       setAutoAdvanceTimer(null);
     }
     // Clear timer interval
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      setTimerInterval(null);
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
     }
   }, [questions]);
-
-  // 타이머 시작 및 관리
-  useEffect(() => {
-    // Don't start timer if result is already showing
-    if (showResult) {
-      return;
-    }
-
-    // 새 문제가 시작되면 타이머 리셋
-    setTimeLeft(30);
-    setTimeExpired(false);
-
-    // Use a ref to track if we should continue
-    let isActive = true;
-
-    // 타이머 시작
-    const interval = setInterval(() => {
-      if (!isActive) return; // Guard against stale intervals
-
-      setTimeLeft((prev) => {
-        if (!isActive || prev <= 0) {
-          return prev;
-        }
-
-        if (prev <= 1) {
-          // 시간 만료 - 자동으로 정답 표시하고 다음 문제로
-          handleTimeExpired();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    setTimerInterval(interval);
-
-    // Cleanup: always clear interval when effect re-runs or component unmounts
-    return () => {
-      isActive = false;
-      clearInterval(interval);
-      setTimerInterval(null);
-    };
-  }, [currentQuestionIndex, showResult, handleTimeExpired]);
 
   const handleNext = useCallback(async () => {
     // Clear auto-advance timer
@@ -176,8 +138,11 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       setAutoAdvanceTimer(null);
     }
 
-    // Don't manually clear timer interval - let useEffect cleanup handle it
-    // when showResult changes to false
+    // 타이머 정지
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
 
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
@@ -188,50 +153,55 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       setTimeLeft(30);
       feedbackAnimation.setValue(0);
     } else {
-      // Save quiz result
-      // Use current state values directly (already updated in handleAnswerSelect)
+      // 마지막 문제 완료 - 상태 업데이트 후 onComplete 호출
+      // setState 콜백을 사용하여 최신 상태 값을 가져온 후, 
+      // setTimeout을 사용하여 렌더링 완료 후 onComplete 호출
       setCorrectAnswers((finalCorrectAnswers) => {
         setIncorrectAnswers((finalIncorrectAnswers) => {
           // Use the length of correct answers as the final score
           const finalScore = finalCorrectAnswers.length;
 
-          if (user) {
-            const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+          // 렌더링 완료 후 onComplete 호출 (다른 컴포넌트 상태 업데이트 방지)
+          setTimeout(() => {
+            if (user) {
+              const timeSpent = Math.floor((Date.now() - startTime) / 1000);
 
-            // 복습 모드에서 맞춘 문제를 기존 결과에서 제거
-            if (isReviewMode && finalCorrectAnswers.length > 0) {
-              storageService
-                .removeIncorrectAnswersFromResults(category, finalCorrectAnswers)
-                .catch((error) => {
-                  console.error('Error removing incorrect answers from results:', error);
+              // 복습 모드에서 맞춘 문제를 기존 결과에서 제거
+              if (isReviewMode && finalCorrectAnswers.length > 0) {
+                storageService
+                  .removeIncorrectAnswersFromResults(category, finalCorrectAnswers)
+                  .catch((error) => {
+                    console.error('Error removing incorrect answers from results:', error);
+                  });
+              }
+
+              const result: QuizResult = {
+                id: Date.now().toString(),
+                userId: user.id,
+                category,
+                score: Math.round((finalScore / questions.length) * 100),
+                totalQuestions: questions.length,
+                correctAnswers: finalCorrectAnswers,
+                incorrectAnswers: finalIncorrectAnswers,
+                completedAt: new Date().toISOString(),
+                timeSpent,
+              };
+
+              // 복습 모드가 아닐 때만 새로운 결과를 저장 (랜덤 퀴즈 포함)
+              if (!isReviewMode) {
+                Promise.all([
+                  storageService.saveQuizResult(result),
+                  storageService.updateLearningStats(result),
+                  storageService.updateCategoryProgress(result),
+                ]).catch((error) => {
+                  console.error('Error saving quiz result:', error);
                 });
+              }
             }
 
-            const result: QuizResult = {
-              id: Date.now().toString(),
-              userId: user.id,
-              category,
-              score: Math.round((finalScore / questions.length) * 100),
-              totalQuestions: questions.length,
-              correctAnswers: finalCorrectAnswers,
-              incorrectAnswers: finalIncorrectAnswers,
-              completedAt: new Date().toISOString(),
-              timeSpent,
-            };
-
-            // 복습 모드가 아닐 때만 새로운 결과를 저장 (랜덤 퀴즈 포함)
-            if (!isReviewMode) {
-              Promise.all([
-                storageService.saveQuizResult(result),
-                storageService.updateLearningStats(result),
-                storageService.updateCategoryProgress(result),
-              ]).catch((error) => {
-                console.error('Error saving quiz result:', error);
-              });
-            }
-          }
-
-          onComplete(finalScore, finalCorrectAnswers, finalIncorrectAnswers);
+            onComplete(finalScore, finalCorrectAnswers, finalIncorrectAnswers);
+          }, 0);
+          
           return finalIncorrectAnswers;
         });
         return finalCorrectAnswers;
@@ -239,7 +209,6 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     }
   }, [
     autoAdvanceTimer,
-    timerInterval,
     currentQuestionIndex,
     questions.length,
     feedbackAnimation,
@@ -278,6 +247,70 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     }, 3000);
     setAutoAdvanceTimer(timer);
   }, [showResult, currentQuestion, feedbackAnimation, handleNext]);
+  
+  // handleTimeExpired의 최신 참조를 ref에 저장
+  handleTimeExpiredRef.current = handleTimeExpired;
+
+  // 타이머 시작 및 관리
+  useEffect(() => {
+    // Don't start timer if result is already showing
+    if (showResult) {
+      // 타이머가 실행 중이면 정지
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
+      return;
+    }
+
+    // 기존 타이머가 있으면 정리
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+
+    // 새 문제가 시작되면 타이머 리셋
+    setTimeLeft(30);
+    setTimeExpired(false);
+
+    // Use a ref to track if we should continue
+    let isActive = true;
+
+    // 타이머 시작
+    const interval = setInterval(() => {
+      if (!isActive) return; // Guard against stale intervals
+
+      setTimeLeft((prev) => {
+        if (!isActive || prev <= 0) {
+          return prev;
+        }
+
+        const newTime = prev - 1;
+        
+        // 시간 만료 체크는 setTimeLeft 외부에서 처리
+        if (newTime <= 0) {
+          // 다음 틱에서 handleTimeExpired 호출 (setState 외부에서)
+          setTimeout(() => {
+            if (handleTimeExpiredRef.current && isActive) {
+              handleTimeExpiredRef.current();
+            }
+          }, 0);
+          return 0;
+        }
+        return newTime;
+      });
+    }, 1000);
+
+    timerIntervalRef.current = interval;
+
+    // Cleanup: always clear interval when effect re-runs or component unmounts
+    return () => {
+      isActive = false;
+      clearInterval(interval);
+      timerIntervalRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQuestionIndex, showResult]);
 
   const handleAnswerSelect = useCallback(
     (answerIndex: number) => {

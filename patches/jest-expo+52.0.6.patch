@@ -1,0 +1,47 @@
+diff --git a/node_modules/jest-expo/src/preset/setup.js b/node_modules/jest-expo/src/preset/setup.js
+index db69c0f..d5a73ee 100644
+--- a/node_modules/jest-expo/src/preset/setup.js
++++ b/node_modules/jest-expo/src/preset/setup.js
+@@ -117,14 +117,21 @@ for (const moduleName of Object.keys(expoModules)) {
+   });
+ }
+ 
+-Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach(
++// Ensure UIManager is an object before trying to define properties on it
++if (!mockNativeModules.UIManager || typeof mockNativeModules.UIManager !== 'object') {
++  mockNativeModules.UIManager = {};
++}
++
++Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata || {}).forEach(
+   (viewManagerName) => {
+-    Object.defineProperty(mockNativeModules.UIManager, `ViewManagerAdapter_${viewManagerName}`, {
+-      get: () => ({
+-        NativeProps: {},
+-        directEventTypes: [],
+-      }),
+-    });
++    if (mockNativeModules.UIManager && typeof mockNativeModules.UIManager === 'object') {
++      Object.defineProperty(mockNativeModules.UIManager, `ViewManagerAdapter_${viewManagerName}`, {
++        get: () => ({
++          NativeProps: {},
++          directEventTypes: [],
++        }),
++      });
++    }
+   }
+ );
+ 
+@@ -291,7 +298,12 @@ try {
+ }
+ 
+ // Installs web implementations of global things that are normally installed through JSI.
+-require('expo-modules-core/src/web/index.web');
++try {
++  require('expo-modules-core/src/web/index.web');
++} catch (e) {
++  // expo-modules-core/src/web/index.web may not exist in some versions
++  // This is not critical for jest tests
++}
+ 
+ jest.doMock('expo/src/winter/FormData', () => ({
+   // The `installFormDataPatch` function is for native runtime only,

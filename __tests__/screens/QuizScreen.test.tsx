@@ -6,6 +6,11 @@ import { storageService } from '../../services/storageService';
 
 // Mock dependencies
 jest.mock('../../services/storageService');
+jest.mock('expo-speech', () => ({
+  speak: jest.fn(),
+  stop: jest.fn(),
+  isSpeakingAsync: jest.fn(() => Promise.resolve(false)),
+}));
 jest.mock('../../contexts/AuthContext', () => ({
   useAuth: () => ({
     user: {

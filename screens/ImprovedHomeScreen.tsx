@@ -159,6 +159,8 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
+        bounces={true}
+        alwaysBounceVertical={false}
       >
         {/* Top Bar with Stats */}
         <View style={styles.topBar}>
@@ -360,6 +362,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: SPACING.lg,
     paddingBottom: SPACING['3xl'],
+    flexGrow: 1,
   },
   topBar: {
     flexDirection: 'row',

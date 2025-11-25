@@ -355,9 +355,17 @@ const TabIcon = ({ focused, icon }: { focused: boolean; icon: string }) => {
   return <Text style={{ fontSize: focused ? 26 : 24 }}>{icon}</Text>;
 };
 
+// Profile Tab Icon Component with dynamic character
+const ProfileTabIcon = ({ focused }: { focused: boolean }) => {
+  const { user } = useAuth();
+  const character = user?.character || '👤';
+  return <Text style={{ fontSize: focused ? 26 : 24 }}>{character}</Text>;
+};
+
 // Main Tab Navigator
 export function MainNavigator() {
   const { colors } = useTheme();
+  const { user } = useAuth();
 
   return (
     <Tab.Navigator
@@ -400,7 +408,7 @@ export function MainNavigator() {
         component={ProfileStack}
         options={{
           tabBarLabel: 'プロフィール',
-          tabBarIcon: ({ focused }) => <TabIcon focused={focused} icon="👤" />,
+          tabBarIcon: ({ focused }) => <ProfileTabIcon focused={focused} />,
         }}
       />
       <Tab.Screen

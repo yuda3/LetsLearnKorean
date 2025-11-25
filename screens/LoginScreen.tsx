@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  ScrollView,
 } from 'react-native';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
@@ -17,14 +18,18 @@ import { COLORS, TYPOGRAPHY, SPACING, SHADOWS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
 
 const CHARACTERS = [
-  { emoji: '🐱', name: '고양이' },
-  { emoji: '🐶', name: '강아지' },
-  { emoji: '🐻', name: '곰' },
-  { emoji: '🐰', name: '토끼' },
-  { emoji: '🦊', name: '여우' },
-  { emoji: '🐼', name: '팬더' },
-  { emoji: '🦁', name: '사자' },
+  { emoji: '🐭', name: '쥐' },
+  { emoji: '🐮', name: '소' },
   { emoji: '🐯', name: '호랑이' },
+  { emoji: '🐰', name: '토끼' },
+  { emoji: '🐲', name: '용' },
+  { emoji: '🐍', name: '뱀' },
+  { emoji: '🐴', name: '말' },
+  { emoji: '🐑', name: '양' },
+  { emoji: '🐵', name: '원숭이' },
+  { emoji: '🐔', name: '닭' },
+  { emoji: '🐶', name: '개' },
+  { emoji: '🐷', name: '돼지' },
 ];
 
 export const LoginScreen: React.FC = () => {
@@ -50,8 +55,14 @@ export const LoginScreen: React.FC = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        <View style={styles.content}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* Header */}
           <View style={styles.header}>
             <Image
@@ -119,7 +130,7 @@ export const LoginScreen: React.FC = () => {
             <FeatureItem icon="📊" text="学習履歴の記録" />
             <FeatureItem icon="🌙" text="ダークモード対応" />
           </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -147,10 +158,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  content: {
     padding: SPACING.lg,
-    justifyContent: 'center',
+    paddingBottom: SPACING['3xl'],
+    flexGrow: 1,
   },
   header: {
     alignItems: 'center',

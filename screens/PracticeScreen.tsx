@@ -15,6 +15,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { storageService } from '../services/storageService';
 import { QuizResult, QuizCategory } from '../types';
+import { getCategoryConfig } from '../data/categoryConfig';
 
 interface PracticeModeCardProps {
   icon: string;
@@ -160,7 +161,18 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({ onStartPractice 
   };
 
   const getCategoryName = (category: QuizCategory): { ja: string; ko: string; icon: string } => {
-    const names: { [key in QuizCategory]: { ja: string; ko: string; icon: string } } = {
+    // categoryConfig에서 카테고리 정보 가져오기
+    const config = getCategoryConfig(category);
+    if (config) {
+      return {
+        ja: config.titleJa,
+        ko: config.titleKo,
+        icon: config.icon,
+      };
+    }
+
+    // categoryConfig에 없는 경우를 위한 폴백 (기존 일반 카테고리)
+    const fallbackNames: { [key: string]: { ja: string; ko: string; icon: string } } = {
       travel: { ja: '旅行会話', ko: '여행 회화', icon: '🗺️' },
       daily: { ja: '日常会話', ko: '일상 회화', icon: '💬' },
       gratitude: { ja: '感謝の表現', ko: '감사 표현', icon: '💝' },
@@ -169,8 +181,19 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({ onStartPractice 
       restaurant: { ja: 'レストラン', ko: '레스토랑', icon: '🍜' },
       emergency: { ja: '緊急時', ko: '긴급 상황', icon: '🚨' },
       numbers: { ja: '数字', ko: '숫자', icon: '🔢' },
+      // K-POP 카테고리 폴백
+      vlive: { ja: 'V LIVE', ko: 'V LIVE', icon: '📱' },
+      kpop_gratitude: { ja: 'K-POP感謝表現', ko: 'K-POP 감사 표현', icon: '💜' },
+      reactions: { ja: 'リアクション', ko: '리액션', icon: '😲' },
+      fanLetter: { ja: 'ファンレター', ko: '팬레터', icon: '💌' },
+      sns: { ja: 'SNS', ko: 'SNS', icon: '📲' },
+      concert: { ja: 'コンサート', ko: '콘서트', icon: '🎤' },
+      slang: { ja: 'スラング', ko: '슬랭', icon: '💬' },
+      kpopTerms: { ja: 'K-POP用語', ko: 'K-POP 용어', icon: '🎵' },
+      travel_daily: { ja: '旅行で使える日常会話', ko: '여행에서 쓸 수 있는 일상 회화', icon: '🗺️' },
     };
-    return names[category];
+
+    return fallbackNames[category] || { ja: '不明', ko: '알 수 없음', icon: '❓' };
   };
 
   const handleModePress = (mode: string) => {

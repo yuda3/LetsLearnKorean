@@ -16,6 +16,7 @@ import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
+import { validateName } from '../utils/nameValidation';
 
 const CHARACTERS = [
   { emoji: '🐭', name: '쥐' },
@@ -35,11 +36,17 @@ const CHARACTERS = [
 export const LoginScreen: React.FC = () => {
   const [name, setName] = useState('');
   const [selectedCharacter, setSelectedCharacter] = useState<string>(CHARACTERS[0].emoji);
+  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const { login } = useAuth();
 
   const handleLogin = async () => {
-    if (!name.trim()) {
-      Alert.alert('エラー', '名前を入力してください');
+    const validation = validateName(name);
+    
+    if (!validation.isValid) {
+      setHasError(true);
+      setErrorMessage(validation.errorMessage || '名前を入力してください');
+      Alert.alert('エラー', validation.errorMessage || '名前を入力してください');
       return;
     }
 
@@ -47,6 +54,21 @@ export const LoginScreen: React.FC = () => {
       await login(name.trim(), selectedCharacter);
     } catch (error) {
       Alert.alert('エラー', 'ログインに失敗しました');
+    }
+  };
+
+  const handleNameChange = (text: string) => {
+    setName(text);
+    // 입력을 시작하면 에러 상태 해제
+    if (hasError) {
+      const validation = validateName(text);
+      if (validation.isValid) {
+        setHasError(false);
+        setErrorMessage('');
+      } else {
+        // 실시간 검증 (에러 메시지만 업데이트, Alert는 표시하지 않음)
+        setErrorMessage(validation.errorMessage || '');
+      }
     }
   };
 
@@ -84,9 +106,12 @@ export const LoginScreen: React.FC = () => {
             <View style={styles.inputContainer}>
               <Text style={styles.label}>お名前</Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  hasError && styles.inputError,
+                ]}
                 value={name}
-                onChangeText={setName}
+                onChangeText={handleNameChange}
                 placeholder="田中太郎"
                 placeholderTextColor={COLORS.primary[300]}
                 autoCapitalize="none"
@@ -94,6 +119,9 @@ export const LoginScreen: React.FC = () => {
                 returnKeyType="done"
                 onSubmitEditing={handleLogin}
               />
+              {hasError && errorMessage && (
+                <Text style={styles.errorMessage}>{errorMessage}</Text>
+              )}
             </View>
 
             <View style={styles.characterContainer}>
@@ -219,6 +247,17 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.fontSize.lg,
     color: COLORS.primary[800],
     fontFamily: TYPOGRAPHY.fontFamily.regular,
+  },
+  inputError: {
+    borderColor: COLORS.coral[500],
+    borderWidth: 2,
+    backgroundColor: COLORS.coral[50],
+  },
+  errorMessage: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.coral[600],
+    marginTop: SPACING.xs,
+    fontWeight: '500',
   },
   characterContainer: {
     marginBottom: SPACING.lg,

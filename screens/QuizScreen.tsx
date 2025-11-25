@@ -129,12 +129,8 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
 
   // 타이머 시작 및 관리
   useEffect(() => {
+    // Don't start timer if result is already showing
     if (showResult) {
-      // 결과가 표시되면 타이머 정지
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        setTimerInterval(null);
-      }
       return;
     }
 
@@ -142,14 +138,20 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     setTimeLeft(30);
     setTimeExpired(false);
 
+    // Use a ref to track if we should continue
+    let isActive = true;
+
     // 타이머 시작
     const interval = setInterval(() => {
+      if (!isActive) return; // Guard against stale intervals
+
       setTimeLeft((prev) => {
+        if (!isActive || prev <= 0) {
+          return prev;
+        }
+
         if (prev <= 1) {
-          // 시간 만료
-          clearInterval(interval);
-          setTimerInterval(null);
-          // 자동으로 정답 표시하고 다음 문제로
+          // 시간 만료 - 자동으로 정답 표시하고 다음 문제로
           handleTimeExpired();
           return 0;
         }
@@ -159,10 +161,13 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
 
     setTimerInterval(interval);
 
+    // Cleanup: always clear interval when effect re-runs or component unmounts
     return () => {
+      isActive = false;
       clearInterval(interval);
+      setTimerInterval(null);
     };
-  }, [currentQuestionIndex, showResult]);
+  }, [currentQuestionIndex, showResult, handleTimeExpired]);
 
   const handleNext = useCallback(async () => {
     // Clear auto-advance timer
@@ -171,11 +176,8 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       setAutoAdvanceTimer(null);
     }
 
-    // Clear timer interval
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      setTimerInterval(null);
-    }
+    // Don't manually clear timer interval - let useEffect cleanup handle it
+    // when showResult changes to false
 
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
@@ -281,13 +283,17 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     (answerIndex: number) => {
       if (showResult || timeExpired) return;
 
-      // 타이머 정지
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        setTimerInterval(null);
+      setSelectedAnswer(answerIndex);
+
+      // Update score and track answers
+      if (answerIndex === currentQuestion.correctAnswer) {
+        setScore((prev) => prev + 1);
+        setCorrectAnswers((prev) => [...prev, currentQuestion.id]);
+      } else {
+        setIncorrectAnswers((prev) => [...prev, currentQuestion.id]);
       }
 
-      setSelectedAnswer(answerIndex);
+      // Set showResult to trigger useEffect cleanup
       setShowResult(true);
 
       // Animate feedback
@@ -298,21 +304,13 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
         friction: 7,
       }).start();
 
-      // Update score and track answers
-      if (answerIndex === currentQuestion.correctAnswer) {
-        setScore((prev) => prev + 1);
-        setCorrectAnswers((prev) => [...prev, currentQuestion.id]);
-      } else {
-        setIncorrectAnswers((prev) => [...prev, currentQuestion.id]);
-      }
-
       // Auto-advance to next question after 3 seconds
       const timer = setTimeout(() => {
         handleNext();
       }, 3000);
       setAutoAdvanceTimer(timer);
     },
-    [showResult, timeExpired, timerInterval, currentQuestion, feedbackAnimation, handleNext]
+    [showResult, timeExpired, currentQuestion, feedbackAnimation, handleNext]
   );
 
   const feedbackScale = feedbackAnimation.interpolate({

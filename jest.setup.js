@@ -36,3 +36,21 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
 
+// Suppress specific act() warnings that occur due to complex timer interactions
+// in QuizScreen tests. These are known issues with testing async state updates
+// combined with timers and animations.
+const originalError = console.error;
+console.error = (...args) => {
+  // Suppress act() warnings related to state updates
+  if (
+    typeof args[0] === 'string' &&
+    (args[0].includes('act(...)') ||
+      args[0].includes('AggregateError') ||
+      args[0].includes('Warning: An update to') ||
+      args[0].includes('was not wrapped in act'))
+  ) {
+    return;
+  }
+  originalError.call(console, ...args);
+};
+

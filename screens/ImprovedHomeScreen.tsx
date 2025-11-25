@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -82,67 +82,82 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
     }, [user, loadData])
   );
 
-  const isCategoryUnlocked = (categoryId: QuizCategory): boolean => {
-    const categoryConfig = CATEGORY_CONFIGS.find((c) => c.id === categoryId);
-
-    // If no unlock requirement, it's always unlocked
-    if (!categoryConfig?.unlockRequirement) {
-      return true;
-    }
-
-    const requirement = categoryConfig.unlockRequirement;
-
-    // Check if required category is completed
-    if (requirement.requiredCategory) {
-      const requiredProgress = categoryProgress.find(
-        (p) => p.category === requirement.requiredCategory
-      );
-
-      if (!requiredProgress) return false;
-
-      if (
-        requiredProgress.completedQuizzes < requirement.minimumQuizzes ||
-        requiredProgress.bestScore < requirement.minimumScore
-      ) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  const getCategoryProgressData = (categoryId: QuizCategory) => {
-    return categoryProgress.find((p) => p.category === categoryId);
-  };
-
-  const handleCategoryPress = (categoryId: QuizCategory) => {
-    const unlocked = isCategoryUnlocked(categoryId);
-
-    if (!unlocked) {
+  const isCategoryUnlocked = useCallback(
+    (categoryId: QuizCategory): boolean => {
       const categoryConfig = CATEGORY_CONFIGS.find((c) => c.id === categoryId);
-      const requirement = categoryConfig?.unlockRequirement;
 
-      if (requirement?.requiredCategory) {
-        const reqConfig = CATEGORY_CONFIGS.find((c) => c.id === requirement.requiredCategory);
-        Alert.alert(
-          'カテゴリーがロックされています',
-          `「${reqConfig?.titleJa}」で${requirement.minimumQuizzes}個以上のクイズを${requirement.minimumScore}点以上で完了してください。`
-        );
+      // If no unlock requirement, it's always unlocked
+      if (!categoryConfig?.unlockRequirement) {
+        return true;
       }
-      return;
-    }
 
-    if (onCategorySelect) {
-      onCategorySelect(categoryId);
-    } else {
-      onStartQuiz();
-    }
-  };
+      const requirement = categoryConfig.unlockRequirement;
 
-  const dailyGoal = stats?.dailyGoal || 5;
-  const todayProgress = Math.min((todayQuizCount / dailyGoal) * 100, 100);
-  const currentStreak = stats?.currentStreak || 0;
-  const totalScore = stats?.totalCorrectAnswers || 0;
+      // Check if required category is completed
+      if (requirement.requiredCategory) {
+        const requiredProgress = categoryProgress.find(
+          (p) => p.category === requirement.requiredCategory
+        );
+
+        if (!requiredProgress) return false;
+
+        if (
+          requiredProgress.completedQuizzes < requirement.minimumQuizzes ||
+          requiredProgress.bestScore < requirement.minimumScore
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    [categoryProgress]
+  );
+
+  const getCategoryProgressData = useCallback(
+    (categoryId: QuizCategory) => {
+      return categoryProgress.find((p) => p.category === categoryId);
+    },
+    [categoryProgress]
+  );
+
+  const handleCategoryPress = useCallback(
+    (categoryId: QuizCategory) => {
+      const unlocked = isCategoryUnlocked(categoryId);
+
+      if (!unlocked) {
+        const categoryConfig = CATEGORY_CONFIGS.find((c) => c.id === categoryId);
+        const requirement = categoryConfig?.unlockRequirement;
+
+        if (requirement?.requiredCategory) {
+          const reqConfig = CATEGORY_CONFIGS.find((c) => c.id === requirement.requiredCategory);
+          Alert.alert(
+            'カテゴリーがロックされています',
+            `「${reqConfig?.titleJa}」で${requirement.minimumQuizzes}個以上のクイズを${requirement.minimumScore}点以上で完了してください。`
+          );
+        }
+        return;
+      }
+
+      if (onCategorySelect) {
+        onCategorySelect(categoryId);
+      } else {
+        onStartQuiz();
+      }
+    },
+    [isCategoryUnlocked, onCategorySelect, onStartQuiz]
+  );
+
+  const dailyGoal = useMemo(() => stats?.dailyGoal || 5, [stats?.dailyGoal]);
+
+  const todayProgress = useMemo(
+    () => Math.min((todayQuizCount / dailyGoal) * 100, 100),
+    [todayQuizCount, dailyGoal]
+  );
+
+  const currentStreak = useMemo(() => stats?.currentStreak || 0, [stats?.currentStreak]);
+
+  const totalScore = useMemo(() => stats?.totalCorrectAnswers || 0, [stats?.totalCorrectAnswers]);
 
   if (isLoading) {
     return (
@@ -164,13 +179,21 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
         {/* Top Bar with Stats */}
         <View style={styles.topBar}>
           <View style={styles.topBarLeft}>
-            <View style={[styles.statPill, { backgroundColor: colors.sage[100] }]}>
+            <View
+              style={[styles.statPill, { backgroundColor: colors.sage[100] }]}
+              accessibilityLabel={`総合スコア: ${totalScore}点`}
+              accessibilityRole="text"
+            >
               <Text style={styles.statPillIcon}>⭐</Text>
               <Text style={[styles.statPillText, { color: colors.sage[700] }]}>
                 {totalScore}
               </Text>
             </View>
-            <View style={[styles.statPill, { backgroundColor: colors.coral[100] }]}>
+            <View
+              style={[styles.statPill, { backgroundColor: colors.coral[100] }]}
+              accessibilityLabel={`連続学習: ${currentStreak}日間`}
+              accessibilityRole="text"
+            >
               <Text style={styles.statPillIcon}>🔥</Text>
               <Text style={[styles.statPillText, { color: colors.coral[700] }]}>
                 {currentStreak}日
@@ -181,6 +204,9 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
           <TouchableOpacity
             onPress={onNavigateToSettings}
             style={[styles.iconButton, { backgroundColor: colors.background.cream }]}
+            accessibilityLabel="設定"
+            accessibilityHint="設定画面を開きます"
+            accessibilityRole="button"
           >
             <Text style={styles.iconText}>⚙️</Text>
           </TouchableOpacity>
@@ -191,6 +217,9 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
           style={styles.header}
           onPress={onNavigateToProfile}
           activeOpacity={0.8}
+          accessibilityLabel={`プロフィール: ${userName}さん`}
+          accessibilityHint="プロフィール画面を開きます"
+          accessibilityRole="button"
         >
           <View style={[styles.avatar, { backgroundColor: colors.sage[100] }]}>
             <Text style={styles.avatarText}>{user?.character || '👤'}</Text>

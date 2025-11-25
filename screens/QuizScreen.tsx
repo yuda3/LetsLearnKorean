@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -92,8 +92,15 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     );
   }
 
-  const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  const isCorrect = useMemo(
+    () => selectedAnswer === currentQuestion.correctAnswer,
+    [selectedAnswer, currentQuestion.correctAnswer]
+  );
+
+  const progress = useMemo(
+    () => ((currentQuestionIndex + 1) / questions.length) * 100,
+    [currentQuestionIndex, questions.length]
+  );
 
   // Reset quiz state when questions change (new quiz started)
   useEffect(() => {
@@ -157,71 +164,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     };
   }, [currentQuestionIndex, showResult]);
 
-  const handleTimeExpired = () => {
-    if (showResult) return;
-    
-    // currentQuestion이 없으면 처리하지 않음
-    if (!currentQuestion) return;
-
-    // 시간 만료 시 정답을 자동으로 선택한 것으로 처리
-    setSelectedAnswer(null); // 선택하지 않음으로 표시
-    setShowResult(true);
-    setTimeExpired(true);
-
-    // 정답이 아니므로 오답으로 처리
-    setIncorrectAnswers([...incorrectAnswers, currentQuestion.id]);
-
-    // Animate feedback
-    Animated.spring(feedbackAnimation, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 50,
-      friction: 7,
-    }).start();
-
-    // Auto-advance to next question after 3 seconds
-    const timer = setTimeout(() => {
-      handleNext();
-    }, 3000);
-    setAutoAdvanceTimer(timer);
-  };
-
-  const handleAnswerSelect = (answerIndex: number) => {
-    if (showResult || timeExpired) return;
-
-    // 타이머 정지
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      setTimerInterval(null);
-    }
-
-    setSelectedAnswer(answerIndex);
-    setShowResult(true);
-
-    // Animate feedback
-    Animated.spring(feedbackAnimation, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 50,
-      friction: 7,
-    }).start();
-
-    // Update score and track answers
-    if (answerIndex === currentQuestion.correctAnswer) {
-      setScore(score + 1);
-      setCorrectAnswers([...correctAnswers, currentQuestion.id]);
-    } else {
-      setIncorrectAnswers([...incorrectAnswers, currentQuestion.id]);
-    }
-
-    // Auto-advance to next question after 3 seconds
-    const timer = setTimeout(() => {
-      handleNext();
-    }, 3000);
-    setAutoAdvanceTimer(timer);
-  };
-
-  const handleNext = async () => {
+  const handleNext = useCallback(async () => {
     // Clear auto-advance timer
     if (autoAdvanceTimer) {
       clearTimeout(autoAdvanceTimer);
@@ -235,7 +178,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     }
 
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
       setSelectedAnswer(null);
       setShowResult(false);
       setShowDetailedExplanation(false);
@@ -245,54 +188,132 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     } else {
       // Save quiz result
       // Use current state values directly (already updated in handleAnswerSelect)
-      const finalCorrectAnswers = correctAnswers;
-      const finalIncorrectAnswers = incorrectAnswers;
-      // Use the length of correct answers as the final score
-      const finalScore = finalCorrectAnswers.length;
+      setCorrectAnswers((finalCorrectAnswers) => {
+        setIncorrectAnswers((finalIncorrectAnswers) => {
+          // Use the length of correct answers as the final score
+          const finalScore = finalCorrectAnswers.length;
 
-      if (user) {
-        const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-        
-        // 복습 모드에서 맞춘 문제를 기존 결과에서 제거
-        if (isReviewMode && finalCorrectAnswers.length > 0) {
-          try {
-            await storageService.removeIncorrectAnswersFromResults(
+          if (user) {
+            const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+
+            // 복습 모드에서 맞춘 문제를 기존 결과에서 제거
+            if (isReviewMode && finalCorrectAnswers.length > 0) {
+              storageService
+                .removeIncorrectAnswersFromResults(category, finalCorrectAnswers)
+                .catch((error) => {
+                  console.error('Error removing incorrect answers from results:', error);
+                });
+            }
+
+            const result: QuizResult = {
+              id: Date.now().toString(),
+              userId: user.id,
               category,
-              finalCorrectAnswers
-            );
-          } catch (error) {
-            console.error('Error removing incorrect answers from results:', error);
-          }
-        }
+              score: Math.round((finalScore / questions.length) * 100),
+              totalQuestions: questions.length,
+              correctAnswers: finalCorrectAnswers,
+              incorrectAnswers: finalIncorrectAnswers,
+              completedAt: new Date().toISOString(),
+              timeSpent,
+            };
 
-        const result: QuizResult = {
-          id: Date.now().toString(),
-          userId: user.id,
-          category,
-          score: Math.round((finalScore / questions.length) * 100),
-          totalQuestions: questions.length,
-          correctAnswers: finalCorrectAnswers,
-          incorrectAnswers: finalIncorrectAnswers,
-          completedAt: new Date().toISOString(),
-          timeSpent,
-        };
-
-        try {
-          // 복습 모드가 아닐 때만 새로운 결과를 저장 (랜덤 퀴즈 포함)
-          if (!isReviewMode) {
-            await storageService.saveQuizResult(result);
-            await storageService.updateLearningStats(result);
-            // 랜덤 퀴즈의 경우 category가 'basic'이므로 카테고리 진행도도 업데이트
-            await storageService.updateCategoryProgress(result);
+            // 복습 모드가 아닐 때만 새로운 결과를 저장 (랜덤 퀴즈 포함)
+            if (!isReviewMode) {
+              Promise.all([
+                storageService.saveQuizResult(result),
+                storageService.updateLearningStats(result),
+                storageService.updateCategoryProgress(result),
+              ]).catch((error) => {
+                console.error('Error saving quiz result:', error);
+              });
+            }
           }
-        } catch (error) {
-          console.error('Error saving quiz result:', error);
-        }
+
+          onComplete(finalScore, finalCorrectAnswers, finalIncorrectAnswers);
+          return finalIncorrectAnswers;
+        });
+        return finalCorrectAnswers;
+      });
+    }
+  }, [
+    autoAdvanceTimer,
+    timerInterval,
+    currentQuestionIndex,
+    questions.length,
+    feedbackAnimation,
+    user,
+    startTime,
+    isReviewMode,
+    category,
+    onComplete,
+  ]);
+
+  const handleTimeExpired = useCallback(() => {
+    if (showResult) return;
+
+    // currentQuestion이 없으면 처리하지 않음
+    if (!currentQuestion) return;
+
+    // 시간 만료 시 정답을 자동으로 선택한 것으로 처리
+    setSelectedAnswer(null); // 선택하지 않음으로 표시
+    setShowResult(true);
+    setTimeExpired(true);
+
+    // 정답이 아니므로 오답으로 처리
+    setIncorrectAnswers((prev) => [...prev, currentQuestion.id]);
+
+    // Animate feedback
+    Animated.spring(feedbackAnimation, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 7,
+    }).start();
+
+    // Auto-advance to next question after 3 seconds
+    const timer = setTimeout(() => {
+      handleNext();
+    }, 3000);
+    setAutoAdvanceTimer(timer);
+  }, [showResult, currentQuestion, feedbackAnimation, handleNext]);
+
+  const handleAnswerSelect = useCallback(
+    (answerIndex: number) => {
+      if (showResult || timeExpired) return;
+
+      // 타이머 정지
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        setTimerInterval(null);
       }
 
-      onComplete(finalScore, finalCorrectAnswers, finalIncorrectAnswers);
-    }
-  };
+      setSelectedAnswer(answerIndex);
+      setShowResult(true);
+
+      // Animate feedback
+      Animated.spring(feedbackAnimation, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+
+      // Update score and track answers
+      if (answerIndex === currentQuestion.correctAnswer) {
+        setScore((prev) => prev + 1);
+        setCorrectAnswers((prev) => [...prev, currentQuestion.id]);
+      } else {
+        setIncorrectAnswers((prev) => [...prev, currentQuestion.id]);
+      }
+
+      // Auto-advance to next question after 3 seconds
+      const timer = setTimeout(() => {
+        handleNext();
+      }, 3000);
+      setAutoAdvanceTimer(timer);
+    },
+    [showResult, timeExpired, timerInterval, currentQuestion, feedbackAnimation, handleNext]
+  );
 
   const feedbackScale = feedbackAnimation.interpolate({
     inputRange: [0, 1],
@@ -323,7 +344,13 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
         <View style={styles.container}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={onExit} style={[styles.exitButton, { backgroundColor: colors.background.cream }]}>
+            <TouchableOpacity
+              onPress={onExit}
+              style={[styles.exitButton, { backgroundColor: colors.background.cream }]}
+              accessibilityLabel="クイズを終了"
+              accessibilityHint="ホーム画面に戻ります"
+              accessibilityRole="button"
+            >
               <Text style={[styles.exitText, { color: colors.primary[600] }]}>×</Text>
             </TouchableOpacity>
             <View style={styles.progressContainer}>
@@ -331,7 +358,11 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                 <Text style={[styles.userNameText, { color: colors.primary[700] }]}>{userName}さん</Text>
               )}
               <View style={styles.progressAndTimerRow}>
-                <View style={styles.progressSection}>
+                <View
+                  style={styles.progressSection}
+                  accessibilityLabel={`進行状況: ${currentQuestionIndex + 1}問目、全${questions.length}問中`}
+                  accessibilityRole="progressbar"
+                >
                   <View style={[styles.progressBar, { backgroundColor: colors.primary[100] }]}>
                     <View style={[styles.progressFill, { width: `${progress}%`, backgroundColor: colors.sage[500] }]} />
                   </View>
@@ -340,10 +371,15 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                   </Text>
                 </View>
                 {/* 타이머 */}
-                <View style={[
-                  styles.timerContainer,
-                  { backgroundColor: timeLeft <= 10 ? colors.coral[100] : colors.primary[100] }
-                ]}>
+                <View
+                  style={[
+                    styles.timerContainer,
+                    { backgroundColor: timeLeft <= 10 ? colors.coral[100] : colors.primary[100] }
+                  ]}
+                  accessibilityLabel={`残り時間: ${timeLeft}秒`}
+                  accessibilityRole="timer"
+                  accessibilityLiveRegion="polite"
+                >
                   <Text style={[
                     styles.timerText,
                     { color: timeLeft <= 10 ? colors.coral[600] : colors.primary[700] }
@@ -356,7 +392,11 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
           </View>
 
           {/* Question */}
-          <View style={styles.questionContainer}>
+          <View
+            style={styles.questionContainer}
+            accessibilityLabel={`問題: ${currentQuestion.questionJa}、韓国語で: ${currentQuestion.question}`}
+            accessibilityRole="header"
+          >
             <Text style={[styles.questionJa, { color: colors.primary[600] }]}>{currentQuestion.questionJa}</Text>
             <Text style={[styles.question, { color: colors.primary[800] }]}>{currentQuestion.question}</Text>
           </View>
@@ -501,6 +541,20 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
     return colors.primary[200];
   };
 
+  const getAccessibilityLabel = () => {
+    let label = `選択肢: ${text}`;
+    if (correct) label += '、正解';
+    if (incorrect) label += '、不正解';
+    if (timeExpired) label += '、時間切れ';
+    if (selected) label += '、選択中';
+    return label;
+  };
+
+  const getAccessibilityHint = () => {
+    if (disabled) return '回答済み';
+    return 'この選択肢を選ぶにはタップしてください';
+  };
+
   return (
     <View style={styles.optionWithSpeech}>
       <TouchableOpacity
@@ -516,6 +570,13 @@ const AnswerOption: React.FC<AnswerOptionProps> = ({
           },
         ]}
         activeOpacity={0.7}
+        accessibilityLabel={getAccessibilityLabel()}
+        accessibilityHint={getAccessibilityHint()}
+        accessibilityRole="button"
+        accessibilityState={{
+          selected,
+          disabled,
+        }}
       >
         <Text
           style={[

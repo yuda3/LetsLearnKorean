@@ -129,6 +129,15 @@ export const ImprovedHomeScreen: React.FC<ImprovedHomeScreenProps> = ({
         const categoryConfig = CATEGORY_CONFIGS.find((c) => c.id === categoryId);
         const requirement = categoryConfig?.unlockRequirement;
 
+        // K-드라마 카테고리는 준비중 메시지 표시
+        if (categoryId === 'kdrama') {
+          Alert.alert(
+            '準備中',
+            'K-ドラマカテゴリーは現在準備中です。もうしばらくお待ちください。'
+          );
+          return;
+        }
+
         if (requirement?.requiredCategory) {
           const reqConfig = CATEGORY_CONFIGS.find((c) => c.id === requirement.requiredCategory);
           Alert.alert(

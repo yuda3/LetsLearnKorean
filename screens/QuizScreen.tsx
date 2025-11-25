@@ -42,6 +42,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   const [score, setScore] = useState(0);
   const [showDetailedExplanation, setShowDetailedExplanation] = useState(false);
   const [feedbackAnimation] = useState(new Animated.Value(0));
+  const [blinkAnimation] = useState(new Animated.Value(1));
   const [correctAnswers, setCorrectAnswers] = useState<number[]>([]);
   const [incorrectAnswers, setIncorrectAnswers] = useState<number[]>([]);
   const [startTime] = useState(Date.now());
@@ -87,6 +88,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     setCorrectAnswers([]);
     setIncorrectAnswers([]);
     feedbackAnimation.setValue(0);
+    blinkAnimation.setValue(1);
     setTimeLeft(30);
     setTimeExpired(false);
 
@@ -127,6 +129,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       setTimeExpired(false);
       setTimeLeft(30);
       feedbackAnimation.setValue(0);
+      blinkAnimation.setValue(1);
     } else {
       // 마지막 문제 완료 - 상태 업데이트 후 onComplete 호출
       // setState 콜백을 사용하여 최신 상태 값을 가져온 후, 
@@ -216,13 +219,13 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       friction: 7,
     }).start();
 
-    // Auto-advance to next question after 3 seconds (only if detailed explanation is not shown)
+    // Auto-advance to next question after 5 seconds (only if detailed explanation is not shown)
     const timer = setTimeout(() => {
       // showDetailedExplanation가 true가 되면 자동 진행하지 않음
       if (!showDetailedExplanationRef.current) {
         handleNext();
       }
-    }, 3000);
+    }, 5000);
     setAutoAdvanceTimer(timer);
   }, [showResult, currentQuestion, feedbackAnimation, handleNext]);
   
@@ -315,13 +318,13 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
         friction: 7,
       }).start();
 
-      // Auto-advance to next question after 3 seconds (only if detailed explanation is not shown)
+      // Auto-advance to next question after 5 seconds (only if detailed explanation is not shown)
       const timer = setTimeout(() => {
         // showDetailedExplanation가 true가 되면 자동 진행하지 않음
         if (!showDetailedExplanationRef.current) {
           handleNext();
         }
-      }, 3000);
+      }, 5000);
       setAutoAdvanceTimer(timer);
     },
     [showResult, timeExpired, currentQuestion, feedbackAnimation, handleNext]
@@ -336,6 +339,30 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     inputRange: [0, 1],
     outputRange: [0, 1],
   });
+
+  // 깜빡이는 애니메이션
+  useEffect(() => {
+    if (showResult && !showDetailedExplanation) {
+      const blinkLoop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(blinkAnimation, {
+            toValue: 0.3,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(blinkAnimation, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      blinkLoop.start();
+      return () => blinkLoop.stop();
+    } else {
+      blinkAnimation.setValue(1);
+    }
+  }, [showResult, showDetailedExplanation, blinkAnimation]);
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -481,18 +508,28 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                   },
                 ]}
               >
-                <View
-                  style={[
-                    styles.feedbackCircle,
-                    {
-                      backgroundColor: timeExpired ? colors.coral[500] : isCorrect ? colors.sage[500] : colors.coral[500],
-                    },
-                  ]}
-                >
-                  <Text style={styles.feedbackIcon}>
-                    {timeExpired ? '⏱️' : isCorrect ? '✓' : '×'}
-                  </Text>
-                </View>
+                {/* 클릭 가능한 피드백 영역 - もっと見る를 누르지 않았을 때만 다음 문제로 이동 */}
+                {!showDetailedExplanation && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleNext();
+                    }}
+                    activeOpacity={0.7}
+                    style={styles.feedbackClickArea}
+                  >
+                    <Animated.Text
+                      style={[
+                        styles.tapHintText,
+                        {
+                          color: colors.primary[400],
+                          opacity: blinkAnimation,
+                        },
+                      ]}
+                    >
+                      ここをタップして次へ
+                    </Animated.Text>
+                  </TouchableOpacity>
+                )}
 
                 <Card style={styles.explanationCard}>
                   <Text style={[styles.explanationTitle, { color: colors.primary[800] }]}>
@@ -545,13 +582,6 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                   </View>
                 )}
 
-                {!showDetailedExplanation && (
-                  <Text style={[styles.tapToNextText, { color: colors.primary[500] }]}>
-                    {currentQuestionIndex < questions.length - 1
-                      ? '🖐️ タップで次の問題へ'
-                      : '🖐️ タップで結果を見る'}
-                  </Text>
-                )}
 
                 <Button
                   title={
@@ -785,19 +815,16 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xl,
     alignItems: 'center',
   },
-  feedbackCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+  feedbackClickArea: {
+    width: '100%',
+    paddingVertical: SPACING.md,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: SPACING.lg,
-    ...SHADOWS.softMd,
+    marginBottom: SPACING.md,
   },
-  feedbackIcon: {
-    fontSize: 48,
-    color: '#FFFFFF',
-    fontWeight: '700',
+  tapHintText: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    opacity: 0.6,
+    fontWeight: '400',
   },
   explanationCard: {
     width: '100%',

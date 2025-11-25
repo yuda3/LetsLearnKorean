@@ -44,6 +44,8 @@ export type QuizCategory =
   | 'concert'     // コンサート
   | 'slang'       // スラング
   | 'kpopTerms'   // K-POP用語
+  // K-ドラマ関連カテゴリ
+  | 'kdrama'      // K-ドラマ
   // 統合カテゴリ
   | 'travel_daily' // 旅行で使える日常会話 (統合: gratitude, daily, numbers, travel, shopping, restaurant, emergency)
   // 旧カテゴリ (非表示だがデータは保持)

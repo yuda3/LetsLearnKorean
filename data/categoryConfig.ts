@@ -54,7 +54,11 @@ export const CATEGORY_CONFIGS: CategoryConfig[] = [
     icon: '📲',
     description: 'SNSで使える表現',
     difficulty: 'beginner',
-    // No unlock requirement - always unlocked
+    unlockRequirement: {
+      requiredCategory: 'fanLetter',
+      minimumScore: 60,
+      minimumQuizzes: 2,
+    },
   },
   {
     id: 'concert',
@@ -63,7 +67,11 @@ export const CATEGORY_CONFIGS: CategoryConfig[] = [
     icon: '🎤',
     description: 'コンサートで使える表現',
     difficulty: 'beginner',
-    // No unlock requirement - always unlocked
+    unlockRequirement: {
+      requiredCategory: 'fanLetter',
+      minimumScore: 60,
+      minimumQuizzes: 2,
+    },
   },
   {
     id: 'slang',
@@ -72,7 +80,11 @@ export const CATEGORY_CONFIGS: CategoryConfig[] = [
     icon: '💬',
     description: 'K-POPファンがよく使うスラング',
     difficulty: 'intermediate',
-    // No unlock requirement - always unlocked
+    unlockRequirement: {
+      requiredCategory: 'fanLetter',
+      minimumScore: 60,
+      minimumQuizzes: 2,
+    },
   },
   {
     id: 'kpopTerms',
@@ -81,7 +93,25 @@ export const CATEGORY_CONFIGS: CategoryConfig[] = [
     icon: '🎵',
     description: 'K-POPでよく使われる専門用語',
     difficulty: 'intermediate',
-    // No unlock requirement - always unlocked
+    unlockRequirement: {
+      requiredCategory: 'fanLetter',
+      minimumScore: 60,
+      minimumQuizzes: 2,
+    },
+  },
+  // K-드라마 카테고리 (준비중)
+  {
+    id: 'kdrama',
+    titleJa: 'K-ドラマ',
+    titleKo: 'K-드라마',
+    icon: '📺',
+    description: '準備中 - K-ドラマで使える表現',
+    difficulty: 'intermediate',
+    unlockRequirement: {
+      requiredCategory: 'fanLetter',
+      minimumScore: 70,
+      minimumQuizzes: 3,
+    },
   },
   // 통합 카테고리: 여행에서 쓸 수 있는 일상 회화
   {

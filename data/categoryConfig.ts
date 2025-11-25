@@ -83,6 +83,16 @@ export const CATEGORY_CONFIGS: CategoryConfig[] = [
     difficulty: 'intermediate',
     // No unlock requirement - always unlocked
   },
+  // 통합 카테고리: 여행에서 쓸 수 있는 일상 회화
+  {
+    id: 'travel_daily',
+    titleJa: '旅行で使える日常会話',
+    titleKo: '여행에서 쓸 수 있는 일상 회화',
+    icon: '🗺️',
+    description: '旅行・ショッピング・レストラン・緊急時などで使える表現',
+    difficulty: 'intermediate',
+    // No unlock requirement - always unlocked
+  },
   // 기존 카테고리들은 숨김 처리 (주석 처리)
   // {
   //   id: 'gratitude',

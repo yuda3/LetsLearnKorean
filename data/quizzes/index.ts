@@ -116,9 +116,19 @@ export const getQuizzesByCategory = (category: string, userLevel?: 'beginner' | 
     concert: 'beginner',
     slang: 'intermediate',
     kpopTerms: 'intermediate',
+    // 통합 카테고리
+    travel_daily: 'intermediate',
   };
 
-  let filtered = quizQuestions.filter((q) => q.category === category);
+  // 통합 카테고리 처리: travel_daily는 기존 일반 카테고리들을 모두 포함
+  let filtered: Question[];
+  if (category === 'travel_daily') {
+    // 기존 일반 카테고리들의 퀴즈를 모두 합침
+    const travelDailyCategories = ['gratitude', 'daily', 'numbers', 'travel', 'shopping', 'restaurant', 'emergency'];
+    filtered = quizQuestions.filter((q) => travelDailyCategories.includes(q.category));
+  } else {
+    filtered = quizQuestions.filter((q) => q.category === category);
+  }
 
   // ユーザーレベルが指定されている場合は、そのレベルに合った問題のみフィルター
   if (userLevel) {
@@ -171,6 +181,8 @@ export const categoryInfo = {
   concert: { name: 'コンサート', icon: '🎤', color: '#B4F4E8' },
   slang: { name: 'スラング', icon: '💬', color: '#F4D4B4' },
   kpopTerms: { name: 'K-POP用語', icon: '🎵', color: '#D4B4F4' },
+  // 통합 카테고리
+  travel_daily: { name: '旅行で使える日常会話', icon: '🗺️', color: '#9AC4B3' },
 };
 
 // Get questions by difficulty level (based on question's difficulty field or category default)

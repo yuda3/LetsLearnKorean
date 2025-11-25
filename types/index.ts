@@ -34,14 +34,7 @@ export interface Question {
 }
 
 export type QuizCategory =
-  | 'travel'      // 旅行会話
-  | 'daily'       // 日常会話
-  | 'gratitude'   // 感謝の表現
   | 'basic'       // 基本フレーズ
-  | 'shopping'    // ショッピング
-  | 'restaurant'  // レストラン
-  | 'emergency'   // 緊急時
-  | 'numbers'     // 数字
   // K-POP関連カテゴリ
   | 'vlive'       // V LIVE
   | 'kpop_gratitude'  // K-POP感謝表現
@@ -50,7 +43,17 @@ export type QuizCategory =
   | 'sns'         // SNS
   | 'concert'     // コンサート
   | 'slang'       // スラング
-  | 'kpopTerms';  // K-POP用語
+  | 'kpopTerms'   // K-POP用語
+  // 統合カテゴリ
+  | 'travel_daily' // 旅行で使える日常会話 (統合: gratitude, daily, numbers, travel, shopping, restaurant, emergency)
+  // 旧カテゴリ (非表示だがデータは保持)
+  | 'travel'      // 旅行会話
+  | 'daily'       // 日常会話
+  | 'gratitude'   // 感謝の表現
+  | 'shopping'    // ショッピング
+  | 'restaurant'  // レストラン
+  | 'emergency'   // 緊急時
+  | 'numbers';    // 数字
 
 // Learning history types
 export interface QuizResult {

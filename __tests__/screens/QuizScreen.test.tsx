@@ -77,7 +77,8 @@ describe('QuizScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
+    // Don't set fake timers by default - let each test decide
+    jest.useRealTimers();
   });
 
   afterEach(() => {
@@ -85,7 +86,7 @@ describe('QuizScreen', () => {
   });
 
   it('should render quiz screen with first question', () => {
-    const { getByText } = render(
+    const { getAllByText, getByText } = render(
       <QuizScreen
         questions={mockQuestions}
         category="basic"
@@ -95,7 +96,9 @@ describe('QuizScreen', () => {
       />
     );
 
-    expect(getByText('こんにちは')).toBeTruthy();
+    // 'こんにちは' appears twice: as question and as option
+    const elements = getAllByText('こんにちは');
+    expect(elements.length).toBeGreaterThan(0);
     expect(getByText('안녕하세요')).toBeTruthy();
     expect(getByText('1 / 2')).toBeTruthy();
   });
@@ -114,7 +117,7 @@ describe('QuizScreen', () => {
   });
 
   it('should handle answer selection correctly', async () => {
-    const { getByText, getAllByRole } = render(
+    const { getByText, getAllByRole, getAllByText } = render(
       <QuizScreen
         questions={mockQuestions}
         category="basic"
@@ -123,29 +126,24 @@ describe('QuizScreen', () => {
       />
     );
 
-    // Get all TouchableOpacity elements (answer buttons)
+    // Get all buttons with role
     const buttons = getAllByRole('button');
 
-    // Find the correct answer button
-    const correctButton = buttons.find(button => {
-      const text = button.props.children?.find((child: any) =>
-        child?.props?.children === 'こんにちは'
-      );
-      return !!text;
-    });
+    // Find correct answer button by checking accessibility label
+    const correctButton = buttons.find(button =>
+      button.props.accessibilityLabel?.includes('選択肢: こんにちは')
+    );
+
+    expect(correctButton).toBeDefined();
 
     // Click correct answer
-    act(() => {
-      if (correctButton) {
-        fireEvent.press(correctButton);
-      }
-    });
+    fireEvent.press(correctButton!);
 
     // Wait for feedback to show
     await waitFor(() => {
       expect(getByText('正解です！')).toBeTruthy();
       expect(getByText('基本的な挨拶です')).toBeTruthy();
-    });
+    }, { timeout: 3000 });
   });
 
   it('should show incorrect feedback for wrong answer', async () => {
@@ -160,25 +158,20 @@ describe('QuizScreen', () => {
 
     const buttons = getAllByRole('button');
 
-    // Find the wrong answer button (not the first option)
-    const wrongButton = buttons.find(button => {
-      const text = button.props.children?.find((child: any) =>
-        child?.props?.children === 'おはよう'
-      );
-      return !!text;
-    });
+    // Find the wrong answer button by accessibility label
+    const wrongButton = buttons.find(button =>
+      button.props.accessibilityLabel?.includes('選択肢: おはよう')
+    );
+
+    expect(wrongButton).toBeDefined();
 
     // Click wrong answer
-    act(() => {
-      if (wrongButton) {
-        fireEvent.press(wrongButton);
-      }
-    });
+    fireEvent.press(wrongButton!);
 
     // Wait for feedback to show
     await waitFor(() => {
       expect(getByText('不正解')).toBeTruthy();
-    });
+    }, { timeout: 3000 });
   });
 
   it('should auto-advance to next question after 3 seconds', async () => {
@@ -192,33 +185,31 @@ describe('QuizScreen', () => {
     );
 
     const buttons = getAllByRole('button');
-    const correctButton = buttons.find(button => {
-      const text = button.props.children?.find((child: any) =>
-        child?.props?.children === 'こんにちは'
-      );
-      return !!text;
-    });
+    const correctButton = buttons.find(button =>
+      button.props.accessibilityLabel?.includes('選択肢: こんにちは')
+    );
+
+    expect(correctButton).toBeDefined();
 
     // Answer first question
-    act(() => {
-      if (correctButton) {
-        fireEvent.press(correctButton);
-      }
-    });
+    fireEvent.press(correctButton!);
 
-    // Wait for auto-advance timer (3 seconds)
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
+    // Wait for feedback
+    await waitFor(() => {
+      expect(getByText('正解です！')).toBeTruthy();
+    }, { timeout: 3000 });
 
-    // Should now show second question
+    // Wait for auto-advance (3 seconds)
     await waitFor(() => {
       expect(getByText('ありがとうございます')).toBeTruthy();
       expect(getByText('감사합니다')).toBeTruthy();
-    });
+    }, { timeout: 4000 });
   });
 
   it('should handle time expiration correctly', async () => {
+    // This test needs fake timers to fast-forward time
+    jest.useFakeTimers();
+
     const { getByText } = render(
       <QuizScreen
         questions={mockQuestions}
@@ -229,7 +220,7 @@ describe('QuizScreen', () => {
     );
 
     // Fast-forward 30 seconds (timer expiration)
-    act(() => {
+    await act(async () => {
       jest.advanceTimersByTime(30000);
     });
 
@@ -237,10 +228,12 @@ describe('QuizScreen', () => {
     await waitFor(() => {
       expect(getByText('時間切れ')).toBeTruthy();
     });
+
+    jest.useRealTimers();
   });
 
   it('should complete quiz and call onComplete after last question', async () => {
-    const { getAllByRole } = render(
+    const { getAllByRole, getByText } = render(
       <QuizScreen
         questions={mockQuestions}
         category="basic"
@@ -250,53 +243,44 @@ describe('QuizScreen', () => {
     );
 
     // Answer first question correctly
-    act(() => {
-      const buttons = getAllByRole('button');
-      const correctButton = buttons.find(button => {
-        const text = button.props.children?.find((child: any) =>
-          child?.props?.children === 'こんにちは'
-        );
-        return !!text;
-      });
-      if (correctButton) {
-        fireEvent.press(correctButton);
-      }
-    });
+    const buttons1 = getAllByRole('button');
+    const correctButton1 = buttons1.find(button =>
+      button.props.accessibilityLabel?.includes('選択肢: こんにちは')
+    );
+    expect(correctButton1).toBeDefined();
+    fireEvent.press(correctButton1!);
 
-    // Auto-advance to next question
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
+    // Wait for feedback
+    await waitFor(() => {
+      expect(getByText('正解です！')).toBeTruthy();
+    }, { timeout: 3000 });
+
+    // Wait for auto-advance to next question (3 seconds)
+    await waitFor(() => {
+      expect(getByText('ありがとうございます')).toBeTruthy();
+    }, { timeout: 4000 });
 
     // Answer second question correctly
+    const buttons2 = getAllByRole('button');
+    const correctButton2 = buttons2.find(button =>
+      button.props.accessibilityLabel?.includes('選択肢: 감사합니다')
+    );
+    expect(correctButton2).toBeDefined();
+    fireEvent.press(correctButton2!);
+
+    // Wait for feedback on second question
     await waitFor(() => {
-      const buttons = getAllByRole('button');
-      const correctButton2 = buttons.find(button => {
-        const text = button.props.children?.find((child: any) =>
-          child?.props?.children === '감사합니다'
-        );
-        return !!text;
-      });
+      expect(getByText('正解です！')).toBeTruthy();
+    }, { timeout: 3000 });
 
-      act(() => {
-        if (correctButton2) {
-          fireEvent.press(correctButton2);
-        }
-      });
-    });
-
-    // Auto-advance after last question (should call onComplete)
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
-
+    // Wait for auto-advance and onComplete call (3 seconds)
     await waitFor(() => {
       expect(mockOnComplete).toHaveBeenCalledWith(
         2, // score (2 correct)
         [1, 2], // correct answer IDs
         [] // incorrect answer IDs
       );
-    });
+    }, { timeout: 4000 });
   });
 
   it('should call onExit when exit button is pressed', () => {
@@ -316,15 +300,15 @@ describe('QuizScreen', () => {
   });
 
   it('should save quiz result in non-review mode', async () => {
-    const mockSaveQuizResult = jest.fn();
-    const mockUpdateLearningStats = jest.fn();
-    const mockUpdateCategoryProgress = jest.fn();
+    const mockSaveQuizResult = jest.fn().mockResolvedValue(undefined);
+    const mockUpdateLearningStats = jest.fn().mockResolvedValue(undefined);
+    const mockUpdateCategoryProgress = jest.fn().mockResolvedValue(undefined);
 
     (storageService.saveQuizResult as jest.Mock) = mockSaveQuizResult;
     (storageService.updateLearningStats as jest.Mock) = mockUpdateLearningStats;
     (storageService.updateCategoryProgress as jest.Mock) = mockUpdateCategoryProgress;
 
-    const { getAllByRole } = render(
+    const { getAllByRole, getByText } = render(
       <QuizScreen
         questions={mockQuestions}
         category="basic"
@@ -334,45 +318,53 @@ describe('QuizScreen', () => {
       />
     );
 
-    // Answer both questions
-    act(() => {
-      const buttons = getAllByRole('button');
-      const correctButton = buttons[0];
-      fireEvent.press(correctButton);
-    });
+    // Answer first question
+    const buttons1 = getAllByRole('button');
+    const correctButton1 = buttons1.find(button =>
+      button.props.accessibilityLabel?.includes('選択肢: こんにちは')
+    );
+    expect(correctButton1).toBeDefined();
+    fireEvent.press(correctButton1!);
 
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
-
+    // Wait for feedback
     await waitFor(() => {
-      const buttons = getAllByRole('button');
-      if (buttons.length > 0) {
-        act(() => {
-          fireEvent.press(buttons[0]);
-        });
-      }
-    });
+      expect(getByText('正解です！')).toBeTruthy();
+    }, { timeout: 3000 });
 
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
+    // Wait for auto-advance to next question
+    await waitFor(() => {
+      expect(getByText('ありがとうございます')).toBeTruthy();
+    }, { timeout: 4000 });
 
+    // Answer second question
+    const buttons2 = getAllByRole('button');
+    const correctButton2 = buttons2.find(button =>
+      button.props.accessibilityLabel?.includes('選択肢: 감사합니다')
+    );
+    expect(correctButton2).toBeDefined();
+    fireEvent.press(correctButton2!);
+
+    // Wait for feedback
+    await waitFor(() => {
+      expect(getByText('正解です！')).toBeTruthy();
+    }, { timeout: 3000 });
+
+    // Wait for quiz completion and storage calls
     await waitFor(() => {
       expect(mockSaveQuizResult).toHaveBeenCalled();
       expect(mockUpdateLearningStats).toHaveBeenCalled();
       expect(mockUpdateCategoryProgress).toHaveBeenCalled();
-    });
+    }, { timeout: 4000 });
   });
 
   it('should NOT save quiz result in review mode', async () => {
-    const mockSaveQuizResult = jest.fn();
-    const mockRemoveIncorrectAnswers = jest.fn();
+    const mockSaveQuizResult = jest.fn().mockResolvedValue(undefined);
+    const mockRemoveIncorrectAnswers = jest.fn().mockResolvedValue(undefined);
 
     (storageService.saveQuizResult as jest.Mock) = mockSaveQuizResult;
     (storageService.removeIncorrectAnswersFromResults as jest.Mock) = mockRemoveIncorrectAnswers;
 
-    const { getAllByRole } = render(
+    const { getAllByRole, getByText } = render(
       <QuizScreen
         questions={mockQuestions}
         category="basic"
@@ -382,32 +374,41 @@ describe('QuizScreen', () => {
       />
     );
 
-    // Answer both questions correctly
-    act(() => {
-      const buttons = getAllByRole('button');
-      fireEvent.press(buttons[0]);
-    });
+    // Answer first question correctly
+    const buttons1 = getAllByRole('button');
+    const correctButton1 = buttons1.find(button =>
+      button.props.accessibilityLabel?.includes('選択肢: こんにちは')
+    );
+    expect(correctButton1).toBeDefined();
+    fireEvent.press(correctButton1!);
 
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
-
+    // Wait for feedback
     await waitFor(() => {
-      const buttons = getAllByRole('button');
-      if (buttons.length > 0) {
-        act(() => {
-          fireEvent.press(buttons[0]);
-        });
-      }
-    });
+      expect(getByText('正解です！')).toBeTruthy();
+    }, { timeout: 3000 });
 
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
+    // Wait for auto-advance to next question
+    await waitFor(() => {
+      expect(getByText('ありがとうございます')).toBeTruthy();
+    }, { timeout: 4000 });
 
+    // Answer second question correctly
+    const buttons2 = getAllByRole('button');
+    const correctButton2 = buttons2.find(button =>
+      button.props.accessibilityLabel?.includes('選択肢: 감사합니다')
+    );
+    expect(correctButton2).toBeDefined();
+    fireEvent.press(correctButton2!);
+
+    // Wait for feedback
+    await waitFor(() => {
+      expect(getByText('正解です！')).toBeTruthy();
+    }, { timeout: 3000 });
+
+    // Wait for quiz completion
     await waitFor(() => {
       expect(mockSaveQuizResult).not.toHaveBeenCalled();
       expect(mockRemoveIncorrectAnswers).toHaveBeenCalled();
-    });
+    }, { timeout: 4000 });
   });
 });

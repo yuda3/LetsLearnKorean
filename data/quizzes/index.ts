@@ -10,6 +10,18 @@ import { shoppingQuestions } from './shopping';
 import { restaurantQuestions } from './restaurant';
 import { emergencyQuestions } from './emergency';
 
+// Import K-POP category questions
+import {
+  vliveQuestions,
+  kpopGratitudeQuestions,
+  reactionsQuestions,
+  fanLetterQuestions,
+  snsQuestions,
+  concertQuestions,
+  slangQuestions,
+  kpopTermsQuestions
+} from './kpop';
+
 // Combine all questions
 export const quizQuestions: Question[] = [
   ...basicQuestions,
@@ -20,6 +32,15 @@ export const quizQuestions: Question[] = [
   ...shoppingQuestions,
   ...restaurantQuestions,
   ...emergencyQuestions,
+  // K-POP questions
+  ...vliveQuestions,
+  ...kpopGratitudeQuestions,
+  ...reactionsQuestions,
+  ...fanLetterQuestions,
+  ...snsQuestions,
+  ...concertQuestions,
+  ...slangQuestions,
+  ...kpopTermsQuestions,
 ];
 
 // Export individual category questions
@@ -32,6 +53,15 @@ export {
   shoppingQuestions,
   restaurantQuestions,
   emergencyQuestions,
+  // K-POP categories
+  vliveQuestions,
+  kpopGratitudeQuestions,
+  reactionsQuestions,
+  fanLetterQuestions,
+  snsQuestions,
+  concertQuestions,
+  slangQuestions,
+  kpopTermsQuestions,
 };
 
 // Fisher-Yates shuffle algorithm for better randomization
@@ -77,6 +107,15 @@ export const getQuizzesByCategory = (category: string, userLevel?: 'beginner' | 
     shopping: 'intermediate',
     restaurant: 'intermediate',
     emergency: 'advanced',
+    // K-POP categories
+    vlive: 'beginner',
+    kpop_gratitude: 'beginner',
+    reactions: 'beginner',
+    fanLetter: 'intermediate',
+    sns: 'beginner',
+    concert: 'beginner',
+    slang: 'intermediate',
+    kpopTerms: 'intermediate',
   };
 
   let filtered = quizQuestions.filter((q) => q.category === category);
@@ -123,6 +162,15 @@ export const categoryInfo = {
   shopping: { name: 'ショッピング', icon: '🛍️', color: '#B8D4C8' },
   restaurant: { name: 'レストラン', icon: '🍜', color: '#D4E4DD' },
   emergency: { name: '緊急時', icon: '🚨', color: '#FBB8A8' },
+  // K-POP categories
+  vlive: { name: 'V LIVE', icon: '📱', color: '#E8B4F4' },
+  kpop_gratitude: { name: 'K-POP感謝', icon: '💜', color: '#F4B4E8' },
+  reactions: { name: 'リアクション', icon: '😲', color: '#B4E8F4' },
+  fanLetter: { name: 'ファンレター', icon: '💌', color: '#F4E8B4' },
+  sns: { name: 'SNS', icon: '📲', color: '#E8F4B4' },
+  concert: { name: 'コンサート', icon: '🎤', color: '#B4F4E8' },
+  slang: { name: 'スラング', icon: '💬', color: '#F4D4B4' },
+  kpopTerms: { name: 'K-POP用語', icon: '🎵', color: '#D4B4F4' },
 };
 
 // Get questions by difficulty level (based on question's difficulty field or category default)
@@ -137,6 +185,15 @@ export const getQuizzesByDifficulty = (difficulty: 'beginner' | 'intermediate' |
     shopping: 'intermediate',
     restaurant: 'intermediate',
     emergency: 'advanced',
+    // K-POP categories
+    vlive: 'beginner',
+    kpop_gratitude: 'beginner',
+    reactions: 'beginner',
+    fanLetter: 'intermediate',
+    sns: 'beginner',
+    concert: 'beginner',
+    slang: 'intermediate',
+    kpopTerms: 'intermediate',
   };
 
   return quizQuestions.filter((q) => {

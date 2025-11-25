@@ -11,6 +11,7 @@ export interface User {
 
 // Quiz types
 export interface Question {
+  // 既存フィールド
   id: number;
   category: QuizCategory;
   difficulty?: UserLevel; // 問題の難易度（未指定の場合はカテゴリのデフォルト難易度を使用）
@@ -20,6 +21,15 @@ export interface Question {
   correctAnswer: number;
   explanation: string;
   detailedExplanation: string;
+
+  // ★ 新規追加フィールド（K-POP特化）
+  context?: 'V LIVE' | 'concert' | 'fan_letter' | 'SNS' | 'interview';
+  idol?: 'BTS' | 'BLACKPINK' | 'NewJeans' | 'Stray Kids' | 'multiple';
+  frequency?: 'extremely_high' | 'very_high' | 'high' | 'medium';
+  usage?: 'greeting' | 'cheering' | 'reaction' | 'thanks' | 'closing' | 'interaction' | 'QA' | 'announcement' | 'update' | 'reassurance' | 'gratitude' | 'apology' | 'response' | 'promise' | 'request' | 'conversation' | 'mukbang';
+  emotion?: 'happy' | 'moved' | 'longing' | 'surprise' | 'love';
+  formality?: 'casual' | 'polite' | 'formal';
+  realExample?: string; // "BTS V LIVE 2024.3" など
 }
 
 export type QuizCategory =
@@ -30,7 +40,16 @@ export type QuizCategory =
   | 'shopping'    // ショッピング
   | 'restaurant'  // レストラン
   | 'emergency'   // 緊急時
-  | 'numbers';    // 数字
+  | 'numbers'     // 数字
+  // K-POP関連カテゴリ
+  | 'vlive'       // V LIVE
+  | 'kpop_gratitude'  // K-POP感謝表現
+  | 'reactions'   // リアクション
+  | 'fanLetter'   // ファンレター
+  | 'sns'         // SNS
+  | 'concert'     // コンサート
+  | 'slang'       // スラング
+  | 'kpopTerms';  // K-POP用語
 
 // Learning history types
 export interface QuizResult {

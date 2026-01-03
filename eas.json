@@ -14,6 +14,16 @@
         "image": "ubuntu-22.04-jdk-17-ndk-r25b"
       }
     },
+    "development-device": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b"
+      }
+    },
     "preview": {
       "distribution": "internal",
       "ios": {

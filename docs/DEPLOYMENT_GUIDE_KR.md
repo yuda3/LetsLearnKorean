@@ -25,9 +25,47 @@ eas login
 
 ---
 
+### 💻 로컬 개발 및 테스트 (에뮬레이터)
+앱스토어에 배포하기 전, 안드로이드 스튜디오의 에뮬레이터나 실제 기기에서 앱을 테스트하고 실시간으로 코드를 수정하며 확인할 수 있습니다. 이를 위해 **개발 빌드(Development Build)**를 사용합니다.
+
+#### 1단계: `expo-dev-client` 설치
+개발 빌드를 만들기 위해 `expo-dev-client` 패키지가 필요합니다. 아래 명령어로 먼저 설치해주세요.
+
+```bash
+npm install expo-dev-client
+```
+
+#### 2단계: Development 빌드 생성
+에뮬레이터나 테스트 기기에 설치할 개발용 `apk` 파일을 생성합니다.
+
+```bash
+eas build --profile development --platform android
+```
+
+#### 3단계: 에뮬레이터에 앱 설치
+1.  빌드가 완료되면, 빌드 결과 페이지에서 `.apk` 파일을 다운로드합니다.
+2.  안드로이드 스튜디오에서 에뮬레이터를 실행합니다.
+3.  다운로드한 `.apk` 파일을 실행 중인 에뮬레이터 화면으로 드래그 앤 드롭하여 설치합니다.
+
+#### 4단계: 개발 서버 실행 및 앱 테스트
+1.  터미널에서 아래 명령어로 개발 서버를 시작합니다.
+    ```bash
+    npm start
+    ```
+2.  에뮬레이터에서 설치된 '''LetsLearnKorean''' 앱을 실행합니다.
+3.  앱이 개발 서버에 자동으로 연결되며, 이제 코드를 수정하면 에뮬레이터 화면에 즉시 반영됩니다.
+
+---
+
 ## 📱 Android 배포 (Google Play Store)
 
 ### 1단계: Android 빌드 생성
+
+#### Development 빌드 (개발 및 테스트용)
+```bash
+# 위 '''로컬 개발 및 테스트''' 섹션 참고
+eas build --profile development --platform android
+```
 
 #### Preview 빌드 (테스트용 APK)
 ```bash

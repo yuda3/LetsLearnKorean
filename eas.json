@@ -9,6 +9,9 @@
       "distribution": "internal",
       "ios": {
         "simulator": true
+      },
+      "android": {
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b"
       }
     },
     "preview": {
@@ -17,7 +20,8 @@
         "simulator": false
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b"
       }
     },
     "production": {
@@ -25,7 +29,8 @@
         "simulator": false
       },
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "app-bundle",
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b"
       }
     }
   },

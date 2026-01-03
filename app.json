@@ -40,7 +40,19 @@
       "favicon": "./assets/logo2.png"
     },
     "plugins": [
-      "expo-font"
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/noto-sans-jp/NotoSansJP_100Thin.ttf",
+            "node_modules/@expo-google-fonts/noto-sans-jp/NotoSansJP_300Light.ttf",
+            "node_modules/@expo-google-fonts/noto-sans-jp/NotoSansJP_400Regular.ttf",
+            "node_modules/@expo-google-fonts/noto-sans-jp/NotoSansJP_500Medium.ttf",
+            "node_modules/@expo-google-fonts/noto-sans-jp/NotoSansJP_700Bold.ttf",
+            "node_modules/@expo-google-fonts/noto-sans-jp/NotoSansJP_900Black.ttf"
+          ]
+        }
+      ]
     ],
     "extra": {
       "eas": {

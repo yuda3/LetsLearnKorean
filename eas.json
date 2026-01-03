@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 5.0.0"
+    "version": ">= 5.0.0",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -8,6 +9,19 @@
       "distribution": "internal",
       "ios": {
         "simulator": true
+      },
+      "android": {
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b"
+      }
+    },
+    "development-device": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b"
       }
     },
     "preview": {
@@ -16,7 +30,8 @@
         "simulator": false
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b"
       }
     },
     "production": {
@@ -24,7 +39,8 @@
         "simulator": false
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle",
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b"
       }
     }
   },
@@ -42,4 +58,3 @@
     }
   }
 }
-

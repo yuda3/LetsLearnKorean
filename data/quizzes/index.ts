@@ -22,6 +22,31 @@ import {
   kpopTermsQuestions
 } from './kpop';
 
+// Category default difficulty mapping
+const CATEGORY_DEFAULT_DIFFICULTY: Record<string, 'beginner' | 'intermediate' | 'advanced'> = {
+  basic: 'beginner',
+  gratitude: 'beginner',
+  daily: 'beginner',
+  numbers: 'beginner',
+  travel: 'intermediate',
+  shopping: 'intermediate',
+  restaurant: 'intermediate',
+  emergency: 'advanced',
+  // K-POP categories
+  vlive: 'beginner',
+  kpop_gratitude: 'beginner',
+  reactions: 'beginner',
+  fanLetter: 'intermediate',
+  sns: 'beginner',
+  concert: 'beginner',
+  slang: 'intermediate',
+  kpopTerms: 'intermediate',
+  // K-Drama categories
+  kdrama: 'intermediate',
+  // Integrated categories
+  travel_daily: 'intermediate',
+};
+
 // Combine all questions
 export const quizQuestions: Question[] = [
   ...basicQuestions,
@@ -97,28 +122,6 @@ const shuffleQuestionOptions = (question: Question): Question => {
 
 // Category-specific question getters
 export const getQuizzesByCategory = (category: string, userLevel?: 'beginner' | 'intermediate' | 'advanced'): Question[] => {
-  // カテゴリのデフォルト難易度マッピング
-  const categoryDefaultDifficulty: Record<string, 'beginner' | 'intermediate' | 'advanced'> = {
-    basic: 'beginner',
-    gratitude: 'beginner',
-    daily: 'beginner',
-    numbers: 'beginner',
-    travel: 'intermediate',
-    shopping: 'intermediate',
-    restaurant: 'intermediate',
-    emergency: 'advanced',
-    // K-POP categories
-    vlive: 'beginner',
-    kpop_gratitude: 'beginner',
-    reactions: 'beginner',
-    fanLetter: 'intermediate',
-    sns: 'beginner',
-    concert: 'beginner',
-    slang: 'intermediate',
-    kpopTerms: 'intermediate',
-    // 통합 카테고리
-    travel_daily: 'intermediate',
-  };
 
   // 통합 카테고리 처리: travel_daily는 기존 일반 카테고리들을 모두 포함
   let filtered: Question[];
@@ -133,7 +136,7 @@ export const getQuizzesByCategory = (category: string, userLevel?: 'beginner' | 
   // ユーザーレベルが指定されている場合は、そのレベルに合った問題のみフィルター
   if (userLevel) {
     filtered = filtered.filter((q) => {
-      const questionDifficulty = q.difficulty || categoryDefaultDifficulty[q.category] || 'beginner';
+      const questionDifficulty = q.difficulty || CATEGORY_DEFAULT_DIFFICULTY[q.category] || 'beginner';
       return questionDifficulty === userLevel;
     });
   }
@@ -187,30 +190,9 @@ export const categoryInfo = {
 
 // Get questions by difficulty level (based on question's difficulty field or category default)
 export const getQuizzesByDifficulty = (difficulty: 'beginner' | 'intermediate' | 'advanced'): Question[] => {
-  // カテゴリのデフォルト難易度マッピング
-  const categoryDefaultDifficulty: Record<string, 'beginner' | 'intermediate' | 'advanced'> = {
-    basic: 'beginner',
-    gratitude: 'beginner',
-    daily: 'beginner',
-    numbers: 'beginner',
-    travel: 'intermediate',
-    shopping: 'intermediate',
-    restaurant: 'intermediate',
-    emergency: 'advanced',
-    // K-POP categories
-    vlive: 'beginner',
-    kpop_gratitude: 'beginner',
-    reactions: 'beginner',
-    fanLetter: 'intermediate',
-    sns: 'beginner',
-    concert: 'beginner',
-    slang: 'intermediate',
-    kpopTerms: 'intermediate',
-  };
-
   return quizQuestions.filter((q) => {
     // 問題に難易度が設定されている場合はそれを使用、なければカテゴリのデフォルトを使用
-    const questionDifficulty = q.difficulty || categoryDefaultDifficulty[q.category] || 'beginner';
+    const questionDifficulty = q.difficulty || CATEGORY_DEFAULT_DIFFICULTY[q.category] || 'beginner';
     return questionDifficulty === difficulty;
   });
 };

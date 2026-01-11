@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Text, Platform } from 'react-native';
 import { ImprovedHomeScreen } from '../screens/ImprovedHomeScreen';
 import { PracticeScreen } from '../screens/PracticeScreen';
@@ -15,8 +15,25 @@ import { getRandomQuizzes, getQuizzesByCategory, getQuizzesByIds } from '../data
 import { UserLevel, QuizCategory, Question } from '../types';
 import { storageService } from '../services/storageService';
 
+// Define navigation param types
+type HomeStackParamList = {
+  HomeMain: undefined;
+  QuizSetup: { category?: QuizCategory };
+  Quiz: undefined;
+  Result: undefined;
+  ProfileMain: undefined;
+  SettingsMain: undefined;
+};
+
+type PracticeStackParamList = {
+  PracticeMain: undefined;
+  PracticeQuiz: undefined;
+  PracticeResult: undefined;
+};
+
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<HomeStackParamList>();
+const PracticeStackNav = createNativeStackNavigator<PracticeStackParamList>();
 
 // Home Stack Navigator
 function HomeStack() {
@@ -175,8 +192,8 @@ function HomeStack() {
         )}
       </Stack.Screen>
       <Stack.Screen name="QuizSetup">
-        {(props: any) => {
-          const category = props.route?.params?.category as QuizCategory | undefined;
+        {(props: NativeStackScreenProps<HomeStackParamList, 'QuizSetup'>) => {
+          const category = props.route.params?.category;
           return (
             <QuizSetupScreen
               {...props}
@@ -315,14 +332,14 @@ function PracticeStack() {
   };
 
   return (
-    <Stack.Navigator
+    <PracticeStackNav.Navigator
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: colors.background.ivory },
       }}
     >
-      <Stack.Screen name="PracticeMain">
-        {(props) => (
+      <PracticeStackNav.Screen name="PracticeMain">
+        {(props: NativeStackScreenProps<PracticeStackParamList, 'PracticeMain'>) => (
           <PracticeScreen
             {...props}
             onStartPractice={(mode) => {
@@ -331,9 +348,9 @@ function PracticeStack() {
             }}
           />
         )}
-      </Stack.Screen>
-      <Stack.Screen name="PracticeQuiz">
-        {(props) => (
+      </PracticeStackNav.Screen>
+      <PracticeStackNav.Screen name="PracticeQuiz">
+        {(props: NativeStackScreenProps<PracticeStackParamList, 'PracticeQuiz'>) => (
           <QuizScreen
             {...props}
             questions={quizState.questions}
@@ -347,9 +364,9 @@ function PracticeStack() {
             userName={user?.name}
           />
         )}
-      </Stack.Screen>
-      <Stack.Screen name="PracticeResult">
-        {(props) => (
+      </PracticeStackNav.Screen>
+      <PracticeStackNav.Screen name="PracticeResult">
+        {(props: NativeStackScreenProps<PracticeStackParamList, 'PracticeResult'>) => (
           <ResultScreen
             {...props}
             score={quizState.score}
@@ -361,8 +378,8 @@ function PracticeStack() {
             timeSpent={quizState.timeSpent}
           />
         )}
-      </Stack.Screen>
-    </Stack.Navigator>
+      </PracticeStackNav.Screen>
+    </PracticeStackNav.Navigator>
   );
 }
 

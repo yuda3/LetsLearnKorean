@@ -46,14 +46,16 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   const [correctAnswers, setCorrectAnswers] = useState<number[]>([]);
   const [incorrectAnswers, setIncorrectAnswers] = useState<number[]>([]);
   const [startTime] = useState(Date.now());
-  const [autoAdvanceTimer, setAutoAdvanceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [timeLeft, setTimeLeft] = useState(30); // 30초 타이머
   const [timeExpired, setTimeExpired] = useState(false);
-  
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   // useRef로 handleTimeExpired의 최신 참조를 유지하여 무한 루프 방지
-  const handleTimeExpiredRef = useRef<() => void>();
+  const handleTimeExpiredRef = useRef<() => void | undefined>(undefined);
   // useRef로 timerInterval을 관리하여 state 업데이트로 인한 리렌더링 방지
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // useRef로 autoAdvanceTimer를 관리하여 메모리 누수 방지
+  const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // showDetailedExplanation의 최신 값을 참조하기 위한 ref
   const showDetailedExplanationRef = useRef(false);
 
@@ -93,9 +95,9 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
     setTimeExpired(false);
 
     // Clear any pending auto-advance timer
-    if (autoAdvanceTimer) {
-      clearTimeout(autoAdvanceTimer);
-      setAutoAdvanceTimer(null);
+    if (autoAdvanceTimerRef.current) {
+      clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
     }
     // Clear timer interval
     if (timerIntervalRef.current) {
@@ -107,9 +109,9 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
 
   const handleNext = useCallback(async () => {
     // Clear auto-advance timer
-    if (autoAdvanceTimer) {
-      clearTimeout(autoAdvanceTimer);
-      setAutoAdvanceTimer(null);
+    if (autoAdvanceTimerRef.current) {
+      clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
     }
 
     // 타이머 정지
@@ -173,6 +175,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                   storageService.updateCategoryProgress(result),
                 ]).catch((error) => {
                   console.error('Error saving quiz result:', error);
+                  setSaveError('クイズ結果の保存に失敗しました。もう一度お試しください。');
                 });
               }
             }
@@ -186,7 +189,6 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
       });
     }
   }, [
-    autoAdvanceTimer,
     currentQuestionIndex,
     questions.length,
     feedbackAnimation,
@@ -226,7 +228,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
         handleNext();
       }
     }, 5000);
-    setAutoAdvanceTimer(timer);
+    autoAdvanceTimerRef.current = timer;
   }, [showResult, currentQuestion, feedbackAnimation, handleNext]);
   
   // handleTimeExpired의 최신 참조를 ref에 저장
@@ -325,7 +327,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
           handleNext();
         }
       }, 5000);
-      setAutoAdvanceTimer(timer);
+      autoAdvanceTimerRef.current = timer;
     },
     [showResult, timeExpired, currentQuestion, feedbackAnimation, handleNext]
   );
@@ -367,11 +369,16 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
-      if (autoAdvanceTimer) {
-        clearTimeout(autoAdvanceTimer);
+      if (autoAdvanceTimerRef.current) {
+        clearTimeout(autoAdvanceTimerRef.current);
+        autoAdvanceTimerRef.current = null;
+      }
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
       }
     };
-  }, [autoAdvanceTimer]);
+  }, []); // Only run cleanup on unmount
 
   // Early return을 조건부 렌더링으로 변경 (모든 hooks 호출 후)
   if (!questions || questions.length === 0) {
@@ -469,6 +476,23 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
             </View>
           </View>
 
+          {/* Save Error Message */}
+          {saveError && (
+            <View style={[styles.errorBanner, { backgroundColor: '#FFEBEE' }]}>
+              <Text style={[styles.errorBannerText, { color: '#C62828' }]}>
+                ⚠️ {saveError}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setSaveError(null)}
+                style={styles.errorCloseButton}
+                accessibilityLabel="エラーメッセージを閉じる"
+                accessibilityRole="button"
+              >
+                <Text style={[styles.errorCloseText, { color: '#C62828' }]}>×</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* Question */}
           <View
             style={styles.questionContainer}
@@ -552,9 +576,9 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
                           onPress={(e) => {
                             e.stopPropagation();
                             // 자동 진행 타이머 취소
-                            if (autoAdvanceTimer) {
-                              clearTimeout(autoAdvanceTimer);
-                              setAutoAdvanceTimer(null);
+                            if (autoAdvanceTimerRef.current) {
+                              clearTimeout(autoAdvanceTimerRef.current);
+                              autoAdvanceTimerRef.current = null;
                             }
                             // 타이머 정지
                             if (timerIntervalRef.current) {
@@ -893,5 +917,27 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.fontSize.xl,
     textAlign: 'center',
     marginBottom: SPACING.md,
+  },
+  errorBanner: {
+    marginTop: SPACING.md,
+    marginBottom: SPACING.md,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  errorBannerText: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontWeight: '500',
+    flex: 1,
+  },
+  errorCloseButton: {
+    marginLeft: SPACING.sm,
+    padding: SPACING.xs,
+  },
+  errorCloseText: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });

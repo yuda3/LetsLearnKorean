@@ -12,7 +12,7 @@
         "image": "latest"
       },
       "cache": {
-        "key": "v5-reanimated-patch"
+        "key": "v6-reanimated-upgrade"
       },
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r25b"
@@ -26,7 +26,7 @@
         "image": "latest"
       },
       "cache": {
-        "key": "v5-reanimated-patch"
+        "key": "v6-reanimated-upgrade"
       },
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r25b"
@@ -39,7 +39,7 @@
         "image": "latest"
       },
       "cache": {
-        "key": "v5-reanimated-patch"
+        "key": "v6-reanimated-upgrade"
       },
       "android": {
         "buildType": "apk",
@@ -52,7 +52,7 @@
         "image": "latest"
       },
       "cache": {
-        "key": "v5-reanimated-patch"
+        "key": "v6-reanimated-upgrade"
       },
       "android": {
         "buildType": "app-bundle",

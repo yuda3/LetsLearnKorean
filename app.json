@@ -19,16 +19,6 @@
         "expo-build-properties",
         {
           "ios": {
-            "extraPods": [
-              {
-                "name": "DoubleConversion",
-                "modular_headers": true
-              },
-              {
-                "name": "glog",
-                "modular_headers": true
-              }
-            ],
             "ccacheEnabled": false
           }
         }

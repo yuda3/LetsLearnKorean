@@ -8,7 +8,11 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "image": "latest"
+      },
+      "cache": {
+        "key": "v2-folly-fix"
       },
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r25b"
@@ -18,7 +22,11 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "simulator": false
+        "simulator": false,
+        "image": "latest"
+      },
+      "cache": {
+        "key": "v2-folly-fix"
       },
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r25b"
@@ -27,7 +35,11 @@
     "preview": {
       "distribution": "internal",
       "ios": {
-        "simulator": false
+        "simulator": false,
+        "image": "latest"
+      },
+      "cache": {
+        "key": "v2-folly-fix"
       },
       "android": {
         "buildType": "apk",
@@ -36,7 +48,11 @@
     },
     "production": {
       "ios": {
-        "simulator": false
+        "simulator": false,
+        "image": "latest"
+      },
+      "cache": {
+        "key": "v2-folly-fix"
       },
       "android": {
         "buildType": "app-bundle",

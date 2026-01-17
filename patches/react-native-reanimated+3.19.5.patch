@@ -1,12 +1,12 @@
 diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.h b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.h
 --- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.h
 +++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.h
-@@ -22,7 +22,7 @@ class ReanimatedMountHook : public UIManagerMountHook {
+@@ -26,7 +26,7 @@ class ReanimatedMountHook : public UIManagerMountHook {
  #else
-     double /*unmountTime*/
- #endif
--    ) noexcept override;
-+    ) noexcept;
+       double /*unmountTime*/
+ #endif // REACT_NATIVE_MINOR_VERSION >= 81
+-      ) noexcept override;
++      ) noexcept;
 
   private:
    const std::shared_ptr<PropsRegistry> propsRegistry_;

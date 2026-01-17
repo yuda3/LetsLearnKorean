@@ -14,6 +14,9 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "plugins": [
+      "./plugins/withFollyDisableCoroutines"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.letslearnkorean.app",

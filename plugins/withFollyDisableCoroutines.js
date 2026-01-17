@@ -3,9 +3,11 @@ const fs = require("fs");
 const path = require("path");
 
 /**
- * Expo config plugin to fix the 'folly/coro/Coroutine.h' file not found error.
- * This adds preprocessor definitions to disable Folly's coroutine support
- * which requires C++20 features not always available in the build environment.
+ * Expo config plugin to fix iOS C++ build errors:
+ * 1. 'folly/coro/Coroutine.h' file not found error - adds preprocessor definitions
+ *    to disable Folly's coroutine support which requires C++20 features.
+ * 2. 'non-virtual member function marked override hides virtual member function' error -
+ *    adds compiler flags to suppress this warning in React Native native modules.
  */
 function withFollyDisableCoroutines(config) {
   // First, modify the Podfile
@@ -33,6 +35,7 @@ function withFollyDisableCoroutines(config) {
       // The post_install hook content to add
       const follyFixCode = `
     # Fix for 'folly/coro/Coroutine.h' file not found error
+    # Fix for 'non-virtual member function marked override hides virtual member function' error
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         # Add Folly-related preprocessor definitions
@@ -42,6 +45,19 @@ function withFollyDisableCoroutines(config) {
 
         # Ensure C++17 standard is used
         config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+
+        # Suppress 'override hides virtual member function' warnings
+        # This is needed for React Native native modules that have C++ signature mismatches
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] ||= ['$(inherited)']
+        unless config.build_settings['OTHER_CPLUSPLUSFLAGS'].include?('-Wno-inconsistent-missing-override')
+          config.build_settings['OTHER_CPLUSPLUSFLAGS'] << '-Wno-inconsistent-missing-override'
+        end
+
+        # Also set warning flags to prevent this from being treated as an error
+        config.build_settings['WARNING_CFLAGS'] ||= ['$(inherited)']
+        unless config.build_settings['WARNING_CFLAGS'].include?('-Wno-error=inconsistent-missing-override')
+          config.build_settings['WARNING_CFLAGS'] << '-Wno-error=inconsistent-missing-override'
+        end
       end
     end
 `;

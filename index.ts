@@ -1,6 +1,3 @@
-// Polyfill for crypto.getRandomValues() - MUST be imported before uuid
-import 'react-native-get-random-values';
-
 import { registerRootComponent } from 'expo';
 
 import App from './App';

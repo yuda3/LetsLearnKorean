@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import * as Crypto from 'expo-crypto';
 import { User, UserLevel } from '../types';
 import { storageService } from '../services/storageService';
 
@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (name: string, character?: string) => {
     try {
       // UUID를 사용하여 고유한 사용자 ID 생성
-      const userId = uuidv4();
+      const userId = Crypto.randomUUID();
 
       const newUser: User = {
         id: userId,
